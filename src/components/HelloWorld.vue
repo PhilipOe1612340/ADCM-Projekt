@@ -21,6 +21,10 @@
           </md-card-actions>
       </md-ripple>
     </md-card>
+    <div id="input">
+      store test
+      <md-input autocomplete="given-name" v-model="error" />
+    </div>
   </div>
 </template>
 
@@ -36,6 +40,16 @@ export default {
     test() {
       this.msg += 5;
     }
+  },
+  computed: {
+    error: {
+      get() {
+        return this.$store.getters.getError;
+      },
+      set(val) {
+        this.$store.commit("error", val);
+      }
+    }
   }
 };
 </script>
@@ -48,5 +62,8 @@ h2 {
 #card {
   width: 700px;
   margin-left: 500px;
+}
+#input {
+  margin: 30px;
 }
 </style>

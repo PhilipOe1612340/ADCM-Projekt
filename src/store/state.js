@@ -1,8 +1,5 @@
 export default {
-  model: {
-    bots: [],
-    status: 'testStatus',
-  },
-
-
-}
+  apiState: {
+    error: null,
+  }
+};

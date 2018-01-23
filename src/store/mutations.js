@@ -6,8 +6,8 @@ module.exports = {
   /**
    * creates a green succes card to notify the user
    */
-  success(state, cause) {
-    state.apiState.success = cause;
+  error(state, cause) {
+    state.apiState.error = cause;
   },
 
 }
