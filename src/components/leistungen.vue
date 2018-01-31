@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div id="komplett">
     <md-card>
       <md-card-media-cover md-text-scrim md-ratio="16:9">
         <md-card-media md-ratio="16:9">
@@ -17,27 +17,11 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: "HelloWorld",
-  data() {
-    return {
-    };
-  },
-  methods: {
-    // test() {
-    //   this.msg += 5;
-    // }
-  },
-  computed: {
-    // error: {
-    //   get() {
-    //     return this.$store.getters.getError;
-    //   },
-    //   set(val) {
-    //     this.$store.commit("error", val);
-    //   }
-    // }
-  }
-};
-</script>
+<style>
+#komplett {
+  width: 80%;
+  max-width: 1000px;
+  margin: auto;
+  padding: 10px;
+}
+</style>

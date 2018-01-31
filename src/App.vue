@@ -16,7 +16,7 @@
     </md-tabs>
 
     <div class="footer">
-      <router-link to="/impressum">Impressum</router-link>
+      <router-link to="/impressum">Impressum</router-link> <br>
       <router-link to="/kontakt">Kontakt</router-link>
     </div>
 
@@ -25,7 +25,7 @@
 
 <script>
 export default {
-  name: "Header"
+  name: "Header",
 };
 </script>
 
@@ -39,7 +39,12 @@ export default {
   margin-top: 60px;
 }
 
+#spacer{
+  width: 10px;
+}
+
 .footer{
   color: white;
+  margin-left: 80px;
 }
 </style>
