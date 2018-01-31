@@ -17,7 +17,7 @@
   </div>
 </template>
 
-<style>
+<style scoped>
 #komplett {
   width: 80%;
   max-width: 1000px;

@@ -16,8 +16,8 @@
     </md-tabs>
 
     <div class="footer">
-      <router-link to="/impressum">Impressum</router-link> <br>
-      <router-link to="/kontakt">Kontakt</router-link>
+      <router-link to="/impressum" tag="p" >Impressum</router-link>
+      <router-link to="/kontakt" tag="p" >Kontakt</router-link>
     </div>
 
   </div>
@@ -44,7 +44,11 @@ export default {
 }
 
 .footer{
+  position: relative;
+  bottom: -40px;
+  margin-left: 10%;
   color: white;
-  margin-left: 80px;
+  font-style: normal;
+  margin-bottom: 20px;
 }
 </style>
