@@ -1,6 +1,6 @@
 <template>
   <div>
-    <md-tabs md-sync-route md-alignment="centered">
+    <md-tabs md-sync-route md-alignment="centered" v-touch:swipe.left="swipe_Left" v-touch:swipe.right="swipe_Right">
       <md-tab id="tab-leistungen" md-label="leistungen" to="/leistungen">
         <router-view/>
       </md-tab>
@@ -26,6 +26,39 @@
 <script>
 export default {
   name: "Header",
+  methods: {
+    swipe_Right(direction) {
+      switch (this.$store.state.route.path) {
+        case "/referenzen":
+          this.$router.push("/leistungen");
+          break;
+        case "/kunden":
+          this.$router.push("/referenzen");
+          break;
+        case "/aktuelles":
+          this.$router.push("/kunden");
+          break;
+        case "/leistungen":
+          this.$router.push("/aktuelles");
+          break;
+      }    },
+    swipe_Left(direction) {
+      switch (this.$store.state.route.path) {
+        case "/referenzen":
+          this.$router.push("/kunden");
+          break;
+        case "/kunden":
+          this.$router.push("/aktuelles");
+          break;
+        case "/aktuelles":
+          this.$router.push("/leistungen");
+          break;
+        case "/leistungen":
+          this.$router.push("/referenzen");
+          break;
+      }
+    }
+  }
 };
 </script>
 
@@ -39,11 +72,11 @@ export default {
   margin-top: 60px;
 }
 
-#spacer{
+#spacer {
   width: 10px;
 }
 
-.footer{
+.footer {
   position: relative;
   bottom: -40px;
   margin-left: 10%;

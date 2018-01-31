@@ -6,7 +6,9 @@ import { sync } from "vuex-router-sync"
 import VueMaterial from "vue-material"
 import "vue-material/dist/vue-material.min.css"
 import "./theme.scss"
+import Vue2TouchEvents from "vue2-touch-events";
 
+Vue.use(Vue2TouchEvents);
 
 Vue.use(VueMaterial)
 
