@@ -1,19 +1,19 @@
 <template>
-  <div>
-    <md-tabs md-sync-route md-alignment="centered" v-touch:swipe.left="swipe_Left" v-touch:swipe.right="swipe_Right">
+  <div v-touch:swipe.left="swipe_Left" v-touch:swipe.right="swipe_Right">
+    <md-tabs md-sync-route md-alignment="centered" >
       <md-tab id="tab-leistungen" md-label="leistungen" to="/leistungen">
-        <router-view/>
       </md-tab>
       <md-tab id="tab-referenzen" md-label="referenzen" to="/referenzen">
-        <router-view/>
       </md-tab>
       <md-tab id="tab-kunden" md-label="kunden" to="/kunden">
-        <router-view/>
       </md-tab>
       <md-tab id="tab-aktuelles" md-label="aktuelles" to="/aktuelles">
-        <router-view/>
       </md-tab>
     </md-tabs>
+
+    <transition name="page" mode="out-in">
+      <router-view></router-view>
+    </transition>
 
     <div class="footer">
       <router-link to="/impressum" tag="p" >Impressum</router-link>
@@ -41,7 +41,8 @@ export default {
         case "/leistungen":
           this.$router.push("/aktuelles");
           break;
-      }    },
+      }
+    },
     swipe_Left(direction) {
       switch (this.$store.state.route.path) {
         case "/referenzen":
@@ -83,5 +84,14 @@ export default {
   color: white;
   font-style: normal;
   margin-bottom: 20px;
+}
+
+
+.page-enter-active, .page-leave-active {
+  transition: opacity 0.3s, transform 0.3s;
+}
+.page-enter, .page-leave-to {
+  opacity: 0;
+  transform: translateY(-30%);
 }
 </style>
