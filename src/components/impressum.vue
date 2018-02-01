@@ -1,7 +1,7 @@
 <template>
   <div>
 
-    <h1>impressum</h1>
+    <h1>Impressum</h1>
 
     <div>
       <span>agentur_dcm</span><br />

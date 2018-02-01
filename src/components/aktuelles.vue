@@ -7,8 +7,8 @@
         </md-card-media>
         <md-card-area>
           <md-card-header>
-            <span class="md-title">News</span>
-            <!-- <span class="md-subhead">Am Puls der Zeit</span> -->
+            <span class="md-title">Aktuelles</span>
+            <span class="md-subhead">Am Puls der Zeit</span>
           </md-card-header>
         </md-card-area>
       </md-card-media-cover>
@@ -73,11 +73,6 @@ export default {
         card.id = i++;
         card.datum = moment(card.date).format("LL");
       });
-
-      setTimeout(()=>{
-        vm.$forceUpdate();
-      },200 )
-
       return news;
     }
   }
