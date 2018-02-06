@@ -56,7 +56,7 @@ export default {
     }
   },
   beforeMount() {
-    //this.loadNews();
+    this.loadNews();
   },
   computed: {
     error() {
