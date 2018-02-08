@@ -6,6 +6,7 @@ import kunden from "@/components/kunden";
 import aktuelles from "@/components/aktuelles";
 import kontakt from "@/components/kontakt";
 import impressum from "@/components/impressum";
+import admin from "@/components/admin";
 
 Vue.use(Router);
 
@@ -37,6 +38,10 @@ export default new Router({
     {
       path: "/impressum",
       component: impressum
+    },
+    {
+      path: "/admin",
+      component: admin
     }
   ]
 });

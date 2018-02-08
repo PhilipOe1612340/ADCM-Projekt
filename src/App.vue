@@ -1,6 +1,6 @@
 <template>
   <div v-touch:swipe.left="swipe_Left" v-touch:swipe.right="swipe_Right">
-    <md-tabs md-sync-route md-alignment="centered" >
+    <md-tabs md-sync-route md-alignment="centered" v-if="$store.state.route.path != '/admin'" >
       <md-tab id="tab-leistungen" md-label="leistungen" to="/leistungen">
       </md-tab>
       <md-tab id="tab-referenzen" md-label="referenzen" to="/referenzen">
@@ -15,7 +15,7 @@
       <router-view></router-view>
     </transition>
 
-    <div class="footer">
+    <div class="footer" v-if="$store.state.route.path != '/admin'">
       <router-link to="/impressum" tag="p" >Impressum</router-link>
       <router-link to="/kontakt" tag="p" >Kontakt</router-link>
     </div>
