@@ -16,8 +16,12 @@
     </transition>
 
     <div class="footer" v-if="$store.state.route.path != '/admin'">
-      <router-link to="/impressum" tag="p" >Impressum</router-link>
-      <router-link to="/kontakt" tag="p" >Kontakt</router-link>
+      <router-link to="/impressum" tag="p">Impressum</router-link>
+      <router-link to="/kontakt" tag="p">Kontakt</router-link>
+      <router-link to="/admin" tag="p">Administrieren</router-link>
+    </div>
+    <div class="footer" v-else>
+      <router-link to="/leistungen" tag="p">Home</router-link>
     </div>
 
   </div>
@@ -64,6 +68,9 @@ export default {
 </script>
 
 <style>
+html{
+  min-width: 700px;
+}
 #app {
   font-family: "Avenir", Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;

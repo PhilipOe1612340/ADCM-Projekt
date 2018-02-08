@@ -31,7 +31,7 @@ module.exports = {
       state.auth.isLoggedIn = true;
     } else {
       state.auth.token = null;
-      state.auth.name = "testuser"; //null
+      state.auth.name = null;
       state.auth.isLoggedIn = false;
     }
   },

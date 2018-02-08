@@ -1,48 +1,41 @@
 <template>
   <div id="komplett">
-    <form class="md-layout" @submit.prevent="newLogin" v-if="!loggedIn">
-      <md-card class="md-layout-item">
-        <md-card-header>
-          <div class="md-title">Login</div>
-        </md-card-header>
-
-        <md-card-content>
-          <div class="md-layout md-gutter">
-            <div class="md-layout-item md-small-size-100">
-              <md-field>
-                <label for="Username">Username</label>
-                <md-input name="Username" id="name" v-model="name" :disabled="sending" />
-              </md-field>
-            </div>
-          </div>
-
-          <div class="md-layout md-gutter">
-            <div class="md-layout-item md-small-size-100">
-              <md-field>
-                <label for="Password">Password</label>
-                <md-input name="password" id="first-name" v-model="pw" :disabled="sending" />
-              </md-field>
-            </div>
-          </div>
-        </md-card-content>
-        <md-card-actions>
-          <md-button type="submit" class="md-primary" @click="newLogin" :disabled="sending">Absenden</md-button>
-        </md-card-actions>
-      </md-card>
-    </form>
+    <md-snackbar md-position="center" :md-duration="duration" :md-active.sync="error" md-persistent>
+      <span>{{error}}</span>
+    </md-snackbar>
+    <md-card class="md-layout-item" id="loginCard" v-if="!loggedIn">
+      <md-card-header>
+        <div class="md-title">Login</div>
+      </md-card-header>
+      <md-card-content>
+        <form class="md-layout" @keyup.enter="newLogin" @submit.prevent="newLogin" >
+          <md-field>
+            <label for="Username">Username</label>
+            <md-input name="Username" id="name" v-model="name" :disabled="sending" />
+          </md-field>
+          <md-field>
+            <label for="Password">Password</label>
+            <md-input name="password" autocomplete="off" id="first-name" v-model="pw" :disabled="sending" type="password"/>
+          </md-field>
+        </form>
+      </md-card-content>
+      <md-card-actions>
+        <md-button type="submit" class="md-primary" @click="newLogin" :disabled="sending">Anmelden</md-button>
+      </md-card-actions>
+    </md-card>
     <div v-else>
       <div class="md-layout md-gutter">
-        <md-progress-bar v-if="sending" md-mode="indeterminate"></md-progress-bar>
-        <div class="md-layout-item md-size-70"> <h1>Artikel verwalten</h1> </div>
-        <div class="md-layout-item md-size-10">
-          <md-button @click.native="refresh" class="md-icon-button md-dense md-raised md-primary">
+        <div class="md-layout-item md-size-75"> <h1>Artikel verwalten</h1> </div>
+        <div class="md-layout-item md-size-5" id="refresh">
+          <md-button @click.native="refresh" class="md-icon-button md-dense md-flat">
             <md-icon>cached</md-icon>
           </md-button>
         </div>
         <div class="md-layout-item md-size-20">
-          <md-button class="md-accent" @click.native="logout">Abmelden</md-button>
+          <md-button class="md-flat" id="logout" @click.native="logout">Abmelden</md-button>
         </div>
       </div>
+      <md-progress-bar v-if="sending" md-mode="indeterminate"/>
       <div v-if="edit">
         <md-card id="card">
           <md-card-header>
@@ -50,7 +43,7 @@
               <form class="md-layout" @submit.prevent="newAricle">
               <md-field>
                 <label for="Überschrift">Überschrift</label>
-                <md-input name="Überschrift" id="Überschrift" v-model="title" :disabled="sending" />
+                <md-input name="Überschrift" id="Überschrift" autocomplete="off" v-model="title" :disabled="sending" />
               </md-field>
               </form>
             </div>
@@ -59,7 +52,7 @@
             <form class="md-layout" @submit.prevent="newAricle">
               <md-field>
                 <label for="Inhalt">Inhalt</label>
-                <md-input type="Inhalt" name="Inhalt" v-model="body" :disabled="sending" />
+                <md-textarea id="inhalt" type="Inhalt" name="Inhalt" v-model="body" :disabled="sending"/>
               </md-field>
             </form>
             {{date}}
@@ -69,7 +62,6 @@
             <md-button type="submit" class="md-primary" @click.native="newAricle" :disabled="sending">Absenden</md-button>
           </md-card-actions>
         </md-card>
-        <!-- <md-snackbar :md-active.sync="success">gespeichert</md-snackbar> -->
       </div>
       <br>
       <div v-for="card in news" :key="card.articleId">
@@ -94,15 +86,22 @@
         md-description="Creating project, you'll be able to upload your design and collaborate with people.">
         <md-button class="md-primary md-raised" @click="showEdit">Create first project</md-button>
       </md-empty-state>
+      <md-speed-dial class="md-bottom-right" md-direction="top" md-event="hover">
+        <md-speed-dial-target class="md-primary">
+          <md-icon class="md-morph-initial">add</md-icon>
+          <md-icon class="md-morph-final">close</md-icon>
+        </md-speed-dial-target>
 
-      <md-snackbar md-position="center" :md-duration="duration" :md-active.sync="error" md-persistent>
-        <span>{{error}}</span>
-        <md-button class="md-primary" @click="loadNews">Retry</md-button>
-        <md-button class="md-primary" @click="clearError">Close</md-button>
-      </md-snackbar>
-      <md-button id="fab" @click.native="showEdit" class="md-fab md-primary" >
-        <md-icon @click="newAricle">add</md-icon>
-      </md-button>
+        <md-speed-dial-content>
+          <md-button @click="showEdit" class="md-icon-button">
+            <md-icon>add</md-icon>
+          </md-button>
+
+          <md-button class="md-icon-button">
+            <md-icon>event</md-icon>
+          </md-button>
+        </md-speed-dial-content>
+      </md-speed-dial>
     </div>
   </div>
 </template>
@@ -114,7 +113,7 @@ export default {
   name: "aktuelles",
   data: () => ({
     edit: false,
-    duration: 4000
+    duration: 5000
   }),
   methods: {
     clearError() {
@@ -128,16 +127,11 @@ export default {
       this.$store.dispatch("getNews");
     },
     newLogin() {
-      this.$store
-        .dispatch("login")
-        .then(token => {
-          this.$cookies.set("token", token, 20 * 60);
-          this.$cookies.set("un", this.name, 20 * 60);
-          this.pw = null;
-        })
-        .catch(() => {
-          alert("Fehler");
-        });
+      this.$store.dispatch("login").then(token => {
+        this.$cookies.set("token", token, 20 * 60);
+        this.$cookies.set("un", this.name, 20 * 60);
+        this.pw = null;
+      });
     },
     showEdit() {
       this.edit = !this.edit;
@@ -157,8 +151,8 @@ export default {
       this.$store.dispatch("delete", nr);
     },
     logout() {
-      this.$cookies.remove("token");
-      this.$cookies.remove("un");
+      this.$cookies.set("token", null, 1);
+      this.$cookies.set("un", null, 1);
       this.$store.commit("cookie", {});
     },
     loadNews() {
@@ -237,9 +231,12 @@ export default {
 
 
 <style scoped>
-#card > * {
-  word-wrap: break-word;
-  overflow: hidden;
+#loginCard {
+  width: 60%;
+  max-width: 1000px;
+  margin: auto;
+  margin-top: 50px;
+  padding: 10px;
 }
 
 #komplett {
@@ -254,4 +251,17 @@ export default {
   right: 30px;
   bottom: 50px;
 }
+#refresh {
+  padding-top: 11px;
+}
+#logout {
+  padding-top: 8px;
+  margin-right: 0;
+  float: right;
+}
+textarea#inhalt {
+  padding: 15px 15px 30px;
+  height: 150px !important;
+}
+
 </style>

@@ -41,9 +41,9 @@ export default {
           resolve(response.data.token);
         })
         .catch(function(error) {
-          reject(error);
           commit("loading", false);
-          commit("error", "Fehler beim Speichern: " + error);
+          commit("error", "Fehler beim anmelden");
+          reject(error);
         });
     });
   },
@@ -58,7 +58,7 @@ export default {
         })
         .then(function(response) {
           commit("loading", false);
-          dispatch("getNews")
+          dispatch("getNews");
           resolve();
         })
         .catch(function(error) {

@@ -9,11 +9,11 @@ export default {
   },
   auth: {
     isLoggedIn: false,
-    pw: "test",
-    name: "testuser",
-    token: null,
+    pw: null,
+    name: null,
+    token: null
   },
-  newPost:{
+  newPost: {
     title: null,
     body: null
   }

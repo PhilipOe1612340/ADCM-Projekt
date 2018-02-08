@@ -40,7 +40,7 @@
 
               <md-field>
                 <label>Ihre Mitteilung</label>
-                <md-textarea v-model="form.text"></md-textarea>
+                <md-textarea v-model="form.text" md-counter="300"></md-textarea>
               </md-field>
             </md-card-content>
 
