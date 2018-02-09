@@ -26,61 +26,63 @@
       </md-card>
     </div>
     <div v-else>
-      <div class="md-layout md-gutter">
-        <div class="md-layout-item md-medium-size-75 md-xsmall-size-50"> <h1>Artikel verwalten</h1> </div>
-        <div class="md-layout-item md-medium-size-5 md-xsmall-size-25" id="refresh">
+      <div id="articleHeader" class="md-layout md-gutter">
+        <div class="md-layout-item md-large-size-20 md-xsmall-size-50"> <h1>Artikel verwalten</h1> </div>
+        <div class="md-layout-item md-large-size-55 md-xsmall-size-25" id="refresh">
           <md-button @click.native="refresh" class="md-icon-button md-dense md-flat">
             <md-icon>cached</md-icon>
           </md-button>
         </div>
-        <div class="md-layout-item md-medium-size-20 md-xsmall-size-25">
+        <div class="md-layout-item md-large-size-25 md-xsmall-size-25">
           <md-button class="md-flat" id="logout" @click.native="logout">Abmelden</md-button>
         </div>
       </div>
       <md-progress-bar v-if="sending" md-mode="indeterminate"/>
-      <div v-if="edit">
-        <md-card id="card">
-          <md-card-header>
-            <div class="md-title">
+      <div id="articlelayout">
+        <div v-if="edit">
+          <md-card id="card">
+            <md-card-header>
+              <div class="md-title">
+                <form class="md-layout" @submit.prevent="newAricle">
+                <md-field>
+                  <label for="Überschrift">Überschrift</label>
+                  <md-input name="Überschrift" id="Überschrift" autocomplete="off" v-model="title" :disabled="sending" />
+                </md-field>
+                </form>
+              </div>
+            </md-card-header>
+            <md-card-content>
               <form class="md-layout" @submit.prevent="newAricle">
-              <md-field>
-                <label for="Überschrift">Überschrift</label>
-                <md-input name="Überschrift" id="Überschrift" autocomplete="off" v-model="title" :disabled="sending" />
-              </md-field>
+                <md-field>
+                  <label for="Inhalt">Inhalt</label>
+                  <md-textarea id="inhalt" type="Inhalt" name="Inhalt" v-model="body" :disabled="sending"/>
+                </md-field>
               </form>
-            </div>
-          </md-card-header>
-          <md-card-content>
-            <form class="md-layout" @submit.prevent="newAricle">
-              <md-field>
-                <label for="Inhalt">Inhalt</label>
-                <md-textarea id="inhalt" type="Inhalt" name="Inhalt" v-model="body" :disabled="sending"/>
-              </md-field>
-            </form>
-            {{date}}
-          </md-card-content>
-          <md-card-actions>
-            <md-button type="submit" class="md-secondary" @click.native="close" :disabled="sending">Löschen</md-button>
-            <md-button type="submit" class="md-primary" @click.native="newAricle" :disabled="sending">Absenden</md-button>
-          </md-card-actions>
-        </md-card>
-      </div>
-      <br>
-      <div v-for="card in news" :key="card.articleId">
-        <md-card id="card">
-          <md-card-header>
-            <div class="md-title">{{card.title}}</div>
-          </md-card-header>
-
-          <md-card-content>
-            {{card.body}} <br>
-            {{card.datum}}
-          </md-card-content>
-          <md-card-actions>
-            <md-button @click.native="deleteCard(card.articleId)" class="md-primary">Löschen</md-button>
-          </md-card-actions>
-        </md-card>
+              {{date}}
+            </md-card-content>
+            <md-card-actions>
+              <md-button type="submit" class="md-secondary" @click.native="close" :disabled="sending">Löschen</md-button>
+              <md-button type="submit" class="md-primary" @click.native="newAricle" :disabled="sending">Absenden</md-button>
+            </md-card-actions>
+          </md-card>
+        </div>
         <br>
+        <div v-for="card in news" :key="card.articleId">
+          <md-card id="card">
+            <md-card-header>
+              <div class="md-title">{{card.title}}</div>
+            </md-card-header>
+
+            <md-card-content>
+              {{card.body}} <br>
+              {{card.datum}}
+            </md-card-content>
+            <md-card-actions>
+              <md-button @click.native="deleteCard(card.articleId)" class="md-primary">Löschen</md-button>
+            </md-card-actions>
+          </md-card>
+          <br>
+        </div>
       </div>
       <md-empty-state v-if="news.length == 0 && !edit"
         md-icon="devices_other"
@@ -233,9 +235,17 @@ export default {
 
 
 <style scoped>
+
+#articlelayout,
 #cardContainer{
  width: 98vw;
 }
+#articleHeader{
+  width: 95%;
+  max-width: 1300px;
+  margin: auto;
+}
+#card,
 #loginCard {
   width: 60%;
   max-width: 1000px;
@@ -244,10 +254,12 @@ export default {
   margin-top: 50px;
   padding: 10px;
 }
+h1{
+  text-align: center;
+}
 
 #komplett {
-  width: 100%;
-  max-width: 1000px;
+  width: 98vw;
   padding: 10px;
 }
 
@@ -268,5 +280,4 @@ textarea#inhalt {
   padding: 15px 15px 30px;
   height: 150px !important;
 }
-
 </style>

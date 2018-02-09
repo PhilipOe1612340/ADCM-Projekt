@@ -1,12 +1,12 @@
 import Vue from "vue";
 import Router from "vue-router";
-import leistungen from "@/components/leistungen";
-import referenzen from "@/components/referenzen";
-import kunden from "@/components/kunden";
-import aktuelles from "@/components/aktuelles";
-import kontakt from "@/components/kontakt";
-import impressum from "@/components/impressum";
-import admin from "@/components/admin";
+const leistungen = () => import("@/components/leistungen");
+const referenzen = () => import("@/components/referenzen");
+const kunden = () => import("@/components/kunden");
+const aktuelles = () => import("@/components/aktuelles");
+const kontakt = () => import("@/components/kontakt");
+const impressum = () => import("@/components/impressum");
+const admin = () => import("@/components/admin");
 
 Vue.use(Router);
 

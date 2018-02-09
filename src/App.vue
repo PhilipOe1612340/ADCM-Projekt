@@ -64,9 +64,6 @@ export default {
       }
     }
   },
-  mounted: function() {
-    document.getElementById("splashLoader").remove();
-  }
 };
 </script>
 
