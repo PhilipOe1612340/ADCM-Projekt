@@ -3,35 +3,37 @@
     <md-snackbar md-position="center" :md-duration="duration" :md-active.sync="error" md-persistent>
       <span>{{error}}</span>
     </md-snackbar>
-    <md-card class="md-layout-item" id="loginCard" v-if="!loggedIn">
-      <md-card-header>
-        <div class="md-title">Login</div>
-      </md-card-header>
-      <md-card-content>
-        <form class="md-layout" @keyup.enter="newLogin" @submit.prevent="newLogin" >
-          <md-field>
-            <label for="Username">Username</label>
-            <md-input name="Username" id="name" v-model="name" :disabled="sending" />
-          </md-field>
-          <md-field>
-            <label for="Password">Password</label>
-            <md-input name="password" autocomplete="off" id="first-name" v-model="pw" :disabled="sending" type="password"/>
-          </md-field>
-        </form>
-      </md-card-content>
-      <md-card-actions>
-        <md-button type="submit" class="md-primary" @click="newLogin" :disabled="sending">Anmelden</md-button>
-      </md-card-actions>
-    </md-card>
+    <div id="cardContainer" v-if="!loggedIn">
+      <md-card class="md-layout-item" id="loginCard">
+        <md-card-header>
+          <div class="md-title">Login</div>
+        </md-card-header>
+        <md-card-content>
+          <form class="md-layout" @keyup.enter="newLogin" @submit.prevent="newLogin" >
+            <md-field>
+              <label for="Username">Username</label>
+              <md-input name="Username" id="name" v-model="name" :disabled="sending" />
+            </md-field>
+            <md-field>
+              <label for="Password">Password</label>
+              <md-input name="password" autocomplete="off" id="first-name" v-model="pw" :disabled="sending" type="password"/>
+            </md-field>
+          </form>
+        </md-card-content>
+        <md-card-actions>
+          <md-button type="submit" class="md-primary" @click="newLogin" :disabled="sending">Anmelden</md-button>
+        </md-card-actions>
+      </md-card>
+    </div>
     <div v-else>
       <div class="md-layout md-gutter">
-        <div class="md-layout-item md-size-75"> <h1>Artikel verwalten</h1> </div>
-        <div class="md-layout-item md-size-5" id="refresh">
+        <div class="md-layout-item md-medium-size-75 md-xsmall-size-50"> <h1>Artikel verwalten</h1> </div>
+        <div class="md-layout-item md-medium-size-5 md-xsmall-size-25" id="refresh">
           <md-button @click.native="refresh" class="md-icon-button md-dense md-flat">
             <md-icon>cached</md-icon>
           </md-button>
         </div>
-        <div class="md-layout-item md-size-20">
+        <div class="md-layout-item md-medium-size-20 md-xsmall-size-25">
           <md-button class="md-flat" id="logout" @click.native="logout">Abmelden</md-button>
         </div>
       </div>
@@ -231,18 +233,21 @@ export default {
 
 
 <style scoped>
+#cardContainer{
+ width: 98vw;
+}
 #loginCard {
   width: 60%;
   max-width: 1000px;
+  min-width: 350px;
   margin: auto;
   margin-top: 50px;
   padding: 10px;
 }
 
 #komplett {
-  width: 80%;
+  width: 100%;
   max-width: 1000px;
-  margin: auto;
   padding: 10px;
 }
 

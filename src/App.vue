@@ -63,14 +63,14 @@ export default {
           break;
       }
     }
+  },
+  mounted: function() {
+    document.getElementById("splashLoader").remove();
   }
 };
 </script>
 
 <style>
-html{
-  min-width: 700px;
-}
 #app {
   font-family: "Avenir", Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -93,11 +93,12 @@ html{
   margin-bottom: 20px;
 }
 
-
-.page-enter-active, .page-leave-active {
+.page-enter-active,
+.page-leave-active {
   transition: opacity 0.2s, transform 0.35s;
 }
-.page-enter, .page-leave-to {
+.page-enter,
+.page-leave-to {
   opacity: 0;
   transform: translateY(-30%);
 }
