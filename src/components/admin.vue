@@ -61,7 +61,7 @@
             <md-card-actions>
               <md-button type="submit" v-if="!title && !body" class="md-secondary" @click.native="close" :disabled="sending">Schließen</md-button>
               <md-button type="submit" v-else class="md-secondary" @click.native="close" :disabled="sending">Löschen</md-button>
-              <md-button type="submit" class="md-primary" @click.native="newAricle" :disabled="sending">Absenden</md-button>
+              <md-button type="submit" class="md-primary" @click.native="newAricle" :disabled="!title || !body">Absenden</md-button>
             </md-card-actions>
           </md-card>
         </div>
@@ -97,7 +97,7 @@
             <md-card-actions>
               <md-button v-if="editId == card.articleId" @click.native="closeCard(card.articleId)" class="md-secondary">Speichern</md-button>
               <md-button v-else @click.native="editCard(card.articleId)" class="md-secondary">Bearbeiten</md-button>
-              <md-button @click.native="deleteCard(card.articleId)" class="md-primary">Löschen</md-button>
+              <md-button @click.native="prepareDel(card.articleId)" class="md-primary">Löschen</md-button>
             </md-card-actions>
           </md-card>
           <br>
@@ -125,6 +125,13 @@
           </md-button>
         </md-speed-dial-content>
       </md-speed-dial>
+      <md-dialog-confirm
+      :md-active.sync="deleteActive"
+      md-title="Wollen Sie diesen Artikel wirklich löschen?"
+      md-confirm-text="Löschen"
+      md-cancel-text="Abbrechen"
+      @md-cancel="cancelDelete"
+      @md-confirm="deleteCard" />
     </div>
   </div>
 </template>
@@ -135,6 +142,8 @@ import moment from "moment";
 export default {
   name: "aktuelles",
   data: () => ({
+    deleteId: null,
+    deleteActive: false,
     edit: false,
     duration: 5000
   }),
@@ -169,8 +178,17 @@ export default {
       this.$store.commit("title");
       this.$store.commit("body");
     },
-    deleteCard(nr) {
-      this.$store.dispatch("delete", nr);
+    cancelDelete() {
+      this.deleteActive = false;
+      this.deleteId = null;
+    },
+    prepareDel(id) {
+      this.deleteActive = true;
+      this.deleteId = id;
+    },
+    deleteCard() {
+      this.$store.dispatch("delete", this.deleteId);
+      this.deleteActive = false;
     },
     logout() {
       this.$cookies.set("token", null, 1);
@@ -181,6 +199,7 @@ export default {
       this.$store.dispatch("getNews");
     },
     refresh() {
+      this.$store.commit("closeEdit");
       this.loadNews();
     },
     newAricle() {
@@ -272,7 +291,7 @@ export default {
         this.$store.commit("editBody", val);
       }
     },
-    editId(){
+    editId() {
       return this.$store.getters.editId;
     }
   }
