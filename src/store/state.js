@@ -19,6 +19,7 @@ export default {
   },
   edit: {
     title: null,
-    body: null
+    body: null,
+    id: null
   }
 };

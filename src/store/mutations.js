@@ -14,7 +14,6 @@ module.exports = {
   news(state, news) {
     news.forEach(element => {
       delete element._id;
-      element.edit = false;
     });
     state.news = news.reverse();
   },
@@ -22,17 +21,14 @@ module.exports = {
     var editObj = state.news.find(art => {
       return art.articleId === id;
     });
-    editObj.edit = true;
     state.edit.title = editObj.title;
     state.edit.body = editObj.body;
+    state.edit.id = id;
   },
-  closeEdit(state, id) {
-    var editObj = state.news.find(art => {
-      return art.articleId === id;
-    });
-    editObj.edit = false;
-     state.edit.title = null;
-     state.edit.body = null;
+  closeEdit(state) {
+    state.edit.id = null;
+    state.edit.title = null;
+    state.edit.body = null;
   },
   name(state, val) {
     state.auth.name = val;

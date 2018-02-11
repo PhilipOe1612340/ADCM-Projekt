@@ -59,7 +59,8 @@
               {{date}}
             </md-card-content>
             <md-card-actions>
-              <md-button type="submit" class="md-secondary" @click.native="close" :disabled="sending">Löschen</md-button>
+              <md-button type="submit" v-if="!title && !body" class="md-secondary" @click.native="close" :disabled="sending">Schließen</md-button>
+              <md-button type="submit" v-else class="md-secondary" @click.native="close" :disabled="sending">Löschen</md-button>
               <md-button type="submit" class="md-primary" @click.native="newAricle" :disabled="sending">Absenden</md-button>
             </md-card-actions>
           </md-card>
@@ -68,7 +69,7 @@
         <div v-for="card in news" :key="card.articleId">
           <md-card id="card">
             <md-card-header>
-              <div v-if="card.edit">
+              <div v-if="editId == card.articleId">
                 <form class="md-layout" @submit.prevent="newAricle">
                   <md-field>
                     <label for="Überschrift">Überschrift</label>
@@ -80,7 +81,7 @@
             </md-card-header>
 
             <md-card-content>
-              <div v-if="card.edit">
+              <div v-if="editId == card.articleId">
                 <form class="md-layout" @submit.prevent="newAricle">
                   <md-field>
                     <label for="Überschrift">Überschrift</label>
@@ -94,8 +95,8 @@
               </div>
             </md-card-content>
             <md-card-actions>
-              <md-button v-if="card.edit" @click.native="closeCard(card.articleId)" class="md-primary">Speichern</md-button>
-              <md-button v-else @click.native="editCard(card.articleId)" class="md-primary">Bearbeiten</md-button>
+              <md-button v-if="editId == card.articleId" @click.native="closeCard(card.articleId)" class="md-secondary">Speichern</md-button>
+              <md-button v-else @click.native="editCard(card.articleId)" class="md-secondary">Bearbeiten</md-button>
               <md-button @click.native="deleteCard(card.articleId)" class="md-primary">Löschen</md-button>
             </md-card-actions>
           </md-card>
@@ -194,7 +195,7 @@ export default {
     closeCard(id) {
       this.$store.dispatch("edit", id).then(() => {
         this.$store.dispatch("getNews");
-        this.$store.commit("closeEdit", id);
+        this.$store.commit("closeEdit");
       });
     }
   },
@@ -270,6 +271,9 @@ export default {
       set(val) {
         this.$store.commit("editBody", val);
       }
+    },
+    editId(){
+      return this.$store.getters.editId;
     }
   }
 };

@@ -29,4 +29,7 @@ export default {
   editTitle: state => {
     return state.edit.title;
   },
+  editId: state => {
+    return state.edit.id;
+  },
 };
