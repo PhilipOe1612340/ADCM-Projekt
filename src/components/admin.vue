@@ -12,16 +12,16 @@
           <form class="md-layout" @keyup.enter="newLogin" @submit.prevent="newLogin" >
             <md-field>
               <label for="Username">Username</label>
-              <md-input name="Username" id="name" v-model="name" :disabled="sending" />
+              <md-input name="Username" id="name" v-model="name"  />
             </md-field>
             <md-field>
               <label for="Password">Password</label>
-              <md-input name="password" autocomplete="off" id="first-name" v-model="pw" :disabled="sending" type="password"/>
+              <md-input name="password" autocomplete="off" id="first-name" v-model="pw" type="password"/>
             </md-field>
           </form>
         </md-card-content>
         <md-card-actions>
-          <md-button type="submit" class="md-primary" @click="newLogin" :disabled="sending">Anmelden</md-button>
+          <md-button type="submit" class="md-primary" @click="newLogin">Anmelden</md-button>
         </md-card-actions>
       </md-card>
     </div>
@@ -42,14 +42,12 @@
         <div v-if="edit">
           <md-card id="card">
             <md-card-header>
-              <div class="md-title">
-                <form class="md-layout" @submit.prevent="newAricle">
-                <md-field>
-                  <label for="Überschrift">Überschrift</label>
-                  <md-input name="Überschrift" id="Überschrift" autocomplete="off" v-model="title" :disabled="sending" />
-                </md-field>
-                </form>
-              </div>
+              <form class="md-layout" @submit.prevent="newAricle">
+              <md-field>
+                <label for="Überschrift">Überschrift</label>
+                <md-input name="Überschrift" id="Überschrift" autocomplete="off" v-model="title" :disabled="sending" />
+              </md-field>
+              </form>
             </md-card-header>
             <md-card-content>
               <form class="md-layout" @submit.prevent="newAricle">
@@ -70,14 +68,34 @@
         <div v-for="card in news" :key="card.articleId">
           <md-card id="card">
             <md-card-header>
-              <div class="md-title">{{card.title}}</div>
+              <div v-if="card.edit">
+                <form class="md-layout" @submit.prevent="newAricle">
+                  <md-field>
+                    <label for="Überschrift">Überschrift</label>
+                    <md-input name="Überschrift" id="Überschrift" autocomplete="off" v-model="editTitle" :disabled="sending" />
+                  </md-field>
+                </form>
+              </div>
+              <div v-else class="md-title">{{card.title}}</div>
             </md-card-header>
 
             <md-card-content>
-              {{card.body}} <br>
-              {{card.datum}}
+              <div v-if="card.edit">
+                <form class="md-layout" @submit.prevent="newAricle">
+                  <md-field>
+                    <label for="Überschrift">Überschrift</label>
+                    <md-input name="Überschrift" id="Überschrift" autocomplete="off" v-model="editBody" :disabled="sending" />
+                  </md-field>
+                </form>
+              </div>
+              <div v-else>
+                {{card.body}} <br>
+                {{card.datum}}
+              </div>
             </md-card-content>
             <md-card-actions>
+              <md-button v-if="card.edit" @click.native="closeCard(card.articleId)" class="md-primary">Speichern</md-button>
+              <md-button v-else @click.native="editCard(card.articleId)" class="md-primary">Bearbeiten</md-button>
               <md-button @click.native="deleteCard(card.articleId)" class="md-primary">Löschen</md-button>
             </md-card-actions>
           </md-card>
@@ -151,7 +169,6 @@ export default {
       this.$store.commit("body");
     },
     deleteCard(nr) {
-      console.log(nr);
       this.$store.dispatch("delete", nr);
     },
     logout() {
@@ -169,6 +186,15 @@ export default {
       this.$store.dispatch("new").then(() => {
         this.$store.dispatch("getNews");
         this.close();
+      });
+    },
+    editCard(id) {
+      this.$store.commit("newsEdit", id);
+    },
+    closeCard(id) {
+      this.$store.dispatch("edit", id).then(() => {
+        this.$store.dispatch("getNews");
+        this.$store.commit("closeEdit", id);
       });
     }
   },
@@ -228,6 +254,22 @@ export default {
         card.datum = moment(card.date).format("LL");
       });
       return news;
+    },
+    editTitle: {
+      get() {
+        return this.$store.getters.editTitle;
+      },
+      set(val) {
+        this.$store.commit("editTitle", val);
+      }
+    },
+    editBody: {
+      get() {
+        return this.$store.getters.editBody;
+      },
+      set(val) {
+        this.$store.commit("editBody", val);
+      }
     }
   }
 };
@@ -235,12 +277,11 @@ export default {
 
 
 <style scoped>
-
 #articlelayout,
-#cardContainer{
- width: 98vw;
+#cardContainer {
+  width: 98vw;
 }
-#articleHeader{
+#articleHeader {
   width: 95%;
   max-width: 1300px;
   margin: auto;
@@ -254,7 +295,7 @@ export default {
   margin-top: 50px;
   padding: 10px;
 }
-h1{
+h1 {
   text-align: center;
 }
 

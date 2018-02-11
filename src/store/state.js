@@ -5,7 +5,7 @@ export default {
   },
   news: [],
   settings: {
-    serverIp: "http://localhost:3000"
+    serverIp: "http://79.220.102.60:3000"
   },
   auth: {
     isLoggedIn: false,
@@ -14,6 +14,10 @@ export default {
     token: null
   },
   newPost: {
+    title: null,
+    body: null
+  },
+  edit: {
     title: null,
     body: null
   }

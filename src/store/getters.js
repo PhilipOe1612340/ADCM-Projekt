@@ -23,4 +23,10 @@ export default {
   title: state => {
     return state.newPost.title;
   },
+  editBody: state => {
+    return state.edit.body
+  },
+  editTitle: state => {
+    return state.edit.title;
+  },
 };

@@ -53,7 +53,7 @@ export default {
     commit("loading", true);
     return new Promise((resolve, reject) => {
       axios
-        .delete(state.settings.serverIp + "/article/" + id, {
+        .get(state.settings.serverIp + "/delete/" + id, {
           headers: { token: state.auth.token, user: state.auth.name }
         })
         .then(function(response) {
@@ -79,6 +79,30 @@ export default {
     return new Promise((resolve, reject) => {
       axios
         .post(state.settings.serverIp + "/neu", a, {
+          headers: { token: state.auth.token, user: state.auth.name }
+        })
+        .then(function(response) {
+          commit("loading", false);
+          resolve();
+        })
+        .catch(function(error) {
+          reject(error);
+          commit("loading", false);
+          commit("error", "Fehler beim Speichern: " + error);
+        });
+    });
+  },
+  edit({ dispatch, commit, state }, id) {
+    if (!state.edit.title || !state.edit.body) {
+      commit("error", "One of the field was empty");
+      return;
+    }
+    let a = { title: state.edit.title, body: state.edit.body };
+    commit("clearError");
+    commit("loading", true);
+    return new Promise((resolve, reject) => {
+      axios
+        .post(state.settings.serverIp + "/edit/" + id, a, {
           headers: { token: state.auth.token, user: state.auth.name }
         })
         .then(function(response) {

@@ -12,7 +12,27 @@ module.exports = {
   },
 
   news(state, news) {
+    news.forEach(element => {
+      delete element._id;
+      element.edit = false;
+    });
     state.news = news.reverse();
+  },
+  newsEdit(state, id) {
+    var editObj = state.news.find(art => {
+      return art.articleId === id;
+    });
+    editObj.edit = true;
+    state.edit.title = editObj.title;
+    state.edit.body = editObj.body;
+  },
+  closeEdit(state, id) {
+    var editObj = state.news.find(art => {
+      return art.articleId === id;
+    });
+    editObj.edit = false;
+     state.edit.title = null;
+     state.edit.body = null;
   },
   name(state, val) {
     state.auth.name = val;
@@ -25,7 +45,7 @@ module.exports = {
     state.auth.isLoggedIn = true;
   },
   cookie(state, obj) {
-    if (obj.token && obj.name) {
+    if (obj && obj.token && obj.name) {
       state.auth.token = obj.token;
       state.auth.name = obj.name;
       state.auth.isLoggedIn = true;
@@ -40,5 +60,11 @@ module.exports = {
   },
   title(state, val) {
     state.newPost.title = val;
+  },
+  editBody(state, val) {
+    state.edit.body = val;
+  },
+  editTitle(state, val) {
+    state.edit.title = val;
   }
 };
