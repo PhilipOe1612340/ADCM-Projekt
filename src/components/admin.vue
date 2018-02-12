@@ -65,8 +65,8 @@
               {{date}}
             </md-card-content>
             <md-card-actions>
-              <md-button type="submit" v-if="!title && !body" class="md-secondary" @click.native="close" :disabled="sending">Schließen</md-button>
-              <md-button type="submit" v-else class="md-secondary" @click.native="close" :disabled="sending">Löschen</md-button>
+              <md-button type="submit" v-if="!title && !body" class="md-secondary" @click.native="closeArticleEdit" :disabled="sending">Schließen</md-button>
+              <md-button type="submit" v-else class="md-secondary" @click.native="closeArticleEdit" :disabled="sending">Löschen</md-button>
               <md-button type="submit" class="md-primary" @click.native="createNewArticle" :disabled="!title || !body">Absenden</md-button>
             </md-card-actions>
           </md-card>
@@ -94,8 +94,8 @@
               <div v-if="editId == card.articleId">
                 <form class="md-layout" @submit.prevent="editCard(card.articleId)">
                   <md-field>
-                    <label for="Überschrift">Überschrift</label>
-                    <md-input name="Überschrift" id="Überschrift" autocomplete="off" v-model="editBody" :disabled="sending" />
+                    <label for="Inhalt">Inhalt</label>
+                    <md-textarea id="inhalt" type="Inhalt" name="Inhalt" v-model="editBody" :disabled="sending"/>
                   </md-field>
                 </form>
               </div>
@@ -107,9 +107,10 @@
             </md-card-content>
             <md-card-actions>
               <!-- buttons -->
-              <md-button v-if="editId == card.articleId" @click.native="closeCard(card.articleId)" class="md-secondary">Speichern</md-button>
+              <md-button v-if="editId == card.articleId" @click.native="closeCard(card.articleId)" class="md-secondary">Abbrechen</md-button>
               <md-button v-else @click.native="editCard(card.articleId)" class="md-secondary">Bearbeiten</md-button>
-              <md-button @click.native="prepareDelete(card.articleId)" class="md-primary">Löschen</md-button>
+              <md-button v-if="editId == card.articleId" @click.native="closeCard(card.articleId)" class="md-primary">Speichern</md-button>
+              <md-button v-else @click.native="prepareDelete(card.articleId)" class="md-primary">Löschen</md-button>
             </md-card-actions>
           </md-card>
           <br>
@@ -226,11 +227,9 @@ export default {
       this.$store.commit("newsEdit", id);
     },
     closeCard(id) {
-      this.$store.dispatch("edit", id).then(() => {
-        this.$store.dispatch("getNews");
-        this.$store.commit("closeEdit");
-      });
-    }
+      this.$store.commit("closeEdit");
+    },
+    cancelCardEdit() {}
   },
   beforeMount() {
     this.checkLogin();
