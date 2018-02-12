@@ -116,12 +116,12 @@
           <br>
         </div>
       </div>
-      <!-- TODO: change text -->
+      <!-- fist visit text -->
       <md-empty-state v-if="news.length == 0 && !edit"
-        md-icon="devices_other"
-        md-label="Create your first project"
-        md-description="Creating project, you'll be able to upload your design and collaborate with people.">
-        <md-button class="md-primary md-raised" @click="showNewArticle">Create first project</md-button>
+        md-icon="add"
+        md-label="Noch keine Artikel"
+        md-description="Erstellen Sie Ihren ersten Artikel!">
+        <md-button class="md-primary md-raised" @click="showNewArticle">Artikel erstellen</md-button>
       </md-empty-state>
       <!-- bottom corner button -->
       <md-speed-dial class="md-bottom-right" md-direction="top" md-event="hover">
