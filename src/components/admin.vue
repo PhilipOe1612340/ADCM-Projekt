@@ -3,7 +3,9 @@
     <md-snackbar md-position="center" :md-duration="duration" :md-active.sync="error" md-persistent>
       <span>{{error}}</span>
     </md-snackbar>
+    <!-- Not Logged in Card -->
     <div id="cardContainer" v-if="!loggedIn">
+      <!-- TODO: Put in different File -->
       <md-card class="md-layout-item" id="loginCard">
         <md-card-header>
           <div class="md-title">Login</div>
@@ -25,7 +27,9 @@
         </md-card-actions>
       </md-card>
     </div>
+    <!-- Logged in View -->
     <div v-else>
+      <!-- Header for logged in version -->
       <div id="articleHeader" class="md-layout md-gutter">
         <div class="md-layout-item md-large-size-20 md-xsmall-size-50"> <h1>Artikel verwalten</h1> </div>
         <div class="md-layout-item md-large-size-55 md-xsmall-size-25" id="refresh">
@@ -37,12 +41,14 @@
           <md-button class="md-flat" id="logout" @click.native="logout">Abmelden</md-button>
         </div>
       </div>
+      <!-- Progress bar -->
       <md-progress-bar v-if="sending" md-mode="indeterminate"/>
       <div id="articlelayout">
+        <!-- New article card -->
         <div v-if="edit">
           <md-card id="card">
             <md-card-header>
-              <form class="md-layout" @submit.prevent="newAricle">
+              <form class="md-layout" @submit.prevent="createNewArticle">
               <md-field>
                 <label for="Überschrift">Überschrift</label>
                 <md-input name="Überschrift" id="Überschrift" autocomplete="off" v-model="title" :disabled="sending" />
@@ -50,7 +56,7 @@
               </form>
             </md-card-header>
             <md-card-content>
-              <form class="md-layout" @submit.prevent="newAricle">
+              <form class="md-layout" @submit.prevent="createNewArticle">
                 <md-field>
                   <label for="Inhalt">Inhalt</label>
                   <md-textarea id="inhalt" type="Inhalt" name="Inhalt" v-model="body" :disabled="sending"/>
@@ -61,77 +67,85 @@
             <md-card-actions>
               <md-button type="submit" v-if="!title && !body" class="md-secondary" @click.native="close" :disabled="sending">Schließen</md-button>
               <md-button type="submit" v-else class="md-secondary" @click.native="close" :disabled="sending">Löschen</md-button>
-              <md-button type="submit" class="md-primary" @click.native="newAricle" :disabled="!title || !body">Absenden</md-button>
+              <md-button type="submit" class="md-primary" @click.native="createNewArticle" :disabled="!title || !body">Absenden</md-button>
             </md-card-actions>
           </md-card>
         </div>
         <br>
+        <!-- Main list of articels -->
         <div v-for="card in news" :key="card.articleId">
           <md-card id="card">
             <md-card-header>
+              <!-- title edit -->
               <div v-if="editId == card.articleId">
-                <form class="md-layout" @submit.prevent="newAricle">
+                <form class="md-layout" @submit.prevent="editCard(card.articleId)">
                   <md-field>
                     <label for="Überschrift">Überschrift</label>
                     <md-input name="Überschrift" id="Überschrift" autocomplete="off" v-model="editTitle" :disabled="sending" />
                   </md-field>
                 </form>
               </div>
+              <!-- normal title -->
               <div v-else class="md-title">{{card.title}}</div>
             </md-card-header>
 
             <md-card-content>
+              <!-- body edit -->
               <div v-if="editId == card.articleId">
-                <form class="md-layout" @submit.prevent="newAricle">
+                <form class="md-layout" @submit.prevent="editCard(card.articleId)">
                   <md-field>
                     <label for="Überschrift">Überschrift</label>
                     <md-input name="Überschrift" id="Überschrift" autocomplete="off" v-model="editBody" :disabled="sending" />
                   </md-field>
                 </form>
               </div>
+              <!-- normal body -->
               <div v-else>
                 {{card.body}} <br>
                 {{card.datum}}
               </div>
             </md-card-content>
             <md-card-actions>
+              <!-- buttons -->
               <md-button v-if="editId == card.articleId" @click.native="closeCard(card.articleId)" class="md-secondary">Speichern</md-button>
               <md-button v-else @click.native="editCard(card.articleId)" class="md-secondary">Bearbeiten</md-button>
-              <md-button @click.native="prepareDel(card.articleId)" class="md-primary">Löschen</md-button>
+              <md-button @click.native="prepareDelete(card.articleId)" class="md-primary">Löschen</md-button>
             </md-card-actions>
           </md-card>
           <br>
         </div>
       </div>
+      <!-- TODO: change text -->
       <md-empty-state v-if="news.length == 0 && !edit"
         md-icon="devices_other"
         md-label="Create your first project"
         md-description="Creating project, you'll be able to upload your design and collaborate with people.">
-        <md-button class="md-primary md-raised" @click="showEdit">Create first project</md-button>
+        <md-button class="md-primary md-raised" @click="toggleNewArticle">Create first project</md-button>
       </md-empty-state>
+      <!-- bottom corner button -->
       <md-speed-dial class="md-bottom-right" md-direction="top" md-event="hover">
         <md-speed-dial-target class="md-primary">
           <md-icon class="md-morph-initial">add</md-icon>
           <md-icon class="md-morph-final">close</md-icon>
         </md-speed-dial-target>
-
+        <!-- button buttons -->
         <md-speed-dial-content>
-          <md-button @click="showEdit" class="md-icon-button">
+          <md-button @click="toggleNewArticle" class="md-icon-button">
             <md-icon>add</md-icon>
           </md-button>
-
           <md-button class="md-icon-button">
             <md-icon>event</md-icon>
           </md-button>
         </md-speed-dial-content>
       </md-speed-dial>
+      <!-- Delete Confirm Tab -->
       <md-dialog-confirm
       :md-active.sync="deleteActive"
       md-title="Wollen Sie diesen Artikel wirklich löschen?"
       md-confirm-text="Löschen"
       md-cancel-text="Abbrechen"
       @md-cancel="cancelDelete"
-      @md-confirm="deleteCard" />
+      @md-confirm="reallyDelete" />
     </div>
   </div>
 </template>
@@ -165,7 +179,7 @@ export default {
         this.pw = null;
       });
     },
-    showEdit() {
+    toggleNewArticle() {
       this.edit = !this.edit;
       if (this.edit) {
         setTimeout(() => {
@@ -173,7 +187,7 @@ export default {
         }, 20);
       }
     },
-    close() {
+    closeArticleEdit() {
       this.edit = false;
       this.$store.commit("title");
       this.$store.commit("body");
@@ -182,11 +196,11 @@ export default {
       this.deleteActive = false;
       this.deleteId = null;
     },
-    prepareDel(id) {
+    prepareDelete(id) {
       this.deleteActive = true;
       this.deleteId = id;
     },
-    deleteCard() {
+    reallyDelete() {
       this.$store.dispatch("delete", this.deleteId);
       this.deleteActive = false;
     },
@@ -202,10 +216,10 @@ export default {
       this.$store.commit("closeEdit");
       this.loadNews();
     },
-    newAricle() {
+    createNewArticle() {
       this.$store.dispatch("new").then(() => {
         this.$store.dispatch("getNews");
-        this.close();
+        this.closeArticleEdit();
       });
     },
     editCard(id) {
