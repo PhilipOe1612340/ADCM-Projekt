@@ -65,8 +65,8 @@
               {{date}}
             </md-card-content>
             <md-card-actions>
-              <md-button type="submit" v-if="!title && !body" class="md-secondary" @click.native="closeArticleEdit" :disabled="sending">Schließen</md-button>
-              <md-button type="submit" v-else class="md-secondary" @click.native="closeArticleEdit" :disabled="sending">Löschen</md-button>
+              <md-button type="submit" v-if="!title && !body" class="md-secondary" @click.native="closeNewArticle" :disabled="sending">Schließen</md-button>
+              <md-button type="submit" v-else class="md-secondary" @click.native="closeNewArticle" :disabled="sending">Löschen</md-button>
               <md-button type="submit" class="md-primary" @click.native="createNewArticle" :disabled="!title || !body">Absenden</md-button>
             </md-card-actions>
           </md-card>
@@ -107,9 +107,9 @@
             </md-card-content>
             <md-card-actions>
               <!-- buttons -->
-              <md-button v-if="editId == card.articleId" @click.native="closeCard(card.articleId)" class="md-secondary">Abbrechen</md-button>
+              <md-button v-if="editId == card.articleId" @click.native="sendEdit(card.articleId)" class="md-secondary">Abbrechen</md-button>
               <md-button v-else @click.native="editCard(card.articleId)" class="md-secondary">Bearbeiten</md-button>
-              <md-button v-if="editId == card.articleId" @click.native="closeCard(card.articleId)" class="md-primary">Speichern</md-button>
+              <md-button v-if="editId == card.articleId" @click.native="sendEdit(card.articleId)" class="md-primary">Speichern</md-button>
               <md-button v-else @click.native="prepareDelete(card.articleId)" class="md-primary">Löschen</md-button>
             </md-card-actions>
           </md-card>
@@ -121,7 +121,7 @@
         md-icon="devices_other"
         md-label="Create your first project"
         md-description="Creating project, you'll be able to upload your design and collaborate with people.">
-        <md-button class="md-primary md-raised" @click="toggleNewArticle">Create first project</md-button>
+        <md-button class="md-primary md-raised" @click="showNewArticle">Create first project</md-button>
       </md-empty-state>
       <!-- bottom corner button -->
       <md-speed-dial class="md-bottom-right" md-direction="top" md-event="hover">
@@ -131,7 +131,7 @@
         </md-speed-dial-target>
         <!-- button buttons -->
         <md-speed-dial-content>
-          <md-button @click="toggleNewArticle" class="md-icon-button">
+          <md-button @click="showNewArticle" class="md-icon-button">
             <md-icon>add</md-icon>
           </md-button>
           <md-button class="md-icon-button">
@@ -173,6 +173,9 @@ export default {
       });
       this.$store.dispatch("getNews");
     },
+    /**
+      send login credentials to the server and set cookies
+     */
     newLogin() {
       this.$store.dispatch("login").then(token => {
         this.$cookies.set("token", token, 20 * 60);
@@ -180,15 +183,19 @@ export default {
         this.pw = null;
       });
     },
-    toggleNewArticle() {
-      this.edit = !this.edit;
-      if (this.edit) {
-        setTimeout(() => {
-          window.scrollTo(0, 0);
-        }, 20);
-      }
+    /**
+      show the NEW ARTCLE CARD and scroll up
+     */
+    showNewArticle() {
+      this.edit = true;
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+      }, 20);
     },
-    closeArticleEdit() {
+    /**
+      close NEW ARTCLE CARD
+     */
+    closeNewArticle() {
       this.edit = false;
       this.$store.commit("title");
       this.$store.commit("body");
@@ -205,11 +212,17 @@ export default {
       this.$store.dispatch("delete", this.deleteId);
       this.deleteActive = false;
     },
+    /**
+      delete cookies and login creds
+     */
     logout() {
       this.$cookies.set("token", null, 1);
       this.$cookies.set("un", null, 1);
       this.$store.commit("cookie", {});
     },
+    /**
+      get news from server
+     */
     loadNews() {
       this.$store.dispatch("getNews");
     },
@@ -217,21 +230,33 @@ export default {
       this.cancelCardEdit();
       this.loadNews();
     },
+    /**
+      post new article to the server, reload and hide card
+     */
     createNewArticle() {
       this.$store.dispatch("new").then(() => {
         this.$store.dispatch("getNews");
-        this.closeArticleEdit();
+        this.closeNewArticle();
       });
     },
+    /**
+      edit the content of a card by id
+     */
     editCard(id) {
       this.$store.commit("newsEdit", id);
     },
-    closeCard(id) {
+    /**
+      send the modified content and reload
+     */
+    sendEdit(id) {
       this.$store.dispatch("edit", id).then(() => {
         this.$store.dispatch("getNews");
-      this.$store.commit("closeEdit");
-      })
+        this.$store.commit("closeEdit");
+      });
     },
+    /**
+      cancel edit of article
+     */
     cancelCardEdit() {
       this.$store.commit("closeEdit");
     }
@@ -281,10 +306,16 @@ export default {
     loggedIn() {
       return this.$store.getters.isLoggedIn;
     },
+    /**
+      @description current date formated
+     */
     date() {
       moment.locale("de");
       return moment(new Date()).format("LL");
     },
+    /**
+      @description gets news array and converts date
+     */
     news() {
       var news = this.$store.getters.getNews;
       moment.locale("de");
