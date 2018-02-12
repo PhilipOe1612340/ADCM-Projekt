@@ -16,12 +16,16 @@
     </transition>
 
     <div class="footer" v-if="$store.state.route.path != '/admin'">
-      <router-link to="/impressum" tag="p">Impressum</router-link>
-      <router-link to="/kontakt" tag="p">Kontakt</router-link>
-      <router-link to="/admin" tag="p">Administrieren</router-link>
+      <ul>
+        <li><router-link to="/impressum" tag="span">Impressum</router-link></li>
+        <li><router-link to="/kontakt" tag="span">Kontakt</router-link></li>
+        <li><router-link to="/admin" tag="span">Administrieren</router-link></li>
+      </ul>
     </div>
     <div class="footer" v-else>
-      <router-link to="/leistungen" tag="p">Home</router-link>
+      <ul>
+        <li><router-link to="/leistungen" tag="span">Home</router-link></li>
+      </ul>
     </div>
 
   </div>
@@ -98,5 +102,17 @@ export default {
 .page-leave-to {
   opacity: 0;
   transform: translateY(-30%);
+}
+.footer span {
+  cursor: pointer;
+}
+.footer span:hover {
+  font-weight: bold;
+}
+.footer ul {
+  list-style-type: none;
+}
+.footer li {
+  margin: 1%;
 }
 </style>

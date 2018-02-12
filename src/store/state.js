@@ -5,7 +5,7 @@ export default {
   },
   news: [],
   settings: {
-    serverIp: "http://79.220.102.60:3000"
+    serverIp: "http://localhost:3000"
   },
   auth: {
     isLoggedIn: false,
