@@ -24,7 +24,7 @@
         </md-card-header>
 
         <md-card-content>
-          {{card.body}} <br>
+          <span v-html="card.body"></span> <br>
           {{card.datum}}
         </md-card-content>
       </md-card>

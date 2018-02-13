@@ -101,7 +101,8 @@
               </div>
               <!-- normal body -->
               <div v-else>
-                {{card.body}} <br>
+                <span v-html="card.body"></span>
+                <br>
                 {{card.datum}}
               </div>
             </md-card-content>
