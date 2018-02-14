@@ -272,12 +272,9 @@ export default {
     editCard(id) {
       this.$store.commit("newsEdit", id);
     },
-<<<<<<< HEAD
     closeCard(id) {
       this.$store.commit("closeEdit");
     },
-    cancelCardEdit() {}
-=======
     /**
       send the modified content and reload
      */
@@ -295,7 +292,6 @@ export default {
     cancelCardEdit() {
       this.$store.commit("closeEdit");
     }
->>>>>>> 5c99d6114ca2d9b78cca3ea8a7326fc06cc155e4
   },
   beforeMount() {
     this.checkLogin();
