@@ -61,6 +61,10 @@
                   <label for="Inhalt">Inhalt</label>
                   <md-textarea id="inhalt" type="Inhalt" name="Inhalt" v-model="body" :disabled="sending"/>
                 </md-field>
+                <md-field>
+                  <label>Bild hochladen</label>
+                  <md-file v-model="fileSet" id="fileUpload" accept="image/*" placeholder="Bild hinzufügen" />
+                </md-field>
               </form>
               {{date}}
             </md-card-content>
@@ -97,11 +101,17 @@
                     <label for="Inhalt">Inhalt</label>
                     <md-textarea id="inhalt" type="Inhalt" name="Inhalt" v-model="editBody" :disabled="sending"/>
                   </md-field>
+                  <md-field>
+                    <label>Bild hochladen</label>
+                    <md-file v-model="fileSet" accept="image/*" id="fileUpload" :placeholder="card.image?card.image + ' ersetzen':'Bild hinzufügen'" />
+                  </md-field>
                 </form>
               </div>
               <!-- normal body -->
               <div v-else>
                 <span v-html="card.body"></span>
+                <br>
+                <img v-if="card.image" :src="card.image" :alt="card.image"/>
                 <br>
                 {{card.datum}}
               </div>
@@ -156,14 +166,23 @@
 import moment from "moment";
 
 export default {
-  name: "aktuelles",
+  name: "admin",
   data: () => ({
+    fileSet: null,
     deleteId: null,
     deleteActive: false,
     edit: false,
     duration: 5000
   }),
   methods: {
+    picUpload(id) {
+      if (this.fileSet) {
+        return this.$store.dispatch("postImage", {
+          id,
+          file: document.getElementById("fileUpload").files[0]
+        });
+      }
+    },
     clearError() {
       this.$store.commit("clearError");
     },
@@ -235,9 +254,11 @@ export default {
       post new article to the server, reload and hide card
      */
     createNewArticle() {
-      this.$store.dispatch("new").then(() => {
-        this.$store.dispatch("getNews");
-        this.closeNewArticle();
+      this.$store.dispatch("new").then(res => {
+        this.picUpload(res.data.articleId).then(() => {
+          this.$store.dispatch("getNews");
+          this.closeNewArticle();
+        });
       });
     },
     /**
@@ -250,9 +271,11 @@ export default {
       send the modified content and reload
      */
     sendEdit(id) {
-      this.$store.dispatch("edit", id).then(() => {
-        this.$store.dispatch("getNews");
-        this.$store.commit("closeEdit");
+      this.$store.dispatch("edit", id).then(res => {
+        this.picUpload(id).then(() => {
+          this.$store.dispatch("getNews");
+          this.$store.commit("closeEdit");
+        });
       });
     },
     /**
