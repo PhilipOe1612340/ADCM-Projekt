@@ -83,7 +83,7 @@ export default {
         })
         .then(function(response) {
           commit("loading", false);
-          resolve();
+          resolve(response);
         })
         .catch(function(error) {
           reject(error);
@@ -105,6 +105,32 @@ export default {
         .post(state.settings.serverIp + "/edit/" + id, a, {
           headers: { token: state.auth.token, user: state.auth.name }
         })
+        .then(function(response) {
+          commit("loading", false);
+          resolve();
+        })
+        .catch(function(error) {
+          reject(error);
+          commit("loading", false);
+          commit("error", "Fehler beim Speichern: " + error);
+        });
+    });
+  },
+
+  postImage({ dispatch, commit, state }, obj) {
+    let data = new FormData();
+    data.append("image", obj.file, obj.file.name);
+    const config = {
+      headers: {
+        token: state.auth.token,
+        user: state.auth.name
+      }
+    };
+    commit("clearError");
+    commit("loading", true);
+    return new Promise((resolve, reject) => {
+      return axios
+        .post(state.settings.serverIp + "/image/" + obj.id, data, config)
         .then(function(response) {
           commit("loading", false);
           resolve();
