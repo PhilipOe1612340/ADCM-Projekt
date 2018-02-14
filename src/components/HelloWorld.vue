@@ -1,69 +1,17 @@
 <template>
-  <div class="hello">
-    <h1>{{ msg }}</h1>
-    <h2>Essential Links</h2>
-    <h2>Ecosystem</h2>
-      <md-button class="md-accent md-raised" id="button" @click="test">Alert</md-button>
-      <md-card id="card" md-with-hover>
-        <md-ripple>
-          <md-card-header>
-            <div class="md-title">Card withakljsdhfkajsh hover effect</div>
-            <div class="md-subhead">It also have a ripple</div>
-          </md-card-header>
-
-          <md-card-content>
-            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Optio itaque ea, nostrum odio. Dolores, sed accusantium quasi non.
-          </md-card-content>
-
-          <md-card-actions>
-            <md-button>Action</md-button>
-            <md-button>Action</md-button>
-          </md-card-actions>
-      </md-ripple>
-    </md-card>
-    <div id="input">
-      store test
-      <md-input autocomplete="given-name" v-model="error" />
-    </div>
+  <div>
+    <md-tabs md-sync-route>
+      <md-tab id="tab-home" md-label="Home" to="/home"></md-tab>
+      <md-tab id="tab-pages" md-label="Pages" to="/pages"></md-tab>
+      <md-tab id="tab-posts" md-label="Posts" to="/posts"></md-tab>
+      <md-tab id="tab-settings" md-label="Settings" to="/settings"></md-tab>
+      <md-tab id="tab-disabled" md-label="Disabled" md-disabled></md-tab>
+    </md-tabs>
   </div>
 </template>
 
 <script>
-export default {
-  name: "HelloWorld",
-  data() {
-    return {
-      msg: "Welcome to Your Vue.js App"
-    };
-  },
-  methods: {
-    test() {
-      this.msg += 5;
-    }
-  },
-  computed: {
-    error: {
-      get() {
-        return this.$store.getters.getError;
-      },
-      set(val) {
-        this.$store.commit("error", val);
-      }
-    }
+  export default {
+    name: 'TabRouter'
   }
-};
 </script>
-
-<style scoped>
-h1,
-h2 {
-  font-weight: normal;
-}
-#card {
-  width: 700px;
-  margin-left: 500px;
-}
-#input {
-  margin: 30px;
-}
-</style>
