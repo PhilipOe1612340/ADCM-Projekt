@@ -61,12 +61,18 @@
                   <label for="Inhalt">Inhalt</label>
                   <md-textarea id="inhalt" type="Inhalt" name="Inhalt" v-model="body" :disabled="sending"/>
                 </md-field>
+                <md-field>
+                  <label>Bild hochladen</label>
+                  <md-file v-model="fileSet" id="fileUpload" accept="image/*" placeholder="Bild hinzufügen" />
+                </md-field>
               </form>
               {{date}}
             </md-card-content>
             <md-card-actions>
               <md-button type="submit" v-if="!title && !body" class="md-secondary" @click.native="closeArticleEdit" :disabled="sending">Schließen</md-button>
               <md-button type="submit" v-else class="md-secondary" @click.native="closeArticleEdit" :disabled="sending">Löschen</md-button>
+              <md-button type="submit" v-if="!title && !body" class="md-secondary" @click.native="closeNewArticle" :disabled="sending">Schließen</md-button>
+              <md-button type="submit" v-else class="md-secondary" @click.native="closeNewArticle" :disabled="sending">Löschen</md-button>
               <md-button type="submit" class="md-primary" @click.native="createNewArticle" :disabled="!title || !body">Absenden</md-button>
             </md-card-actions>
           </md-card>
@@ -97,11 +103,18 @@
                     <label for="Inhalt">Inhalt</label>
                     <md-textarea id="inhalt" type="Inhalt" name="Inhalt" v-model="editBody" :disabled="sending"/>
                   </md-field>
+                  <md-field>
+                    <label>Bild hochladen</label>
+                    <md-file v-model="fileSet" accept="image/*" id="fileUpload" :placeholder="card.image?card.image + ' ersetzen':'Bild hinzufügen'" />
+                  </md-field>
                 </form>
               </div>
               <!-- normal body -->
               <div v-else>
-                {{card.body}} <br>
+                <span v-html="card.body"></span>
+                <br>
+                <img v-if="card.image" :src="card.image" :alt="card.image"/>
+                <br>
                 {{card.datum}}
               </div>
             </md-card-content>
@@ -110,18 +123,21 @@
               <md-button v-if="editId == card.articleId" @click.native="closeCard(card.articleId)" class="md-secondary">Abbrechen</md-button>
               <md-button v-else @click.native="editCard(card.articleId)" class="md-secondary">Bearbeiten</md-button>
               <md-button v-if="editId == card.articleId" @click.native="closeCard(card.articleId)" class="md-primary">Speichern</md-button>
+              <md-button v-if="editId == card.articleId" @click.native="sendEdit(card.articleId)" class="md-secondary">Abbrechen</md-button>
+              <md-button v-else @click.native="editCard(card.articleId)" class="md-secondary">Bearbeiten</md-button>
+              <md-button v-if="editId == card.articleId" @click.native="sendEdit(card.articleId)" class="md-primary">Speichern</md-button>
               <md-button v-else @click.native="prepareDelete(card.articleId)" class="md-primary">Löschen</md-button>
             </md-card-actions>
           </md-card>
           <br>
         </div>
       </div>
-      <!-- TODO: change text -->
+      <!-- fist visit text -->
       <md-empty-state v-if="news.length == 0 && !edit"
-        md-icon="devices_other"
-        md-label="Create your first project"
-        md-description="Creating project, you'll be able to upload your design and collaborate with people.">
-        <md-button class="md-primary md-raised" @click="toggleNewArticle">Create first project</md-button>
+        md-icon="add"
+        md-label="Noch keine Artikel"
+        md-description="Erstellen Sie Ihren ersten Artikel!">
+        <md-button class="md-primary md-raised" @click="showNewArticle">Artikel erstellen</md-button>
       </md-empty-state>
       <!-- bottom corner button -->
       <md-speed-dial class="md-bottom-right" md-direction="top" md-event="hover">
@@ -131,7 +147,7 @@
         </md-speed-dial-target>
         <!-- button buttons -->
         <md-speed-dial-content>
-          <md-button @click="toggleNewArticle" class="md-icon-button">
+          <md-button @click="showNewArticle" class="md-icon-button">
             <md-icon>add</md-icon>
           </md-button>
           <md-button class="md-icon-button">
@@ -155,14 +171,23 @@
 import moment from "moment";
 
 export default {
-  name: "aktuelles",
+  name: "admin",
   data: () => ({
+    fileSet: null,
     deleteId: null,
     deleteActive: false,
     edit: false,
     duration: 5000
   }),
   methods: {
+    picUpload(id) {
+      if (this.fileSet) {
+        return this.$store.dispatch("postImage", {
+          id,
+          file: document.getElementById("fileUpload").files[0]
+        });
+      }
+    },
     clearError() {
       this.$store.commit("clearError");
     },
@@ -173,6 +198,9 @@ export default {
       });
       this.$store.dispatch("getNews");
     },
+    /**
+      send login credentials to the server and set cookies
+     */
     newLogin() {
       this.$store.dispatch("login").then(token => {
         this.$cookies.set("token", token, 20 * 60);
@@ -180,15 +208,19 @@ export default {
         this.pw = null;
       });
     },
-    toggleNewArticle() {
-      this.edit = !this.edit;
-      if (this.edit) {
-        setTimeout(() => {
-          window.scrollTo(0, 0);
-        }, 20);
-      }
+    /**
+      show the NEW ARTCLE CARD and scroll up
+     */
+    showNewArticle() {
+      this.edit = true;
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+      }, 20);
     },
-    closeArticleEdit() {
+    /**
+      close NEW ARTCLE CARD
+     */
+    closeNewArticle() {
       this.edit = false;
       this.$store.commit("title");
       this.$store.commit("body");
@@ -205,31 +237,65 @@ export default {
       this.$store.dispatch("delete", this.deleteId);
       this.deleteActive = false;
     },
+    /**
+      delete cookies and login creds
+     */
     logout() {
       this.$cookies.set("token", null, 1);
       this.$cookies.set("un", null, 1);
       this.$store.commit("cookie", {});
     },
+    /**
+      get news from server
+     */
     loadNews() {
       this.$store.dispatch("getNews");
     },
     refresh() {
-      this.$store.commit("closeEdit");
+      this.cancelCardEdit();
       this.loadNews();
     },
+    /**
+      post new article to the server, reload and hide card
+     */
     createNewArticle() {
-      this.$store.dispatch("new").then(() => {
-        this.$store.dispatch("getNews");
-        this.closeArticleEdit();
+      this.$store.dispatch("new").then(res => {
+        this.picUpload(res.data.articleId).then(() => {
+          this.$store.dispatch("getNews");
+          this.closeNewArticle();
+        });
       });
     },
+    /**
+      edit the content of a card by id
+     */
     editCard(id) {
       this.$store.commit("newsEdit", id);
     },
+<<<<<<< HEAD
     closeCard(id) {
       this.$store.commit("closeEdit");
     },
     cancelCardEdit() {}
+=======
+    /**
+      send the modified content and reload
+     */
+    sendEdit(id) {
+      this.$store.dispatch("edit", id).then(res => {
+        this.picUpload(id).then(() => {
+          this.$store.dispatch("getNews");
+          this.$store.commit("closeEdit");
+        });
+      });
+    },
+    /**
+      cancel edit of article
+     */
+    cancelCardEdit() {
+      this.$store.commit("closeEdit");
+    }
+>>>>>>> 5c99d6114ca2d9b78cca3ea8a7326fc06cc155e4
   },
   beforeMount() {
     this.checkLogin();
@@ -276,10 +342,16 @@ export default {
     loggedIn() {
       return this.$store.getters.isLoggedIn;
     },
+    /**
+      @description current date formated
+     */
     date() {
       moment.locale("de");
       return moment(new Date()).format("LL");
     },
+    /**
+      @description gets news array and converts date
+     */
     news() {
       var news = this.$store.getters.getNews;
       moment.locale("de");

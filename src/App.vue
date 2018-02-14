@@ -1,5 +1,5 @@
 <template>
-  <div v-touch:swipe.left="swipe_Left" v-touch:swipe.right="swipe_Right">
+  <div id="tabs" v-touch:swipe.left="swipe_Left" v-touch:swipe.right="swipe_Right">
     <md-tabs md-sync-route md-alignment="centered" v-if="$store.state.route.path != '/admin'" >
       <md-tab id="tab-leistungen" md-label="leistungen" to="/leistungen">
       </md-tab>
@@ -99,6 +99,9 @@ export default {
 </script>
 
 <style>
+#tabs{
+  min-height: 98vh;
+}
 #app {
   font-family: "Avenir", Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;

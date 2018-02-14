@@ -24,7 +24,10 @@
         </md-card-header>
 
         <md-card-content>
-          {{card.body}} <br>
+          <span v-html="card.body"></span>
+          <br>
+          <img v-if="card.image" :src="card.image" :alt="card.image"/>
+          <br>
           {{card.datum}}
         </md-card-content>
       </md-card>
@@ -45,7 +48,7 @@ import moment from "moment";
 export default {
   name: "aktuelles",
   data: () => ({
-    duration: 4000,
+    duration: 4000
   }),
   methods: {
     clearError() {
@@ -68,7 +71,7 @@ export default {
     news() {
       var news = this.$store.getters.getNews;
       var i = 0;
-      moment.locale('de');
+      moment.locale("de");
       news.forEach(card => {
         card.id = i++;
         card.datum = moment(card.date).format("LL");
@@ -81,7 +84,7 @@ export default {
 
 
 <style scoped>
-#card>*{
+#card > * {
   word-wrap: break-word;
   overflow: hidden;
 }
