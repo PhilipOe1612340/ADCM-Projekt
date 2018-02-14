@@ -62,5 +62,8 @@ module.exports = {
   },
   editTitle(state, val) {
     state.edit.title = val;
+  },
+  setTheme: (state, val) => {
+    state.general.theme = val
   }
 };
