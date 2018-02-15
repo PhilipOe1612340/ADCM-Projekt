@@ -118,6 +118,9 @@ export default {
   },
 
   postImage({ dispatch, commit, state }, obj) {
+    if(!obj.file || obj.file.name){
+      return new Promise((resolve) => {resolve()})
+    }
     let data = new FormData();
     data.append("image", obj.file, obj.file.name);
     const config = {

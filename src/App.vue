@@ -99,6 +99,9 @@ export default {
 </script>
 
 <style>
+html{
+  overflow-x: hidden;
+}
 #tabs{
   min-height: 98vh;
 }
