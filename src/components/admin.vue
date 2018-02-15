@@ -78,72 +78,14 @@
           </md-card>
         </div>
         <br>
+
         <!-- Main list of articels -->
         <div v-for="card in news" :key="card.articleId">
-          <md-card id="card">
-            <md-card-header>
-              <!-- title edit -->
-              <div v-if="editId == card.articleId">
-                <form class="md-layout" @submit.prevent="editCard(card.articleId)">
-                  <md-field>
-                    <label for="Überschrift">Überschrift</label>
-                    <md-input name="Überschrift" id="Überschrift" autocomplete="off" v-model="editTitle" :disabled="sending" />
-                  </md-field>
-                </form>
-              </div>
-              <!-- normal title -->
-              <div v-else class="md-title">{{card.title}}</div>
-            </md-card-header>
-
-            <md-card-content>
-              <!-- body edit -->
-              <div v-if="editId == card.articleId">
-                <form class="md-layout" @submit.prevent="editCard(card.articleId)">
-                  <md-field>
-                    <label for="Inhalt">Inhalt</label>
-                    <md-textarea id="inhalt" type="Inhalt" name="Inhalt" v-model="editBody" :disabled="sending" />
-                  </md-field>
-                  <md-field>
-                    <label>Bild hochladen</label>
-                    <md-file v-model="fileSet" accept="image/*" id="fileUpload" :placeholder="card.image?card.image + ' ersetzen':'Bild hinzufügen'"
-                    />
-                  </md-field>
-                </form>
-              </div>
-              <!-- normal body -->
-              <div v-else>
-                <span v-html="card.body"></span>
-                <br> {{card.datum}}
-              </div>
-            </md-card-content>
-            <md-card-media v-if="card.image && card.image.indexOf('undefined') == -1 && editId != card.articleId">
-              <img v-if="card.image" :src="card.image" :alt="card.image" />
-              <br>
-            </md-card-media>
-            <!-- buttons -->
-            <md-card-expand>
-              <md-card-actions md-alignment="space-between">
-                <div>
-                  <md-button v-if="editId == card.articleId" @click.native="cancelCardEdit(card.articleId)" class="md-secondary">Abbrechen</md-button>
-                  <md-button v-else @click.native="editCard(card.articleId)" class="md-secondary">Bearbeiten</md-button>
-                  <md-button v-if="editId == card.articleId" @click.native="sendEdit(card.articleId)" class="md-primary">Speichern</md-button>
-                  <md-button v-else @click.native="prepareDelete(card.articleId)" class="md-primary">Löschen</md-button>
-                </div>
-                <md-card-expand-trigger>
-                    <md-button>mehr lesen</md-button>
-                </md-card-expand-trigger>
-              </md-card-actions>
-
-              <md-card-expand-content>
-                <md-card-content>
-                  <span v-html="card.body"></span>
-                </md-card-content>
-              </md-card-expand-content>
-            </md-card-expand>
-          </md-card>
+          <card v-bind="card" :edit="editId == card.articleId" v-on:delete="prepareDelete(card.articleId)" />
           <br>
         </div>
       </div>
+
       <!-- fist visit text -->
       <md-empty-state v-if="news.length == 0 && !edit" md-icon="add" md-label="Noch keine Artikel" md-description="Erstellen Sie Ihren ersten Artikel!">
         <md-button class="md-primary md-raised" @click="showNewArticle">Artikel erstellen</md-button>
@@ -172,273 +114,267 @@
 </template>
 
 <script>
-  import moment from "moment";
+import moment from "moment";
+import card from "./card.vue";
 
-  export default {
-    name: "admin",
-    data: () => ({
-      fileSet: null,
-      deleteId: null,
-      deleteActive: false,
-      edit: false,
-      duration: 5000
-    }),
-    methods: {
-      picUpload(id) {
-        if (this.fileSet) {
-          return this.$store.dispatch("postImage", {
-            id,
-            file: document.getElementById("fileUpload").files[0]
-          });
-        } else {
-          return new Promise((resolve) => {
-            resolve()
-          })
-        }
-      },
-      clearError() {
-        this.$store.commit("clearError");
-      },
-      checkLogin() {
-        this.$store.commit("cookie", {
-          token: this.$cookies.get("token"),
-          name: this.$cookies.get("un")
+export default {
+  name: "admin",
+  components: {
+    card
+  },
+  data: () => ({
+    fileSet: null,
+    deleteId: null,
+    deleteActive: false,
+    edit: false,
+    duration: 5000
+  }),
+  methods: {
+    picUpload(id) {
+      if (this.fileSet) {
+        return this.$store.dispatch("postImage", {
+          id,
+          file: document.getElementById("fileUpload").files[0]
         });
-        this.$store.dispatch("getNews");
-      },
-      /**
+      } else {
+        return new Promise(resolve => {
+          resolve();
+        });
+      }
+    },
+    clearError() {
+      this.$store.commit("clearError");
+    },
+    checkLogin() {
+      this.$store.commit("cookie", {
+        token: this.$cookies.get("token"),
+        name: this.$cookies.get("un")
+      });
+      this.$store.dispatch("getNews");
+    },
+    /**
         send login credentials to the server and set cookies
        */
-      newLogin() {
-        this.$store.dispatch("login").then(token => {
-          this.$cookies.set("token", token, 20 * 60);
-          this.$cookies.set("un", this.name, 20 * 60);
-          this.pw = null;
-        });
-      },
-      /**
+    newLogin() {
+      this.$store.dispatch("login").then(token => {
+        this.$cookies.set("token", token, 20 * 60);
+        this.$cookies.set("un", this.name, 20 * 60);
+        this.pw = null;
+      });
+    },
+    /**
         show the NEW ARTCLE CARD and scroll up
        */
-      showNewArticle() {
-        this.edit = true;
-        setTimeout(() => {
-          window.scrollTo(0, 0);
-        }, 20);
-      },
-      /**
+    showNewArticle() {
+      this.edit = true;
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+      }, 20);
+    },
+    /**
         close NEW ARTCLE CARD
        */
-      closeNewArticle() {
-        this.edit = false;
-        this.$store.commit("title");
-        this.$store.commit("body");
-      },
-      cancelDelete() {
-        this.deleteActive = false;
-        this.deleteId = null;
-      },
-      prepareDelete(id) {
-        this.deleteActive = true;
-        this.deleteId = id;
-      },
-      reallyDelete() {
-        this.$store.dispatch("delete", this.deleteId);
-        this.deleteActive = false;
-      },
-      /**
+    closeNewArticle() {
+      this.edit = false;
+      this.$store.commit("title");
+      this.$store.commit("body");
+    },
+    cancelDelete() {
+      this.deleteActive = false;
+      this.deleteId = null;
+    },
+    prepareDelete(id) {
+      this.deleteActive = true;
+      this.deleteId = id;
+    },
+    reallyDelete() {
+      this.$store.dispatch("delete", this.deleteId);
+      this.deleteActive = false;
+    },
+    /**
         delete cookies and login creds
        */
-      logout() {
-        this.$cookies.set("token", null, 1);
-        this.$cookies.set("un", null, 1);
-        this.$store.commit("cookie", {});
-      },
-      /**
+    logout() {
+      this.$cookies.set("token", null, 1);
+      this.$cookies.set("un", null, 1);
+      this.$store.commit("cookie", {});
+    },
+    /**
         get news from server
        */
-      loadNews() {
-        this.$store.dispatch("getNews");
-      },
-      refresh() {
-        this.cancelCardEdit();
-        this.loadNews();
-      },
-      /**
+    loadNews() {
+      this.$store.dispatch("getNews");
+    },
+    refresh() {
+      this.cancelCardEdit();
+      this.loadNews();
+    },
+    /**
         post new article to the server, reload and hide card
        */
-      createNewArticle() {
-        this.$store.dispatch("new").then(res => {
-          this.picUpload(res.data.articleId).then(() => {
-            this.$store.dispatch("getNews");
-            this.closeNewArticle();
-          });
+    createNewArticle() {
+      this.$store.dispatch("new").then(res => {
+        this.picUpload(res.data.articleId).then(() => {
+          this.$store.dispatch("getNews");
+          this.closeNewArticle();
         });
-      },
-      /**
+      });
+    },
+    /**
         edit the content of a card by id
        */
-      editCard(id) {
-        this.$store.commit("newsEdit", id);
-      },
-      closeCard(id) {
-        this.$store.commit("closeEdit");
-      },
-      /**
+    editCard(id) {
+      this.$store.commit("newsEdit", id);
+    },
+    closeCard(id) {
+      this.$store.commit("closeEdit");
+    },
+    /**
         send the modified content and reload
        */
-      sendEdit(id) {
-        this.$store.dispatch("edit", id).then(res => {
-          this.picUpload(id).then(() => {
-            this.$store.dispatch("getNews");
-            this.cancelCardEdit();
-          });
-        });
-      },
-      /**
+    /**
         cancel edit of article
        */
-      cancelCardEdit() {
-        this.$store.commit("closeEdit");
+    cancelCardEdit() {
+      this.$store.commit("closeEdit");
+    }
+  },
+  beforeMount() {
+    this.checkLogin();
+  },
+  computed: {
+    pw: {
+      get() {
+        return this.$store.getters.pw;
+      },
+      set(val) {
+        this.$store.commit("pw", val);
       }
     },
-    beforeMount() {
-      this.checkLogin();
+    name: {
+      get() {
+        return this.$store.getters.name;
+      },
+      set(val) {
+        this.$store.commit("name", val);
+      }
     },
-    computed: {
-      pw: {
-        get() {
-          return this.$store.getters.pw;
-        },
-        set(val) {
-          this.$store.commit("pw", val);
-        }
+    title: {
+      get() {
+        return this.$store.getters.title;
       },
-      name: {
-        get() {
-          return this.$store.getters.name;
-        },
-        set(val) {
-          this.$store.commit("name", val);
-        }
+      set(val) {
+        this.$store.commit("title", val);
+      }
+    },
+    body: {
+      get() {
+        return this.$store.getters.body;
       },
-      title: {
-        get() {
-          return this.$store.getters.title;
-        },
-        set(val) {
-          this.$store.commit("title", val);
-        }
-      },
-      body: {
-        get() {
-          return this.$store.getters.body;
-        },
-        set(val) {
-          this.$store.commit("body", val);
-        }
-      },
-      error() {
-        return this.$store.getters.getError;
-      },
-      sending() {
-        return this.$store.getters.getLoading;
-      },
-      loggedIn() {
-        return this.$store.getters.isLoggedIn;
-      },
-      /**
+      set(val) {
+        this.$store.commit("body", val);
+      }
+    },
+    error() {
+      return this.$store.getters.getError;
+    },
+    sending() {
+      return this.$store.getters.getLoading;
+    },
+    loggedIn() {
+      return this.$store.getters.isLoggedIn;
+    },
+    /**
         @description current date formated
        */
-      date() {
-        moment.locale("de");
-        return moment(new Date()).format("LL");
-      },
-      /**
+    date() {
+      moment.locale("de");
+      return moment(new Date()).format("LL");
+    },
+    /**
         @description gets news array and converts date
        */
-      news() {
-        var news = this.$store.getters.getNews;
-        moment.locale("de");
-        news.forEach(card => {
-          card.datum = moment(card.date).format("LL");
-        });
-        return news;
+    news() {
+      var news = this.$store.getters.getNews;
+      moment.locale("de");
+      news.forEach(card => {
+        card.datum = moment(card.date).format("LL");
+      });
+      return news;
+    },
+    editTitle: {
+      get() {
+        return this.$store.getters.editTitle;
       },
-      editTitle: {
-        get() {
-          return this.$store.getters.editTitle;
-        },
-        set(val) {
-          this.$store.commit("editTitle", val);
-        }
-      },
-      editBody: {
-        get() {
-          return this.$store.getters.editBody;
-        },
-        set(val) {
-          this.$store.commit("editBody", val);
-        }
-      },
-      editId() {
-        return this.$store.getters.editId;
+      set(val) {
+        this.$store.commit("editTitle", val);
       }
+    },
+    editBody: {
+      get() {
+        return this.$store.getters.editBody;
+      },
+      set(val) {
+        this.$store.commit("editBody", val);
+      }
+    },
+    editId() {
+      return this.$store.getters.editId;
     }
-  };
-
+  }
+};
 </script>
 
 
 <style scoped>
-  #articlelayout,
-  #cardContainer {
-    width: 98vw;
-  }
+#articlelayout,
+#cardContainer {
+  width: 98vw;
+}
 
-  #articleHeader {
-    width: 95%;
-    max-width: 1300px;
-    margin: auto;
-  }
+#articleHeader {
+  width: 95%;
+  max-width: 1300px;
+  margin: auto;
+}
 
-  #card,
-  #loginCard {
-    width: 60%;
-    max-width: 1000px;
-    min-width: 350px;
-    margin: auto;
-    margin-top: 50px;
-    padding: 10px;
-  }
+#card,
+#loginCard {
+  width: 60%;
+  max-width: 1000px;
+  min-width: 350px;
+  margin: auto;
+  margin-top: 50px;
+  padding: 10px;
+}
 
-  h1 {
-    text-align: center;
-  }
+h1 {
+  text-align: center;
+}
 
-  #komplett {
-    width: 98vw;
-    padding: 10px;
-  }
+#komplett {
+  width: 98vw;
+  padding: 10px;
+}
 
-  #fab {
-    position: fixed;
-    right: 30px;
-    bottom: 50px;
-  }
+#fab {
+  position: fixed;
+  right: 30px;
+  bottom: 50px;
+}
 
-  #refresh {
-    padding-top: 11px;
-  }
+#refresh {
+  padding-top: 11px;
+}
 
-  #logout {
-    padding-top: 8px;
-    margin-right: 0;
-    float: right;
-  }
+#logout {
+  padding-top: 8px;
+  margin-right: 0;
+  float: right;
+}
 
-  textarea#inhalt {
-    padding: 15px 15px 30px;
-    height: 150px !important;
-  }
-
+textarea#inhalt {
+  padding: 15px 15px 30px;
+  height: 150px !important;
+}
 </style>
