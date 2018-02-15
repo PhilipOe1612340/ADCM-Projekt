@@ -116,7 +116,7 @@
                 <br> {{card.datum}}
               </div>
             </md-card-content>
-            <md-card-media v-if="card.image.indexOf('undefined') == -1 && editId != card.articleId">
+            <md-card-media v-if="card.image && card.image.indexOf('undefined') == -1 && editId != card.articleId">
               <img v-if="card.image" :src="card.image" :alt="card.image" />
               <br>
             </md-card-media>
@@ -149,14 +149,14 @@
         <md-button class="md-primary md-raised" @click="showNewArticle">Artikel erstellen</md-button>
       </md-empty-state>
       <!-- bottom corner button -->
-      <md-speed-dial class="md-bottom-right" md-direction="top" md-event="hover">
+      <md-speed-dial class="md-bottom-right" md-direction="top" id="fab" md-event="hover">
         <md-speed-dial-target class="md-primary">
           <md-icon class="md-morph-initial">add</md-icon>
           <md-icon class="md-morph-final">close</md-icon>
         </md-speed-dial-target>
         <!-- button buttons -->
         <md-speed-dial-content>
-          <md-button @click="showNewArticle" class="md-icon-button">
+          <md-button v-shortkey="['ctrl', 'alt', 'o']" @shortkey="showNewArticle" @click="showNewArticle" class="md-icon-button">
             <md-icon>add</md-icon>
           </md-button>
           <md-button class="md-icon-button">

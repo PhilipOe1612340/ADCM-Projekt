@@ -8,6 +8,7 @@ import "vue-material/dist/vue-material.min.css"
 import "./theme.scss"
 import Vue2TouchEvents from "vue2-touch-events"
 import VueCookies from 'vue-cookies'
+Vue.use(require('vue-shortkey'))
 
 Vue.use(VueCookies)
 Vue.use(Vue2TouchEvents);
