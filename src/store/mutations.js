@@ -13,6 +13,7 @@ module.exports = {
 
   news(state, news) {
     news.forEach(element => {
+      element.image = state.settings.serverIp + "/" + element.image
       delete element._id;
     });
     state.news = news.reverse();
