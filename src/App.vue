@@ -11,23 +11,34 @@
       </md-tab>
     </md-tabs>
 
+    <div id="themeswitch">
+      <span class="clickable" v-if="theme === false" @click="changeTheme"><md-icon class="md-primary">wb_sunny</md-icon></span>
+      <span class="clickable" v-else  @click="changeTheme"><md-icon>brightness_3</md-icon></span>
+    </div>
+
     <transition name="page" mode="out-in">
       <router-view></router-view>
     </transition>
 
     <div class="footer" v-if="$store.state.route.path != '/admin'">
-      <router-link to="/impressum" tag="p">Impressum</router-link>
-      <router-link to="/kontakt" tag="p">Kontakt</router-link>
-      <router-link to="/admin" tag="p">Administrieren</router-link>
+      <ul>
+        <li><router-link to="/impressum" tag="span">Impressum</router-link></li>
+        <li><router-link to="/kontakt" tag="span">Kontakt</router-link></li>
+        <li><router-link to="/admin" tag="span">Administrieren</router-link></li>
+      </ul>
     </div>
     <div class="footer" v-else>
-      <router-link to="/leistungen" tag="p">Home</router-link>
+      <ul>
+        <li><router-link to="/leistungen" tag="span">Home</router-link></li>
+      </ul>
     </div>
 
   </div>
 </template>
 
 <script>
+import Vue from 'vue'
+
 export default {
   name: "Header",
   methods: {
@@ -61,6 +72,26 @@ export default {
         case "/leistungen":
           this.$router.push("/referenzen");
           break;
+      }
+    },
+    changeTheme () {
+      this.theme = !this.theme
+      this.show = !this.show
+      if (this.theme) {
+        Vue.material.theming.theme = 'light'
+      } else {
+        Vue.material.theming.theme = 'default'
+      }
+      localStorage.setItem('theme', this.theme)
+    }
+  },
+  computed: {
+    theme: {
+      get () {
+        return this.$store.state.general.theme
+      },
+      set (val) {
+        this.$store.commit('setTheme', val)
       }
     }
   },
@@ -105,4 +136,23 @@ html{
   opacity: 0;
   transform: translateY(-30%);
 }
+.footer span {
+  cursor: pointer;
+}
+.footer span:hover {
+  font-weight: bold;
+}
+.footer ul {
+  list-style-type: none;
+}
+.footer li {
+  margin: 1%;
+}
+#themeswitch {
+    position: fixed;
+    top: 13px;
+    left: 13px;
+    z-index: 3;
+    cursor: pointer;
+  }
 </style>

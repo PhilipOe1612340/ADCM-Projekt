@@ -21,5 +21,8 @@ export default {
     title: null,
     body: null,
     id: null
+  },
+  general: {
+    theme: false
   }
 };
