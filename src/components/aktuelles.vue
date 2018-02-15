@@ -25,11 +25,32 @@
 
         <md-card-content>
           <span v-html="card.body"></span>
-          <br>
-          <img v-if="card.image" :src="card.image" :alt="card.image"/>
-          <br>
-          {{card.datum}}
+          <br> {{card.datum}}
         </md-card-content>
+        <md-card-media v-if="card.image.indexOf('undefined') == -1 && editId != card.articleId">
+          <img v-if="card.image" :src="card.image" :alt="card.image" />
+          <br>
+        </md-card-media>
+        <!-- buttons -->
+        <md-card-expand>
+          <md-card-actions md-alignment="space-between">
+            <div>
+              <md-button v-if="editId == card.articleId" @click.native="cancelCardEdit(card.articleId)" class="md-secondary">Abbrechen</md-button>
+              <md-button v-else @click.native="editCard(card.articleId)" class="md-secondary">Bearbeiten</md-button>
+              <md-button v-if="editId == card.articleId" @click.native="sendEdit(card.articleId)" class="md-primary">Speichern</md-button>
+              <md-button v-else @click.native="prepareDelete(card.articleId)" class="md-primary">Löschen</md-button>
+            </div>
+            <md-card-expand-trigger>
+              <md-button>mehr lesen</md-button>
+            </md-card-expand-trigger>
+          </md-card-actions>
+
+          <md-card-expand-content>
+            <md-card-content>
+              <span v-html="card.body"></span>
+            </md-card-content>
+          </md-card-expand-content>
+        </md-card-expand>
       </md-card>
       <br>
     </div>
@@ -43,56 +64,58 @@
 </template>
 
 <script>
-import moment from "moment";
+  import moment from "moment";
 
-export default {
-  name: "aktuelles",
-  data: () => ({
-    duration: 4000
-  }),
-  methods: {
-    clearError() {
-      this.$store.commit("clearError");
+  export default {
+    name: "aktuelles",
+    data: () => ({
+      duration: 4000
+    }),
+    methods: {
+      clearError() {
+        this.$store.commit("clearError");
+      },
+      loadNews() {
+        this.$store.dispatch("getNews");
+      }
     },
-    loadNews() {
-      this.$store.dispatch("getNews");
+    beforeMount() {
+      this.loadNews();
+    },
+    computed: {
+      error() {
+        return this.$store.getters.getError;
+      },
+      loading() {
+        return this.$store.getters.getLoading;
+      },
+      news() {
+        var news = this.$store.getters.getNews;
+        var i = 0;
+        moment.locale("de");
+        news.forEach(card => {
+          card.id = i++;
+          card.datum = moment(card.date).format("LL");
+        });
+        return news;
+      }
     }
-  },
-  beforeMount() {
-    this.loadNews();
-  },
-  computed: {
-    error() {
-      return this.$store.getters.getError;
-    },
-    loading() {
-      return this.$store.getters.getLoading;
-    },
-    news() {
-      var news = this.$store.getters.getNews;
-      var i = 0;
-      moment.locale("de");
-      news.forEach(card => {
-        card.id = i++;
-        card.datum = moment(card.date).format("LL");
-      });
-      return news;
-    }
-  }
-};
+  };
+
 </script>
 
 
 <style scoped>
-#card > * {
-  word-wrap: break-word;
-  overflow: hidden;
-}
+  #card>* {
+    word-wrap: break-word;
+    overflow: hidden;
+  }
 
-#komplett {
-  width: 80%;
-  max-width: 1000px;
-  margin: auto;
-  padding: 10px;
-}
+  #komplett {
+    width: 80%;
+    max-width: 1000px;
+    margin: auto;
+    padding: 10px;
+  }
+
 </style>
