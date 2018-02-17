@@ -71,8 +71,6 @@
             <md-card-actions>
               <md-button type="submit" v-if="!title && !body" class="md-secondary" @click.native="closeArticleEdit" :disabled="sending">Schließen</md-button>
               <md-button type="submit" v-else class="md-secondary" @click.native="closeArticleEdit" :disabled="sending">Löschen</md-button>
-              <md-button type="submit" v-if="!title && !body" class="md-secondary" @click.native="closeNewArticle" :disabled="sending">Schließen</md-button>
-              <md-button type="submit" v-else class="md-secondary" @click.native="closeNewArticle" :disabled="sending">Löschen</md-button>
               <md-button type="submit" class="md-primary" @click.native="createNewArticle" :disabled="!title || !body">Absenden</md-button>
             </md-card-actions>
           </md-card>
@@ -103,10 +101,6 @@
                     <label for="Inhalt">Inhalt</label>
                     <md-textarea id="inhalt" type="Inhalt" name="Inhalt" v-model="editBody" :disabled="sending"/>
                   </md-field>
-                  <md-field>
-                    <label>Bild hochladen</label>
-                    <md-file v-model="fileSet" accept="image/*" id="fileUpload" :placeholder="card.image?card.image + ' ersetzen':'Bild hinzufügen'" />
-                  </md-field>
                 </form>
               </div>
               <!-- normal body -->
@@ -123,9 +117,6 @@
               <md-button v-if="editId == card.articleId" @click.native="closeCard(card.articleId)" class="md-secondary">Abbrechen</md-button>
               <md-button v-else @click.native="editCard(card.articleId)" class="md-secondary">Bearbeiten</md-button>
               <md-button v-if="editId == card.articleId" @click.native="closeCard(card.articleId)" class="md-primary">Speichern</md-button>
-              <md-button v-if="editId == card.articleId" @click.native="sendEdit(card.articleId)" class="md-secondary">Abbrechen</md-button>
-              <md-button v-else @click.native="editCard(card.articleId)" class="md-secondary">Bearbeiten</md-button>
-              <md-button v-if="editId == card.articleId" @click.native="sendEdit(card.articleId)" class="md-primary">Speichern</md-button>
               <md-button v-else @click.native="prepareDelete(card.articleId)" class="md-primary">Löschen</md-button>
             </md-card-actions>
           </md-card>
@@ -140,7 +131,7 @@
         <md-button class="md-primary md-raised" @click="showNewArticle">Artikel erstellen</md-button>
       </md-empty-state>
       <!-- bottom corner button -->
-      <md-speed-dial class="md-bottom-right" md-direction="top" md-event="hover">
+      <md-speed-dial class="md-bottom-right" md-direction="top" md-event="hover" id="dial">
         <md-speed-dial-target class="md-primary">
           <md-icon class="md-morph-initial">add</md-icon>
           <md-icon class="md-morph-final">close</md-icon>
@@ -272,30 +263,10 @@ export default {
     editCard(id) {
       this.$store.commit("newsEdit", id);
     },
-<<<<<<< HEAD
     closeCard(id) {
       this.$store.commit("closeEdit");
     },
     cancelCardEdit() {}
-=======
-    /**
-      send the modified content and reload
-     */
-    sendEdit(id) {
-      this.$store.dispatch("edit", id).then(res => {
-        this.picUpload(id).then(() => {
-          this.$store.dispatch("getNews");
-          this.$store.commit("closeEdit");
-        });
-      });
-    },
-    /**
-      cancel edit of article
-     */
-    cancelCardEdit() {
-      this.$store.commit("closeEdit");
-    }
->>>>>>> 5c99d6114ca2d9b78cca3ea8a7326fc06cc155e4
   },
   beforeMount() {
     this.checkLogin();
@@ -412,10 +383,10 @@ h1 {
   padding: 10px;
 }
 
-#fab {
+#dial {
   position: fixed;
-  right: 30px;
   bottom: 50px;
+  right: 30px;
 }
 #refresh {
   padding-top: 11px;
@@ -429,4 +400,5 @@ textarea#inhalt {
   padding: 15px 15px 30px;
   height: 150px !important;
 }
+
 </style>
