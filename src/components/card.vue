@@ -91,7 +91,7 @@
         validator: function (value) {
           return value > 0;
         }
-      }
+      },
     },
 
     // [articleId,datum,body,title,edit,image],
@@ -176,17 +176,6 @@
       date() {
         moment.locale("de");
         return moment(new Date()).format("LL");
-      },
-      /**
-          @description gets news array and converts date
-         */
-      news() {
-        var news = this.$store.getters.getNews;
-        moment.locale("de");
-        news.forEach(card => {
-          datum = moment(date).format("LL");
-        });
-        return news;
       },
       editTitle: {
         get() {

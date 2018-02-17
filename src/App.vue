@@ -1,16 +1,12 @@
 <template>
   <div id="tabs" v-touch:swipe.left="swipe_Left" v-touch:swipe.right="swipe_Right">
     <md-tabs md-sync-route md-alignment="centered" v-if="$store.state.route.path != '/admin'">
-      <md-tab id="tab-leistungen" md-label="leistungen" to="/leistungen">
-      </md-tab>
-      <md-tab id="tab-referenzen" md-label="referenzen" to="/referenzen">
-      </md-tab>
-      <md-tab id="tab-kunden" md-label="kunden" to="/kunden">
-      </md-tab>
-      <md-tab id="tab-aktuelles" md-label="aktuelles" to="/aktuelles">
-      </md-tab>
-      <md-tab id="tab-newcard" md-label="card" to="/card">
-      </md-tab>
+      <md-tab id="tab-leistungen" md-label="leistungen" to="/leistungen" />
+      <md-tab id="tab-referenzen" md-label="referenzen" to="/referenzen" />
+      <md-tab id="tab-kunden" md-label="kunden" to="/kunden" />
+      <md-tab id="tab-aktuelles" md-label="aktuelles" to="/aktuelles" />
+      <!-- <md-tab id="tab-newcard" md-label="card" to="/card">
+      </md-tab> -->
     </md-tabs>
 
     <div id="themeswitch">
@@ -46,7 +42,7 @@
       </ul>
     </footer>
 
-    <md-snackbar id="errorBar" md-position="center" :md-duration="duration" :md-active.sync="error" md-persistent>
+    <md-snackbar id="errorBar" md-position="center" :md-duration="4000" :md-active.sync="error" md-persistent>
       <span>{{error}}</span>
       <md-button class="md-primary" @click="clearError">Schließen</md-button>
     </md-snackbar>
@@ -58,6 +54,9 @@
 
   export default {
     name: "Header",
+    data: () => ({
+      duration: 4000
+    }),
     methods: {
       clearError() {
         this.$store.commit("clearError");

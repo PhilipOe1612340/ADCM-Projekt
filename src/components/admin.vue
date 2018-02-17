@@ -48,7 +48,7 @@
       <div id="articlelayout">
         <!-- New article card -->
         <div v-if="edit">
-          <md-card id="card">
+          <md-card id="newCard">
             <md-card-header>
               <form class="md-layout" @submit.prevent="createNewArticle">
                 <md-field>
@@ -81,7 +81,7 @@
 
         <!-- Main list of articels -->
         <div class="md-layout md-gutter md-alignment-top-center">
-          <card id="card" v-bind="card" v-for="card in news" :key="card.articleId" editable="true" :edit="editId == card.articleId"
+          <card id="card" v-bind="card" v-for="card in news" :key="card.articleId" :editable="true" :edit="editId == card.articleId"
             v-on:delete="prepareDelete(card.articleId)" class="md-layout-item md-xlarge-size-20 md-large-size-33 md-medium-size-50 md-small-size-80"
           />
         </div>
@@ -350,6 +350,7 @@
   }
 
   #card,
+  #newCard,
   #loginCard {
     width: 60%;
     max-width: 1000px;
@@ -357,9 +358,10 @@
     padding: 10px;
   }
 
+  #newCard,
   #loginCard {
     margin: auto;
-    margin-top: 50px;
+    margin-top: 40px;
   }
 
   h1 {
@@ -375,6 +377,7 @@
     position: fixed;
     bottom: 50px;
     right: 30px;
+    z-index: 200;
   }
 
   #refresh {
