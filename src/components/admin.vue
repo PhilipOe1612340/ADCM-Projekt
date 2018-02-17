@@ -11,14 +11,14 @@
           <div class="md-title">Login</div>
         </md-card-header>
         <md-card-content>
-          <form class="md-layout" @keyup.enter="newLogin" @submit.prevent="newLogin" >
+          <form class="md-layout" @keyup.enter="newLogin" @submit.prevent="newLogin">
             <md-field>
               <label for="Username">Username</label>
-              <md-input name="Username" id="name" v-model="name"  />
+              <md-input name="Username" id="name" v-model="name" />
             </md-field>
             <md-field>
               <label for="Password">Password</label>
-              <md-input name="password" autocomplete="off" id="first-name" v-model="pw" type="password"/>
+              <md-input name="password" autocomplete="off" id="first-name" v-model="pw" type="password" />
             </md-field>
           </form>
         </md-card-content>
@@ -31,7 +31,9 @@
     <div v-else>
       <!-- Header for logged in version -->
       <div id="articleHeader" class="md-layout md-gutter">
-        <div class="md-layout-item md-large-size-20 md-xsmall-size-50"> <h1>Artikel verwalten</h1> </div>
+        <div class="md-layout-item md-large-size-20 md-xsmall-size-50">
+          <h1>Artikel verwalten</h1>
+        </div>
         <div class="md-layout-item md-large-size-55 md-xsmall-size-25" id="refresh">
           <md-button @click.native="refresh" class="md-icon-button md-dense md-flat">
             <md-icon>cached</md-icon>
@@ -42,24 +44,24 @@
         </div>
       </div>
       <!-- Progress bar -->
-      <md-progress-bar v-if="sending" md-mode="indeterminate"/>
+      <md-progress-bar v-if="sending" md-mode="indeterminate" />
       <div id="articlelayout">
         <!-- New article card -->
         <div v-if="edit">
           <md-card id="card">
             <md-card-header>
               <form class="md-layout" @submit.prevent="createNewArticle">
-              <md-field>
-                <label for="Überschrift">Überschrift</label>
-                <md-input name="Überschrift" id="Überschrift" autocomplete="off" v-model="title" :disabled="sending" />
-              </md-field>
+                <md-field>
+                  <label for="Überschrift">Überschrift</label>
+                  <md-input name="Überschrift" id="Überschrift" autocomplete="off" v-model="title" :disabled="sending" />
+                </md-field>
               </form>
             </md-card-header>
             <md-card-content>
               <form class="md-layout" @submit.prevent="createNewArticle">
                 <md-field>
                   <label for="Inhalt">Inhalt</label>
-                  <md-textarea id="inhalt" type="Inhalt" name="Inhalt" v-model="body" :disabled="sending"/>
+                  <md-textarea id="inhalt" type="Inhalt" name="Inhalt" v-model="body" :disabled="sending" />
                 </md-field>
                 <md-field>
                   <label>Bild hochladen</label>
@@ -69,8 +71,6 @@
               {{date}}
             </md-card-content>
             <md-card-actions>
-              <md-button type="submit" v-if="!title && !body" class="md-secondary" @click.native="closeArticleEdit" :disabled="sending">Schließen</md-button>
-              <md-button type="submit" v-else class="md-secondary" @click.native="closeArticleEdit" :disabled="sending">Löschen</md-button>
               <md-button type="submit" v-if="!title && !body" class="md-secondary" @click.native="closeNewArticle" :disabled="sending">Schließen</md-button>
               <md-button type="submit" v-else class="md-secondary" @click.native="closeNewArticle" :disabled="sending">Löschen</md-button>
               <md-button type="submit" class="md-primary" @click.native="createNewArticle" :disabled="!title || !body">Absenden</md-button>
@@ -78,76 +78,27 @@
           </md-card>
         </div>
         <br>
+
         <!-- Main list of articels -->
         <div v-for="card in news" :key="card.articleId">
-          <md-card id="card">
-            <md-card-header>
-              <!-- title edit -->
-              <div v-if="editId == card.articleId">
-                <form class="md-layout" @submit.prevent="editCard(card.articleId)">
-                  <md-field>
-                    <label for="Überschrift">Überschrift</label>
-                    <md-input name="Überschrift" id="Überschrift" autocomplete="off" v-model="editTitle" :disabled="sending" />
-                  </md-field>
-                </form>
-              </div>
-              <!-- normal title -->
-              <div v-else class="md-title">{{card.title}}</div>
-            </md-card-header>
-
-            <md-card-content>
-              <!-- body edit -->
-              <div v-if="editId == card.articleId">
-                <form class="md-layout" @submit.prevent="editCard(card.articleId)">
-                  <md-field>
-                    <label for="Inhalt">Inhalt</label>
-                    <md-textarea id="inhalt" type="Inhalt" name="Inhalt" v-model="editBody" :disabled="sending"/>
-                  </md-field>
-                  <md-field>
-                    <label>Bild hochladen</label>
-                    <md-file v-model="fileSet" accept="image/*" id="fileUpload" :placeholder="card.image?card.image + ' ersetzen':'Bild hinzufügen'" />
-                  </md-field>
-                </form>
-              </div>
-              <!-- normal body -->
-              <div v-else>
-                <span v-html="card.body"></span>
-                <br>
-                <img v-if="card.image" :src="card.image" :alt="card.image"/>
-                <br>
-                {{card.datum}}
-              </div>
-            </md-card-content>
-            <md-card-actions>
-              <!-- buttons -->
-              <md-button v-if="editId == card.articleId" @click.native="closeCard(card.articleId)" class="md-secondary">Abbrechen</md-button>
-              <md-button v-else @click.native="editCard(card.articleId)" class="md-secondary">Bearbeiten</md-button>
-              <md-button v-if="editId == card.articleId" @click.native="closeCard(card.articleId)" class="md-primary">Speichern</md-button>
-              <md-button v-if="editId == card.articleId" @click.native="sendEdit(card.articleId)" class="md-secondary">Abbrechen</md-button>
-              <md-button v-else @click.native="editCard(card.articleId)" class="md-secondary">Bearbeiten</md-button>
-              <md-button v-if="editId == card.articleId" @click.native="sendEdit(card.articleId)" class="md-primary">Speichern</md-button>
-              <md-button v-else @click.native="prepareDelete(card.articleId)" class="md-primary">Löschen</md-button>
-            </md-card-actions>
-          </md-card>
+          <card v-bind="card" editable="true" :edit="editId == card.articleId" v-on:delete="prepareDelete(card.articleId)" />
           <br>
         </div>
       </div>
+
       <!-- fist visit text -->
-      <md-empty-state v-if="news.length == 0 && !edit"
-        md-icon="add"
-        md-label="Noch keine Artikel"
-        md-description="Erstellen Sie Ihren ersten Artikel!">
+      <md-empty-state v-if="news.length == 0 && !edit" md-icon="add" md-label="Noch keine Artikel" md-description="Erstellen Sie Ihren ersten Artikel!">
         <md-button class="md-primary md-raised" @click="showNewArticle">Artikel erstellen</md-button>
       </md-empty-state>
       <!-- bottom corner button -->
-      <md-speed-dial class="md-bottom-right" md-direction="top" md-event="hover">
+      <md-speed-dial class="md-bottom-right" md-direction="top" id="fab" md-event="hover">
         <md-speed-dial-target class="md-primary">
           <md-icon class="md-morph-initial">add</md-icon>
           <md-icon class="md-morph-final">close</md-icon>
         </md-speed-dial-target>
         <!-- button buttons -->
         <md-speed-dial-content>
-          <md-button @click="showNewArticle" class="md-icon-button">
+          <md-button v-shortkey="['ctrl', 'alt', 'o']" @shortkey="showNewArticle" @click="showNewArticle" class="md-icon-button">
             <md-icon>add</md-icon>
           </md-button>
           <md-button class="md-icon-button">
@@ -156,22 +107,21 @@
         </md-speed-dial-content>
       </md-speed-dial>
       <!-- Delete Confirm Tab -->
-      <md-dialog-confirm
-      :md-active.sync="deleteActive"
-      md-title="Wollen Sie diesen Artikel wirklich löschen?"
-      md-confirm-text="Löschen"
-      md-cancel-text="Abbrechen"
-      @md-cancel="cancelDelete"
-      @md-confirm="reallyDelete" />
+      <md-dialog-confirm :md-active.sync="deleteActive" md-title="Wollen Sie diesen Artikel wirklich löschen?" md-confirm-text="Löschen"
+        md-cancel-text="Abbrechen" @md-cancel="cancelDelete" @md-confirm="reallyDelete" />
     </div>
   </div>
 </template>
 
 <script>
 import moment from "moment";
+import card from "./card.vue";
 
 export default {
   name: "admin",
+  components: {
+    card
+  },
   data: () => ({
     fileSet: null,
     deleteId: null,
@@ -186,6 +136,10 @@ export default {
           id,
           file: document.getElementById("fileUpload").files[0]
         });
+      } else {
+        return new Promise(resolve => {
+          resolve();
+        });
       }
     },
     clearError() {
@@ -199,8 +153,8 @@ export default {
       this.$store.dispatch("getNews");
     },
     /**
-      send login credentials to the server and set cookies
-     */
+        send login credentials to the server and set cookies
+       */
     newLogin() {
       this.$store.dispatch("login").then(token => {
         this.$cookies.set("token", token, 20 * 60);
@@ -209,8 +163,8 @@ export default {
       });
     },
     /**
-      show the NEW ARTCLE CARD and scroll up
-     */
+        show the NEW ARTCLE CARD and scroll up
+       */
     showNewArticle() {
       this.edit = true;
       setTimeout(() => {
@@ -218,8 +172,8 @@ export default {
       }, 20);
     },
     /**
-      close NEW ARTCLE CARD
-     */
+        close NEW ARTCLE CARD
+       */
     closeNewArticle() {
       this.edit = false;
       this.$store.commit("title");
@@ -238,16 +192,16 @@ export default {
       this.deleteActive = false;
     },
     /**
-      delete cookies and login creds
-     */
+        delete cookies and login creds
+       */
     logout() {
       this.$cookies.set("token", null, 1);
       this.$cookies.set("un", null, 1);
       this.$store.commit("cookie", {});
     },
     /**
-      get news from server
-     */
+        get news from server
+       */
     loadNews() {
       this.$store.dispatch("getNews");
     },
@@ -256,8 +210,8 @@ export default {
       this.loadNews();
     },
     /**
-      post new article to the server, reload and hide card
-     */
+        post new article to the server, reload and hide card
+       */
     createNewArticle() {
       this.$store.dispatch("new").then(res => {
         this.picUpload(res.data.articleId).then(() => {
@@ -267,35 +221,23 @@ export default {
       });
     },
     /**
-      edit the content of a card by id
-     */
+        edit the content of a card by id
+       */
     editCard(id) {
       this.$store.commit("newsEdit", id);
     },
-<<<<<<< HEAD
     closeCard(id) {
       this.$store.commit("closeEdit");
     },
-    cancelCardEdit() {}
-=======
     /**
-      send the modified content and reload
-     */
-    sendEdit(id) {
-      this.$store.dispatch("edit", id).then(res => {
-        this.picUpload(id).then(() => {
-          this.$store.dispatch("getNews");
-          this.$store.commit("closeEdit");
-        });
-      });
-    },
+        send the modified content and reload
+       */
     /**
-      cancel edit of article
-     */
+        cancel edit of article
+       */
     cancelCardEdit() {
       this.$store.commit("closeEdit");
     }
->>>>>>> 5c99d6114ca2d9b78cca3ea8a7326fc06cc155e4
   },
   beforeMount() {
     this.checkLogin();
@@ -343,15 +285,15 @@ export default {
       return this.$store.getters.isLoggedIn;
     },
     /**
-      @description current date formated
-     */
+        @description current date formated
+       */
     date() {
       moment.locale("de");
       return moment(new Date()).format("LL");
     },
     /**
-      @description gets news array and converts date
-     */
+        @description gets news array and converts date
+       */
     news() {
       var news = this.$store.getters.getNews;
       moment.locale("de");
@@ -389,11 +331,13 @@ export default {
 #cardContainer {
   width: 98vw;
 }
+
 #articleHeader {
   width: 95%;
   max-width: 1300px;
   margin: auto;
 }
+
 #card,
 #loginCard {
   width: 60%;
@@ -403,6 +347,7 @@ export default {
   margin-top: 50px;
   padding: 10px;
 }
+
 h1 {
   text-align: center;
 }
@@ -417,14 +362,17 @@ h1 {
   right: 30px;
   bottom: 50px;
 }
+
 #refresh {
   padding-top: 11px;
 }
+
 #logout {
   padding-top: 8px;
   margin-right: 0;
   float: right;
 }
+
 textarea#inhalt {
   padding: 15px 15px 30px;
   height: 150px !important;
