@@ -41,8 +41,8 @@
     </md-card-media>
     <!-- buttons -->
     <md-card-expand>
-      <md-card-actions md-alignment="space-between">
-        <div>
+      <md-card-actions md-alignment="space-between" >
+        <div v-if="editable">
           <md-button v-if="edit" @click.native="cancelCardEdit(articleId)" class="md-primary">Abbrechen</md-button>
           <md-button v-else @click.native="editCard" class="md-primary">Bearbeiten</md-button>
           <md-button v-if="edit" @click.native="sendEdit" class="md-primary">Speichern</md-button>
@@ -78,6 +78,10 @@ export default {
       type: String
     },
     edit: {
+      type: Boolean,
+      default: false
+    },
+    editable: {
       type: Boolean,
       default: false
     },

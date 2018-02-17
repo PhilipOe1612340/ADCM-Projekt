@@ -81,7 +81,7 @@
 
         <!-- Main list of articels -->
         <div v-for="card in news" :key="card.articleId">
-          <card v-bind="card" :edit="editId == card.articleId" v-on:delete="prepareDelete(card.articleId)" />
+          <card v-bind="card" editable="true" :edit="editId == card.articleId" v-on:delete="prepareDelete(card.articleId)" />
           <br>
         </div>
       </div>
