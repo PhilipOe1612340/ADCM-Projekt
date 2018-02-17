@@ -24,8 +24,7 @@
           </md-field>
           <md-field>
             <label>Bild hochladen</label>
-            <md-file v-model="fileSet" accept="image/*" id="fileUpload" :placeholder="image?image + ' ersetzen':'Bild hinzufügen'"
-            />
+            <md-file v-model="fileSet" accept="image/*" id="fileUpload" :placeholder="image?image + ' ersetzen':'Bild hinzufügen'" />
           </md-field>
         </form>
       </div>
@@ -41,7 +40,7 @@
     </md-card-media>
     <!-- buttons -->
     <md-card-expand>
-      <md-card-actions md-alignment="space-between" >
+      <md-card-actions md-alignment="space-between">
         <div v-if="editable">
           <md-button v-if="edit" @click.native="cancelCardEdit(articleId)" class="md-primary">Abbrechen</md-button>
           <md-button v-else @click.native="editCard" class="md-primary">Bearbeiten</md-button>
@@ -49,7 +48,7 @@
           <md-button v-else @click.native="emitDelete" class="md-primary">Löschen</md-button>
         </div>
         <md-card-expand-trigger v-if="!edit">
-            <md-button>mehr lesen</md-button>
+          <md-button>mehr lesen</md-button>
         </md-card-expand-trigger>
       </md-card-actions>
 
@@ -63,153 +62,152 @@
 </template>
 
 <script>
-import moment from "moment";
+  import moment from "moment";
 
-export default {
-  name: "admin",
-  props: {
-    datum: {
-      type: String
-    },
-    body: {
-      type: String
-    },
-    title: {
-      type: String
-    },
-    edit: {
-      type: Boolean,
-      default: false
-    },
-    editable: {
-      type: Boolean,
-      default: false
-    },
-    image: {
-      validator: function(value) {
-        return value > 10;
+  export default {
+    name: "admin",
+    props: {
+      datum: {
+        type: String
+      },
+      body: {
+        type: String
+      },
+      title: {
+        type: String
+      },
+      edit: {
+        type: Boolean,
+        default: false
+      },
+      editable: {
+        type: Boolean,
+        default: false
+      },
+      image: {
+        type: String
+      },
+      articleId: {
+        validator: function (value) {
+          return value > 0;
+        }
       }
     },
-    articleId: {
-      validator: function(value) {
-        return value > 0;
-      }
-    }
-  },
 
-  // [articleId,datum,body,title,edit,image],
-  data: () => ({
-    fileSet: null,
-    deleteId: null,
-    deleteActive: false,
-    duration: 5000
-  }),
-  methods: {
-    picUpload() {
-      if (this.fileSet) {
-        return this.$store.dispatch("postImage", {
-          id: this.articleId,
-          file: document.getElementById("fileUpload").files[0]
+    // [articleId,datum,body,title,edit,image],
+    data: () => ({
+      fileSet: null,
+      deleteId: null,
+      deleteActive: false,
+      duration: 5000
+    }),
+    methods: {
+      picUpload() {
+        if (this.fileSet) {
+          return this.$store.dispatch("postImage", {
+            id: this.articleId,
+            file: document.getElementById("fileUpload").files[0]
+          });
+        } else {
+          return new Promise(resolve => {
+            resolve();
+          });
+        }
+      },
+      emitDelete() {
+        this.$emit("delete");
+      },
+      /**
+          edit the content of a card by id
+         */
+      editCard() {
+        this.$store.commit("newsEdit", this.articleId);
+      },
+      closeCard(id) {
+        this.$store.commit("closeEdit");
+      },
+      /**
+          send the modified content and reload
+         */
+      sendEdit() {
+        this.$store.dispatch("edit", this.articleId).then(res => {
+          this.picUpload(this.articleId).then(() => {
+            this.$store.dispatch("getNews");
+            this.cancelCardEdit();
+          });
         });
-      } else {
-        return new Promise(resolve => {
-          resolve();
-        });
+      },
+      /**
+          cancel edit of article
+         */
+      cancelCardEdit() {
+        this.$store.commit("closeEdit");
       }
     },
-    emitDelete() {
-      this.$emit("delete");
-    },
-    /**
-        edit the content of a card by id
-       */
-    editCard() {
-      this.$store.commit("newsEdit", this.articleId);
-    },
-    closeCard(id) {
-      this.$store.commit("closeEdit");
-    },
-    /**
-        send the modified content and reload
-       */
-    sendEdit() {
-      this.$store.dispatch("edit", this.articleId).then(res => {
-        this.picUpload(this.articleId).then(() => {
-          this.$store.dispatch("getNews");
-          this.cancelCardEdit();
+    computed: {
+      pw: {
+        get() {
+          return this.$store.getters.pw;
+        },
+        set(val) {
+          this.$store.commit("pw", val);
+        }
+      },
+      name: {
+        get() {
+          return this.$store.getters.name;
+        },
+        set(val) {
+          this.$store.commit("name", val);
+        }
+      },
+      error() {
+        return this.$store.getters.getError;
+      },
+      sending() {
+        return this.$store.getters.getLoading;
+      },
+      loggedIn() {
+        return this.$store.getters.isLoggedIn;
+      },
+      /**
+          @description current date formated
+         */
+      date() {
+        moment.locale("de");
+        return moment(new Date()).format("LL");
+      },
+      /**
+          @description gets news array and converts date
+         */
+      news() {
+        var news = this.$store.getters.getNews;
+        moment.locale("de");
+        news.forEach(card => {
+          datum = moment(date).format("LL");
         });
-      });
-    },
-    /**
-        cancel edit of article
-       */
-    cancelCardEdit() {
-      this.$store.commit("closeEdit");
+        return news;
+      },
+      editTitle: {
+        get() {
+          return this.$store.getters.editTitle;
+        },
+        set(val) {
+          this.$store.commit("editTitle", val);
+        }
+      },
+      editBody: {
+        get() {
+          return this.$store.getters.editBody;
+        },
+        set(val) {
+          this.$store.commit("editBody", val);
+        }
+      },
+      editId() {
+        return this.$store.getters.editId;
+      }
     }
-  },
-  computed: {
-    pw: {
-      get() {
-        return this.$store.getters.pw;
-      },
-      set(val) {
-        this.$store.commit("pw", val);
-      }
-    },
-    name: {
-      get() {
-        return this.$store.getters.name;
-      },
-      set(val) {
-        this.$store.commit("name", val);
-      }
-    },
-    error() {
-      return this.$store.getters.getError;
-    },
-    sending() {
-      return this.$store.getters.getLoading;
-    },
-    loggedIn() {
-      return this.$store.getters.isLoggedIn;
-    },
-    /**
-        @description current date formated
-       */
-    date() {
-      moment.locale("de");
-      return moment(new Date()).format("LL");
-    },
-    /**
-        @description gets news array and converts date
-       */
-    news() {
-      var news = this.$store.getters.getNews;
-      moment.locale("de");
-      news.forEach(card => {
-        datum = moment(date).format("LL");
-      });
-      return news;
-    },
-    editTitle: {
-      get() {
-        return this.$store.getters.editTitle;
-      },
-      set(val) {
-        this.$store.commit("editTitle", val);
-      }
-    },
-    editBody: {
-      get() {
-        return this.$store.getters.editBody;
-      },
-      set(val) {
-        this.$store.commit("editBody", val);
-      }
-    },
-    editId() {
-      return this.$store.getters.editId;
-    }
-  }
-};
+  };
+
 </script>

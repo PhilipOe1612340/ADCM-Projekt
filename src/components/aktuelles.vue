@@ -17,16 +17,17 @@
     <br>
     <md-progress-bar v-if="loading" md-mode="indeterminate"></md-progress-bar>
 
-    <div v-for="card in news" :key="card.articleId">
-      <card v-bind="card" :edit="editId == card.articleId" />
-      <br>
+
+    <div class="md-layout md-gutter md-alignment-top-center">
+      <card id="card" v-bind="card" v-for="card in news" :key="card.articleId" class="md-layout-item md-xlarge-size-20 md-large-size-30 md-medium-size-45 md-small-size-95"
+      />
     </div>
 
-  <md-snackbar md-position="center" :md-duration="duration" :md-active.sync="error" md-persistent>
-    <span>{{error}}</span>
-    <md-button class="md-primary" @click="loadNews">Retry</md-button>
-    <md-button class="md-primary" @click="clearError">Close</md-button>
-  </md-snackbar>
+    <md-snackbar md-position="center" :md-duration="duration" :md-active.sync="error" md-persistent>
+      <span>{{error}}</span>
+      <md-button class="md-primary" @click="loadNews">Retry</md-button>
+      <md-button class="md-primary" @click="clearError">Close</md-button>
+    </md-snackbar>
   </div>
 </template>
 
@@ -34,11 +35,11 @@
   import moment from "moment";
   import card from "./card.vue";
 
-export default {
-  name: "aktuelles",
-  components: {
-    card
-  },
+  export default {
+    name: "aktuelles",
+    components: {
+      card
+    },
     data: () => ({
       duration: 4000
     }),
@@ -80,6 +81,10 @@ export default {
   #card>* {
     word-wrap: break-word;
     overflow: hidden;
+  }
+
+  #card{
+    margin: 0px 15px 15px 15px;
   }
 
   #komplett {

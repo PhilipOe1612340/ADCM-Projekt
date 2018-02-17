@@ -18,7 +18,7 @@
     "vue": "^2.5.13",
     "vue-analytics": "^5.8.0",
     "vue-cookies": "^1.5.4",
-    "vue-material": "^1.0.0-beta-7",
+    "vue-material": "^1.0.0-beta-8",
     "vue-router": "^3.0.1",
     "vue-shortkey": "^3.0.4",
     "vue2-touch-events": "^1.0.0",

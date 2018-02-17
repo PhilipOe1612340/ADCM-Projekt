@@ -22,6 +22,7 @@
     <transition name="page" mode="out-in">
       <router-view></router-view>
     </transition>
+    <br>
 
     <footer id="footer" class="footer">
       <ul v-if="$store.state.route.path != '/admin'">
