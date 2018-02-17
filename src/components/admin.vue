@@ -91,7 +91,7 @@
         <md-button class="md-primary md-raised" @click="showNewArticle">Artikel erstellen</md-button>
       </md-empty-state>
       <!-- bottom corner button -->
-      <md-speed-dial class="md-bottom-right" md-direction="top" id="fab" md-event="hover">
+      <md-speed-dial class="md-bottom-right" md-direction="top" md-event="hover" id="dial">
         <md-speed-dial-target class="md-primary">
           <md-icon class="md-morph-initial">add</md-icon>
           <md-icon class="md-morph-final">close</md-icon>
@@ -357,10 +357,10 @@ h1 {
   padding: 10px;
 }
 
-#fab {
+#dial {
   position: fixed;
-  right: 30px;
   bottom: 50px;
+  right: 30px;
 }
 
 #refresh {
@@ -377,4 +377,5 @@ textarea#inhalt {
   padding: 15px 15px 30px;
   height: 150px !important;
 }
+
 </style>

@@ -9,6 +9,9 @@
       </md-tab>
       <md-tab id="tab-aktuelles" md-label="aktuelles" to="/aktuelles">
       </md-tab>
+      <md-tab id="tab-newcard" md-label="card" to="/card">
+      </md-tab>
+      
     </md-tabs>
 
     <div id="themeswitch">
@@ -20,18 +23,16 @@
       <router-view></router-view>
     </transition>
 
-    <div class="footer" v-if="$store.state.route.path != '/admin'">
-      <ul>
+    <footer id="footer" class="footer">
+      <ul v-if="$store.state.route.path != '/admin'">
         <li><router-link to="/impressum" tag="span">Impressum</router-link></li>
         <li><router-link to="/kontakt" tag="span">Kontakt</router-link></li>
         <li><router-link to="/admin" tag="span">Administrieren</router-link></li>
       </ul>
-    </div>
-    <div class="footer" v-else>
-      <ul>
+      <ul v-else>
         <li><router-link to="/leistungen" tag="span">Home</router-link></li>
       </ul>
-    </div>
+    </footer>
 
   </div>
 </template>
@@ -105,6 +106,16 @@ html{
 #tabs{
   min-height: 98vh;
 }
+footer {
+  width: 100vw;
+  height: 5%;
+  background-color: rgb(68, 68, 68);
+  position: absolute;
+  left: 0; 
+  bottom: 0;
+  position: fixed;
+  z-index: 1000;
+}
 #app {
   font-family: "Avenir", Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -116,15 +127,6 @@ html{
 
 #spacer {
   width: 10px;
-}
-
-.footer {
-  position: relative;
-  bottom: -40px;
-  margin-left: 10%;
-  color: white;
-  font-style: normal;
-  margin-bottom: 20px;
 }
 
 .page-enter-active,
@@ -146,7 +148,8 @@ html{
   list-style-type: none;
 }
 .footer li {
-  margin: 1%;
+  float: left;
+  margin-right: 1%;
 }
 #themeswitch {
     position: fixed;
