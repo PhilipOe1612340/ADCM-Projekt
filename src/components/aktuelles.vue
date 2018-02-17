@@ -17,82 +17,76 @@
     <br>
     <md-progress-bar v-if="loading" md-mode="indeterminate"></md-progress-bar>
 
-    <div v-for="card in news" :key="card.id">
-      <md-card id="card">
-        <md-card-header>
-          <div class="md-title">{{card.title}}</div>
-        </md-card-header>
-
-        <md-card-content>
-          <span v-html="card.body"></span>
-          <br>
-          <img v-if="card.image" :src="card.image" :alt="card.image"/>
-          <br>
-          {{card.datum}}
-        </md-card-content>
-      </md-card>
+    <div v-for="card in news" :key="card.articleId">
+      <card v-bind="card" :edit="editId == card.articleId" />
       <br>
     </div>
 
-    <md-snackbar md-position="center" :md-duration="duration" :md-active.sync="error" md-persistent>
-      <span>{{error}}</span>
-      <md-button class="md-primary" @click="loadNews">Retry</md-button>
-      <md-button class="md-primary" @click="clearError">Close</md-button>
-    </md-snackbar>
+  <md-snackbar md-position="center" :md-duration="duration" :md-active.sync="error" md-persistent>
+    <span>{{error}}</span>
+    <md-button class="md-primary" @click="loadNews">Retry</md-button>
+    <md-button class="md-primary" @click="clearError">Close</md-button>
+  </md-snackbar>
   </div>
 </template>
 
 <script>
-import moment from "moment";
+  import moment from "moment";
+  import card from "./card.vue";
 
 export default {
   name: "aktuelles",
-  data: () => ({
-    duration: 4000
-  }),
-  methods: {
-    clearError() {
-      this.$store.commit("clearError");
-    },
-    loadNews() {
-      this.$store.dispatch("getNews");
-    }
+  components: {
+    card
   },
-  beforeMount() {
-    this.loadNews();
-  },
-  computed: {
-    error() {
-      return this.$store.getters.getError;
+    data: () => ({
+      duration: 4000
+    }),
+    methods: {
+      clearError() {
+        this.$store.commit("clearError");
+      },
+      loadNews() {
+        this.$store.dispatch("getNews");
+      }
     },
-    loading() {
-      return this.$store.getters.getLoading;
+    beforeMount() {
+      this.loadNews();
     },
-    news() {
-      var news = this.$store.getters.getNews;
-      var i = 0;
-      moment.locale("de");
-      news.forEach(card => {
-        card.id = i++;
-        card.datum = moment(card.date).format("LL");
-      });
-      return news;
+    computed: {
+      error() {
+        return this.$store.getters.getError;
+      },
+      loading() {
+        return this.$store.getters.getLoading;
+      },
+      news() {
+        var news = this.$store.getters.getNews;
+        var i = 0;
+        moment.locale("de");
+        news.forEach(card => {
+          card.id = i++;
+          card.datum = moment(card.date).format("LL");
+        });
+        return news;
+      }
     }
-  }
-};
+  };
+
 </script>
 
 
 <style scoped>
-#card > * {
-  word-wrap: break-word;
-  overflow: hidden;
-}
+  #card>* {
+    word-wrap: break-word;
+    overflow: hidden;
+  }
 
-#komplett {
-  width: 80%;
-  max-width: 1000px;
-  margin: auto;
-  padding: 10px;
-}
+  #komplett {
+    width: 80%;
+    max-width: 1000px;
+    margin: auto;
+    padding: 10px;
+  }
+
 </style>
