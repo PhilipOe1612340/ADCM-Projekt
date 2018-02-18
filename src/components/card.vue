@@ -92,6 +92,10 @@
           return value > 0;
         }
       },
+      type: {
+        type: String,
+        default: "aktuelles"
+      },
     },
 
     // [articleId,datum,body,title,edit,image],

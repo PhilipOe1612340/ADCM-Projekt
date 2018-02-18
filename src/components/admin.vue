@@ -50,6 +50,10 @@
         <div v-if="edit">
           <md-card id="newCard">
             <md-card-header>
+              <md-radio class="md-primary" v-model="type" value="leistungen">Leistungen</md-radio>
+              <md-radio class="md-primary" v-model="type" value="referenzen">Referenzen</md-radio>
+              <md-radio class="md-primary" v-model="type" value="kunden">Kunden</md-radio>
+              <md-radio class="md-primary" v-model="type" value="aktuelles">Aktuelles</md-radio>
               <form class="md-layout" @submit.prevent="createNewArticle">
                 <md-field>
                   <label for="Überschrift">Überschrift</label>
@@ -73,7 +77,7 @@
             <md-card-actions>
               <md-button type="submit" v-if="!title && !body" class="md-secondary" @click.native="closeNewArticle" :disabled="sending">Schließen</md-button>
               <md-button type="submit" v-else class="md-secondary" @click.native="closeNewArticle" :disabled="sending">Löschen</md-button>
-              <md-button type="submit" class="md-primary" @click.native="createNewArticle" :disabled="!title || !body">Absenden</md-button>
+              <md-button type="submit" class="md-primary" @click.native="createNewArticle" :disabled="!title || !body || !type">Absenden</md-button>
             </md-card-actions>
           </md-card>
         </div>
@@ -81,10 +85,32 @@
 
         <!-- Main list of articels -->
         <div class="md-layout md-gutter md-alignment-top-center">
-          <card id="card" v-bind="card" v-for="card in news" :key="card.articleId" :editable="true" :edit="editId == card.articleId"
+          <span v-if="lNews.length > 0" id="card" class="md-layout-item md-size-100 md-display-3">
+            Leistungen
+          </span>
+          <card id="card" v-bind="card" v-for="card in lNews" :key="card.articleId" :editable="true" :edit="editId == card.articleId"
+            v-on:delete="prepareDelete(card.articleId)" class="md-layout-item md-xlarge-size-20 md-large-size-33 md-medium-size-50 md-small-size-80"
+          />
+          <span v-if="rNews.length > 0" id="card" class="md-layout-item md-size-100 md-display-3">
+            Referenzen
+          </span>
+          <card id="card" v-bind="card" v-for="card in rNews" :key="card.articleId" :editable="true" :edit="editId == card.articleId"
+            v-on:delete="prepareDelete(card.articleId)" class="md-layout-item md-xlarge-size-20 md-large-size-33 md-medium-size-50 md-small-size-80"
+          />
+          <span v-if="kNews.length > 0" id="card" class="md-layout-item md-size-100 md-display-3">
+            Kunden
+          </span>
+          <card id="card" v-bind="card" v-for="card in kNews" :key="card.articleId" :editable="true" :edit="editId == card.articleId"
+            v-on:delete="prepareDelete(card.articleId)" class="md-layout-item md-xlarge-size-20 md-large-size-33 md-medium-size-50 md-small-size-80"
+          />
+          <span v-if="aNews.length > 0" id="card" class="md-layout-item md-size-100 md-display-3">
+            Aktuelles
+          </span>
+          <card id="card" v-bind="card" v-for="card in aNews" :key="card.articleId" :editable="true" :edit="editId == card.articleId"
             v-on:delete="prepareDelete(card.articleId)" class="md-layout-item md-xlarge-size-20 md-large-size-33 md-medium-size-50 md-small-size-80"
           />
         </div>
+
       </div>
 
       <!-- fist visit text -->
@@ -92,21 +118,9 @@
         <md-button class="md-primary md-raised" @click="showNewArticle">Artikel erstellen</md-button>
       </md-empty-state>
       <!-- bottom corner button -->
-      <md-speed-dial class="md-bottom-right" md-direction="top" md-event="hover" id="dial">
-        <md-speed-dial-target class="md-primary">
-          <md-icon class="md-morph-initial">add</md-icon>
-          <md-icon class="md-morph-final">close</md-icon>
-        </md-speed-dial-target>
-        <!-- button buttons -->
-        <md-speed-dial-content>
-          <md-button v-shortkey="['ctrl', 'alt', 'o']" @shortkey="showNewArticle" @click="showNewArticle" class="md-icon-button">
-            <md-icon>add</md-icon>
-          </md-button>
-          <md-button class="md-icon-button">
-            <md-icon>event</md-icon>
-          </md-button>
-        </md-speed-dial-content>
-      </md-speed-dial>
+      <md-button id="dial" class="md-fab md-primary" @click="showNewArticle">
+        <md-icon>add</md-icon>
+      </md-button>
       <!-- Delete Confirm Tab -->
       <md-dialog-confirm :md-active.sync="deleteActive" md-title="Wollen Sie diesen Artikel wirklich löschen?" md-confirm-text="Löschen"
         md-cancel-text="Abbrechen" @md-cancel="cancelDelete" @md-confirm="reallyDelete" />
@@ -143,9 +157,6 @@
           });
         }
       },
-      clearError() {
-        this.$store.commit("clearError");
-      },
       checkLogin() {
         this.$store.commit("cookie", {
           token: this.$cookies.get("token"),
@@ -167,15 +178,20 @@
           show the NEW ARTCLE CARD and scroll up
          */
       showNewArticle() {
+        this.type = null;
         this.edit = true;
         setTimeout(() => {
           window.scrollTo(0, 0);
         }, 20);
       },
+      filterNews(filter){
+        return this.news.filter(el => el.type === filter)
+      },
       /**
           close NEW ARTCLE CARD
          */
       closeNewArticle() {
+        this.newType = null;
         this.edit = false;
         this.$store.commit("title");
         this.$store.commit("body");
@@ -276,9 +292,6 @@
           this.$store.commit("body", val);
         }
       },
-      error() {
-        return this.$store.getters.getError;
-      },
       sending() {
         return this.$store.getters.getLoading;
       },
@@ -303,6 +316,18 @@
         });
         return news;
       },
+      aNews(){
+        return this.filterNews("aktuelles");
+      },
+      lNews(){
+        return this.filterNews("leistungen");
+      },
+      kNews(){
+        return this.filterNews("kunden");
+      },
+      rNews(){
+        return this.filterNews("referenzen");
+      },
       editTitle: {
         get() {
           return this.$store.getters.editTitle;
@@ -317,6 +342,14 @@
         },
         set(val) {
           this.$store.commit("editBody", val);
+        }
+      },
+      type: {
+        get() {
+          return this.$store.getters.getType;
+        },
+        set(val) {
+          this.$store.commit("setType", val);
         }
       },
       editId() {

@@ -5,7 +5,7 @@ export default {
   },
   news: [],
   settings: {
-    serverIp: "http://18.219.159.9:3000"
+    serverIp: "http://13.59.172.69:3000" //13.59.172.69
   },
   auth: {
     isLoggedIn: false,
@@ -15,7 +15,8 @@ export default {
   },
   newPost: {
     title: null,
-    body: null
+    body: null,
+    type: null,
   },
   edit: {
     title: null,

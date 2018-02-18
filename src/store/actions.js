@@ -1,19 +1,22 @@
 var axios = require("axios");
 
 export default {
-  getNews({ commit, state }) {
+  getNews({
+    commit,
+    state
+  }) {
     console.log("news abrufen");
     commit("loading", true);
     commit("clearError");
     return new Promise((resolve, reject) => {
       axios
         .get(state.settings.serverIp + "/news")
-        .then(function(response) {
+        .then(function (response) {
           commit("loading", false);
           commit("news", response.data);
           resolve(response);
         })
-        .catch(function(error) {
+        .catch(function (error) {
           reject(error);
           commit("loading", false);
           commit("error", "Fehler beim abrufen: " + error);
@@ -21,7 +24,11 @@ export default {
     });
   },
 
-  login({ dispatch, commit, state }) {
+  login({
+    dispatch,
+    commit,
+    state
+  }) {
     if (!state.auth.name || !state.auth.pw) {
       commit("error", "One of the field was empty");
       return;
@@ -35,12 +42,12 @@ export default {
     return new Promise((resolve, reject) => {
       axios
         .post(state.settings.serverIp + "/login", a)
-        .then(function(response) {
+        .then(function (response) {
           commit("token", response.data.token);
           commit("loading", false);
           resolve(response.data.token);
         })
-        .catch(function(error) {
+        .catch(function (error) {
           commit("loading", false);
           commit("error", "Fehler beim anmelden");
           reject(error);
@@ -48,68 +55,96 @@ export default {
     });
   },
 
-  delete({ dispatch, commit, state }, id) {
+  delete({
+    dispatch,
+    commit,
+    state
+  }, id) {
     commit("clearError");
     commit("loading", true);
     return new Promise((resolve, reject) => {
       axios
         .get(state.settings.serverIp + "/delete/" + id, {
-          headers: { token: state.auth.token, user: state.auth.name }
+          headers: {
+            token: state.auth.token,
+            user: state.auth.name
+          }
         })
-        .then(function(response) {
+        .then(function (response) {
           commit("loading", false);
           dispatch("getNews");
-          resolve();
+          resolve(response);
         })
-        .catch(function(error) {
+        .catch(function (error) {
           reject(error);
           commit("loading", false);
           commit("error", "Fehler beim Speichern: " + error);
         });
     });
   },
-  new({ dispatch, commit, state }) {
+  new({
+    dispatch,
+    commit,
+    state
+  }) {
     if (!state.newPost.title || !state.auth.name) {
       commit("error", "One of the field was empty");
       return;
     }
-    let a = { title: state.newPost.title, body: state.newPost.body };
+    let a = {
+      title: state.newPost.title,
+      body: state.newPost.body,
+      type: state.newPost.type
+    };
     commit("clearError");
     commit("loading", true);
     return new Promise((resolve, reject) => {
       axios
         .post(state.settings.serverIp + "/neu", a, {
-          headers: { token: state.auth.token, user: state.auth.name }
+          headers: {
+            token: state.auth.token,
+            user: state.auth.name
+          }
         })
-        .then(function(response) {
+        .then(function (response) {
           commit("loading", false);
           resolve(response);
         })
-        .catch(function(error) {
+        .catch(function (error) {
           reject(error);
           commit("loading", false);
           commit("error", "Fehler beim Speichern: " + error);
         });
     });
   },
-  edit({ dispatch, commit, state }, id) {
+  edit({
+    dispatch,
+    commit,
+    state
+  }, id) {
     if (!state.edit.title || !state.edit.body) {
       commit("error", "One of the field was empty");
       return;
     }
-    let a = { title: state.edit.title, body: state.edit.body };
+    let a = {
+      title: state.edit.title,
+      body: state.edit.body
+    };
     commit("clearError");
     commit("loading", true);
     return new Promise((resolve, reject) => {
       axios
         .post(state.settings.serverIp + "/edit/" + id, a, {
-          headers: { token: state.auth.token, user: state.auth.name }
+          headers: {
+            token: state.auth.token,
+            user: state.auth.name
+          }
         })
-        .then(function(response) {
+        .then(function (response) {
           commit("loading", false);
-          resolve();
+          resolve(response);
         })
-        .catch(function(error) {
+        .catch(function (error) {
           reject(error);
           commit("loading", false);
           commit("error", "Fehler beim Speichern: " + error);
@@ -117,12 +152,19 @@ export default {
     });
   },
 
-  postImage({ dispatch, commit, state }, obj) {
-    if(!obj.file || obj.file.name){
-      return new Promise((resolve) => {resolve()})
+  postImage({
+    dispatch,
+    commit,
+    state
+  }, obj) {
+    if (!obj.file || !obj.file.name) {
+      return new Promise((resolve) => {
+        resolve()
+      })
     }
     let data = new FormData();
     data.append("image", obj.file, obj.file.name);
+    console.log(data.getAll, "error")
     const config = {
       headers: {
         token: state.auth.token,
@@ -134,11 +176,11 @@ export default {
     return new Promise((resolve, reject) => {
       return axios
         .post(state.settings.serverIp + "/image/" + obj.id, data, config)
-        .then(function(response) {
+        .then(function (response) {
           commit("loading", false);
-          resolve();
+          resolve(response);
         })
-        .catch(function(error) {
+        .catch(function (error) {
           reject(error);
           commit("loading", false);
           commit("error", "Fehler beim Speichern: " + error);
@@ -146,7 +188,9 @@ export default {
     });
   },
 
-  success({ commit }, message) {
+  success({
+    commit
+  }, message) {
     commit("success", message);
     setTimeout(() => {
       commit("clearSuccess");

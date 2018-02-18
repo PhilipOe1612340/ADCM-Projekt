@@ -23,6 +23,9 @@ export default {
   title: state => {
     return state.newPost.title;
   },
+  getType: state => {
+    return state.newPost.type;
+  },
   editBody: state => {
     return state.edit.body
   },

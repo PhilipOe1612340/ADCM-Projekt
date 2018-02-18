@@ -105,8 +105,13 @@
       }
     },
     computed: {
-      error() {
-        return this.$store.getters.getError;
+      error: {
+        get() {
+          return this.$store.getters.getError;
+        },
+        set(val) {
+          this.$store.commit("clearError");
+        }
       },
       theme: {
         get() {
@@ -141,7 +146,7 @@
     z-index: 1000;
   }
 
-  #errorBar{
+  #errorBar {
     z-index: 9001;
   }
 
