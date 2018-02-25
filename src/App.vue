@@ -100,6 +100,9 @@ export default {
       }
     }
   },
+  beforeMount() {
+    this.$store.dispatch("getNews");
+  },
   computed: {
     error: {
       get() {
