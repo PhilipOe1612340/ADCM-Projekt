@@ -85,32 +85,32 @@
 
         <!-- Main list of articels -->
         <div class="md-layout md-gutter md-alignment-top-center">
-          <span v-if="lNews.length > 0" id="card" class="md-layout-item md-size-100 md-display-3">
+          <span v-if="lNews.length > 0" id="CardDescription" class="md-layout-item md-size-100 md-display-3">
             Leistungen
           </span>
-          <card id="card" v-bind="card" v-for="card in lNews" :key="card.articleId" :editable="true" :edit="editId == card.articleId"
+          <card id="card" v-once v-cloak v-bind="card" v-for="card in lNews" :key="card.articleId" :editable="true" :edit="editId == card.articleId"
             v-on:delete="prepareDelete(card.articleId)" class="md-layout-item md-xlarge-size-20 md-large-size-33 md-medium-size-50 md-small-size-80"
           />
-          <span v-if="rNews.length > 0" id="card" class="md-layout-item md-size-100 md-display-3">
+          <span v-if="rNews.length > 0" id="CardDescription" class="md-layout-item md-size-100 md-display-3">
             Referenzen
           </span>
-          <card id="card" v-bind="card" v-for="card in rNews" :key="card.articleId" :editable="true" :edit="editId == card.articleId"
+          <card id="card" v-once v-cloak v-bind="card" v-for="card in rNews" :key="card.articleId" :editable="true" :edit="editId == card.articleId"
             v-on:delete="prepareDelete(card.articleId)" class="md-layout-item md-xlarge-size-20 md-large-size-33 md-medium-size-50 md-small-size-80"
           />
-          <span v-if="kNews.length > 0" id="card" class="md-layout-item md-size-100 md-display-3">
+          <span v-if="kNews.length > 0" id="CardDescription" class="md-layout-item md-size-100 md-display-3">
             Kunden
           </span>
-          <card id="card" v-bind="card" v-for="card in kNews" :key="card.articleId" :editable="true" :edit="editId == card.articleId"
+          <card id="card" v-once v-cloak v-bind="card" v-for="card in kNews" :key="card.articleId" :editable="true" :edit="editId == card.articleId"
             v-on:delete="prepareDelete(card.articleId)" class="md-layout-item md-xlarge-size-20 md-large-size-33 md-medium-size-50 md-small-size-80"
           />
-          <span v-if="aNews.length > 0" id="card" class="md-layout-item md-size-100 md-display-3">
+          <span v-if="aNews.length > 0" id="CardDescription" class="md-layout-item md-size-100 md-display-3">
             Aktuelles
           </span>
-          <card id="card" v-bind="card" v-for="card in aNews" :key="card.articleId" :editable="true" :edit="editId == card.articleId"
+          <card id="card" v-once v-cloak v-bind="card" v-for="card in aNews" :key="card.articleId" :editable="true" :edit="editId == card.articleId"
             v-on:delete="prepareDelete(card.articleId)" class="md-layout-item md-xlarge-size-20 md-large-size-33 md-medium-size-50 md-small-size-80"
           />
         </div>
-
+      <br>
       </div>
 
       <!-- fist visit text -->
@@ -129,303 +129,314 @@
 </template>
 
 <script>
-  import moment from "moment";
-  import card from "./card.vue";
+import moment from "moment";
+import card from "./card.vue";
 
-  export default {
-    name: "admin",
-    components: {
-      card
-    },
-    data: () => ({
-      fileSet: null,
-      deleteId: null,
-      deleteActive: false,
-      edit: false,
-      duration: 5000
-    }),
-    methods: {
-      picUpload(id) {
-        if (this.fileSet) {
-          return this.$store.dispatch("postImage", {
-            id,
-            file: document.getElementById("fileUpload").files[0]
-          });
-        } else {
-          return new Promise(resolve => {
-            resolve();
-          });
-        }
-      },
-      checkLogin() {
-        this.$store.commit("cookie", {
-          token: this.$cookies.get("token"),
-          name: this.$cookies.get("un")
+export default {
+  name: "admin",
+  components: {
+    card
+  },
+  data: () => ({
+    fileSet: null,
+    deleteId: null,
+    deleteActive: false,
+    edit: false,
+    duration: 5000
+  }),
+  methods: {
+    picUpload(id) {
+      if (this.fileSet) {
+        return this.$store.dispatch("postImage", {
+          id,
+          file: document.getElementById("fileUpload").files[0]
         });
-        this.$store.dispatch("getNews");
-      },
-      /**
+      } else {
+        return new Promise(resolve => {
+          resolve();
+        });
+      }
+    },
+    checkLogin() {
+      this.$store.commit("cookie", {
+        token: this.$cookies.get("token"),
+        name: this.$cookies.get("un")
+      });
+      this.$store.dispatch("getNews");
+    },
+    /**
           send login credentials to the server and set cookies
          */
-      newLogin() {
-        this.$store.dispatch("login").then(token => {
-          this.$cookies.set("token", token, 20 * 60);
-          this.$cookies.set("un", this.name, 20 * 60);
-          this.pw = null;
-        });
-      },
-      /**
+    newLogin() {
+      this.$store.dispatch("login").then(token => {
+        this.$cookies.set("token", token, 20 * 60);
+        this.$cookies.set("un", this.name, 20 * 60);
+        this.pw = null;
+      });
+    },
+    /**
           show the NEW ARTCLE CARD and scroll up
          */
-      showNewArticle() {
-        this.type = null;
-        this.edit = true;
-        setTimeout(() => {
-          window.scrollTo(0, 0);
-        }, 20);
-      },
-      filterNews(filter){
-        return this.news.filter(el => el.type === filter)
-      },
-      /**
+    showNewArticle() {
+      this.type = null;
+      this.edit = true;
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+      }, 20);
+    },
+    filterNews(filter) {
+      return this.news.filter(el => el.type === filter);
+    },
+    /**
           close NEW ARTCLE CARD
          */
-      closeNewArticle() {
-        this.newType = null;
-        this.edit = false;
-        this.$store.commit("title");
-        this.$store.commit("body");
-      },
-      cancelDelete() {
-        this.deleteActive = false;
-        this.deleteId = null;
-      },
-      prepareDelete(id) {
-        this.deleteActive = true;
-        this.deleteId = id;
-      },
-      reallyDelete() {
-        this.$store.dispatch("delete", this.deleteId);
-        this.deleteActive = false;
-      },
-      /**
+    closeNewArticle() {
+      this.newType = null;
+      this.edit = false;
+      this.$store.commit("title");
+      this.$store.commit("body");
+    },
+    cancelDelete() {
+      this.deleteActive = false;
+      this.deleteId = null;
+    },
+    prepareDelete(id) {
+      this.deleteActive = true;
+      this.deleteId = id;
+    },
+    reallyDelete() {
+      this.$store.dispatch("delete", this.deleteId);
+      this.deleteActive = false;
+    },
+    /**
           delete cookies and login creds
          */
-      logout() {
-        this.$cookies.set("token", null, 1);
-        this.$cookies.set("un", null, 1);
-        this.$store.commit("cookie", {});
-      },
-      /**
+    logout() {
+      this.$cookies.set("token", null, 1);
+      this.$cookies.set("un", null, 1);
+      this.$store.commit("cookie", {});
+    },
+    /**
           get news from server
          */
-      loadNews() {
-        this.$store.dispatch("getNews");
-      },
-      refresh() {
-        this.cancelCardEdit();
-        this.loadNews();
-      },
-      /**
+    loadNews() {
+      this.$store.dispatch("getNews");
+    },
+    refresh() {
+      this.cancelCardEdit();
+      this.loadNews();
+    },
+    /**
           post new article to the server, reload and hide card
          */
-      createNewArticle() {
-        this.$store.dispatch("new").then(res => {
-          this.picUpload(res.data.articleId).then(() => {
-            this.$store.dispatch("getNews");
-            this.closeNewArticle();
-          });
+    createNewArticle() {
+      this.$store.dispatch("new").then(res => {
+        this.picUpload(res.data.articleId).then(() => {
+          this.$store.dispatch("getNews");
+          this.closeNewArticle();
         });
-      },
-      /**
+      });
+    },
+    /**
           edit the content of a card by id
          */
-      editCard(id) {
-        this.$store.commit("newsEdit", id);
-      },
-      closeCard(id) {
-        this.$store.commit("closeEdit");
-      },
-      /**
+    editCard(id) {
+      this.$store.commit("newsEdit", id);
+    },
+    closeCard(id) {
+      this.$store.commit("closeEdit");
+    },
+    /**
           send the modified content and reload
          */
-      /**
+    /**
           cancel edit of article
          */
-      cancelCardEdit() {
-        this.$store.commit("closeEdit");
+    cancelCardEdit() {
+      this.$store.commit("closeEdit");
+    }
+  },
+  beforeMount() {
+    this.checkLogin();
+  },
+  computed: {
+    error: {
+      get() {
+        return this.$store.getters.getError;
+      },
+      set(val) {
+        this.$store.commit("clearError");
       }
     },
-    beforeMount() {
-      this.checkLogin();
+    pw: {
+      get() {
+        return this.$store.getters.pw;
+      },
+      set(val) {
+        this.$store.commit("pw", val);
+      }
     },
-    computed: {
-      pw: {
-        get() {
-          return this.$store.getters.pw;
-        },
-        set(val) {
-          this.$store.commit("pw", val);
-        }
+    name: {
+      get() {
+        return this.$store.getters.name;
       },
-      name: {
-        get() {
-          return this.$store.getters.name;
-        },
-        set(val) {
-          this.$store.commit("name", val);
-        }
+      set(val) {
+        this.$store.commit("name", val);
+      }
+    },
+    title: {
+      get() {
+        return this.$store.getters.title;
       },
-      title: {
-        get() {
-          return this.$store.getters.title;
-        },
-        set(val) {
-          this.$store.commit("title", val);
-        }
+      set(val) {
+        this.$store.commit("title", val);
+      }
+    },
+    body: {
+      get() {
+        return this.$store.getters.body;
       },
-      body: {
-        get() {
-          return this.$store.getters.body;
-        },
-        set(val) {
-          this.$store.commit("body", val);
-        }
-      },
-      sending() {
-        return this.$store.getters.getLoading;
-      },
-      loggedIn() {
-        return this.$store.getters.isLoggedIn;
-      },
-      /**
+      set(val) {
+        this.$store.commit("body", val);
+      }
+    },
+    sending() {
+      return this.$store.getters.getLoading;
+    },
+    loggedIn() {
+      return this.$store.getters.isLoggedIn;
+    },
+    /**
           @description current date formated
          */
-      date() {
-        moment.locale("de");
-        return moment(new Date()).format("LL");
-      },
-      /**
+    date() {
+      moment.locale("de");
+      return moment(new Date()).format("LL");
+    },
+    /**
           @description gets news array and converts date
          */
-      news() {
-        var news = this.$store.getters.getNews;
-        moment.locale("de");
-        news.forEach(card => {
-          card.datum = moment(card.date).format("LL");
-        });
-        return news;
+    news() {
+      var news = this.$store.getters.getNews;
+      moment.locale("de");
+      news.forEach(card => {
+        card.datum = moment(card.date).format("LL");
+      });
+      return news;
+    },
+    aNews() {
+      return this.filterNews("aktuelles");
+    },
+    lNews() {
+      return this.filterNews("leistungen");
+    },
+    kNews() {
+      return this.filterNews("kunden");
+    },
+    rNews() {
+      return this.filterNews("referenzen");
+    },
+    editTitle: {
+      get() {
+        return this.$store.getters.editTitle;
       },
-      aNews(){
-        return this.filterNews("aktuelles");
-      },
-      lNews(){
-        return this.filterNews("leistungen");
-      },
-      kNews(){
-        return this.filterNews("kunden");
-      },
-      rNews(){
-        return this.filterNews("referenzen");
-      },
-      editTitle: {
-        get() {
-          return this.$store.getters.editTitle;
-        },
-        set(val) {
-          this.$store.commit("editTitle", val);
-        }
-      },
-      editBody: {
-        get() {
-          return this.$store.getters.editBody;
-        },
-        set(val) {
-          this.$store.commit("editBody", val);
-        }
-      },
-      type: {
-        get() {
-          return this.$store.getters.getType;
-        },
-        set(val) {
-          this.$store.commit("setType", val);
-        }
-      },
-      editId() {
-        return this.$store.getters.editId;
+      set(val) {
+        this.$store.commit("editTitle", val);
       }
+    },
+    editBody: {
+      get() {
+        return this.$store.getters.editBody;
+      },
+      set(val) {
+        this.$store.commit("editBody", val);
+      }
+    },
+    type: {
+      get() {
+        return this.$store.getters.getType;
+      },
+      set(val) {
+        this.$store.commit("setType", val);
+      }
+    },
+    editId() {
+      return this.$store.getters.editId;
     }
-  };
-
+  }
+};
 </script>
 
 
 <style scoped>
-  #articlelayout,
-  #cardContainer {
-    width: 98vw;
-  }
+#articlelayout,
+#cardContainer {
+  width: 98vw;
+}
 
-  #articleHeader {
-    width: 95%;
-    max-width: 1300px;
-    margin: auto;
-  }
+#articleHeader {
+  width: 95%;
+  max-width: 1300px;
+  margin: auto;
+}
 
-  #card>* {
-    word-wrap: break-word;
-    overflow: hidden;
-  }
+#card > * {
+  word-wrap: break-word;
+  overflow: hidden;
+}
 
-  #card {
-    margin: 0px 15px 15px 15px;
-  }
+#card {
+  margin: 0px 15px 15px 15px;
+}
 
-  #card,
-  #newCard,
-  #loginCard {
-    width: 60%;
-    max-width: 1000px;
-    min-width: 350px;
-    padding: 10px;
-  }
+#card,
+#newCard,
+#loginCard {
+  width: 60%;
+  max-width: 1000px;
+  min-width: 350px;
+  padding: 10px;
+}
 
-  #newCard,
-  #loginCard {
-    margin: auto;
-    margin-top: 40px;
-  }
+#newCard,
+#loginCard {
+  margin: auto;
+  margin-top: 40px;
+}
 
-  h1 {
-    text-align: center;
-  }
+h1 {
+  text-align: center;
+}
 
-  #komplett {
-    width: 98vw;
-    padding: 10px;
-  }
+#komplett {
+  width: 98vw;
+  padding: 10px;
+}
 
-  #dial {
-    position: fixed;
-    bottom: 50px;
-    right: 30px;
-    z-index: 200;
-  }
+#CardDescription {
+  margin-left: 20% !important;
+  margin-bottom: 10px !important;
+}
 
-  #refresh {
-    padding-top: 11px;
-  }
+#dial {
+  position: fixed;
+  bottom: 50px;
+  right: 30px;
+  z-index: 200;
+}
 
-  #logout {
-    padding-top: 8px;
-    margin-right: 0;
-    float: right;
-  }
+#refresh {
+  padding-top: 11px;
+}
 
-  textarea#inhalt {
-    padding: 15px 15px 30px;
-    height: 150px !important;
-  }
+#logout {
+  padding-top: 8px;
+  margin-right: 0;
+  float: right;
+}
 
+textarea#inhalt {
+  padding: 15px 15px 30px;
+  height: 150px !important;
+}
 </style>

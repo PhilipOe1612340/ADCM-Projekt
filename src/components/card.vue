@@ -30,8 +30,10 @@
       </div>
       <!-- normal body -->
       <div v-else>
-        <span v-html="body"></span>
-        <br> {{datum}}
+        <div v-if="!editable && !image">
+          <span  v-html="body"></span>
+          <br> {{datum}}
+        </div>
       </div>
     </md-card-content>
     <md-card-media v-if="image && image.indexOf('undefined') == -1 && editId != articleId">
@@ -47,7 +49,7 @@
           <md-button v-if="edit" @click.native="sendEdit" class="md-primary">Speichern</md-button>
           <md-button v-else @click.native="emitDelete" class="md-primary">Löschen</md-button>
         </div>
-        <md-card-expand-trigger v-if="!edit">
+        <md-card-expand-trigger v-if="!editable && image">
           <md-button>mehr lesen</md-button>
         </md-card-expand-trigger>
       </md-card-actions>
@@ -55,6 +57,7 @@
       <md-card-expand-content>
         <md-card-content>
           <span v-html="body"></span>
+          <br> {{datum}}
         </md-card-content>
       </md-card-expand-content>
     </md-card-expand>
@@ -62,145 +65,144 @@
 </template>
 
 <script>
-  import moment from "moment";
+import moment from "moment";
 
-  export default {
-    name: "admin",
-    props: {
-      datum: {
-        type: String
-      },
-      body: {
-        type: String
-      },
-      title: {
-        type: String
-      },
-      edit: {
-        type: Boolean,
-        default: false
-      },
-      editable: {
-        type: Boolean,
-        default: false
-      },
-      image: {
-        type: String
-      },
-      articleId: {
-        validator: function (value) {
-          return value > 0;
-        }
-      },
-      type: {
-        type: String,
-        default: "aktuelles"
-      },
+export default {
+  name: "admin",
+  props: {
+    datum: {
+      type: String
     },
+    body: {
+      type: String
+    },
+    title: {
+      type: String
+    },
+    edit: {
+      type: Boolean,
+      default: false
+    },
+    editable: {
+      type: Boolean,
+      default: false
+    },
+    image: {
+      type: String
+    },
+    articleId: {
+      validator: function(value) {
+        return value > 0;
+      }
+    },
+    type: {
+      type: String,
+      default: "aktuelles"
+    }
+  },
 
-    // [articleId,datum,body,title,edit,image],
-    data: () => ({
-      fileSet: null,
-      deleteId: null,
-      deleteActive: false,
-      duration: 5000
-    }),
-    methods: {
-      picUpload() {
-        if (this.fileSet) {
-          return this.$store.dispatch("postImage", {
-            id: this.articleId,
-            file: document.getElementById("fileUpload").files[0]
-          });
-        } else {
-          return new Promise(resolve => {
-            resolve();
-          });
-        }
-      },
-      emitDelete() {
-        this.$emit("delete");
-      },
-      /**
+  // [articleId,datum,body,title,edit,image],
+  data: () => ({
+    fileSet: null,
+    deleteId: null,
+    deleteActive: false,
+    duration: 5000
+  }),
+  methods: {
+    picUpload() {
+      if (this.fileSet) {
+        return this.$store.dispatch("postImage", {
+          id: this.articleId,
+          file: document.getElementById("fileUpload").files[0]
+        });
+      } else {
+        return new Promise(resolve => {
+          resolve();
+        });
+      }
+    },
+    emitDelete() {
+      this.$emit("delete");
+    },
+    /**
           edit the content of a card by id
          */
-      editCard() {
-        this.$store.commit("newsEdit", this.articleId);
-      },
-      closeCard(id) {
-        this.$store.commit("closeEdit");
-      },
-      /**
+    editCard() {
+      this.$store.commit("newsEdit", this.articleId);
+    },
+    closeCard(id) {
+      this.$store.commit("closeEdit");
+    },
+    /**
           send the modified content and reload
          */
-      sendEdit() {
-        this.$store.dispatch("edit", this.articleId).then(res => {
-          this.picUpload(this.articleId).then(() => {
-            this.$store.dispatch("getNews");
-            this.cancelCardEdit();
-          });
+    sendEdit() {
+      this.$store.dispatch("edit", this.articleId).then(res => {
+        this.picUpload(this.articleId).then(() => {
+          this.$store.dispatch("getNews");
+          this.cancelCardEdit();
         });
-      },
-      /**
+      });
+    },
+    /**
           cancel edit of article
          */
-      cancelCardEdit() {
-        this.$store.commit("closeEdit");
+    cancelCardEdit() {
+      this.$store.commit("closeEdit");
+    }
+  },
+  computed: {
+    pw: {
+      get() {
+        return this.$store.getters.pw;
+      },
+      set(val) {
+        this.$store.commit("pw", val);
       }
     },
-    computed: {
-      pw: {
-        get() {
-          return this.$store.getters.pw;
-        },
-        set(val) {
-          this.$store.commit("pw", val);
-        }
+    name: {
+      get() {
+        return this.$store.getters.name;
       },
-      name: {
-        get() {
-          return this.$store.getters.name;
-        },
-        set(val) {
-          this.$store.commit("name", val);
-        }
-      },
-      error() {
-        return this.$store.getters.getError;
-      },
-      sending() {
-        return this.$store.getters.getLoading;
-      },
-      loggedIn() {
-        return this.$store.getters.isLoggedIn;
-      },
-      /**
+      set(val) {
+        this.$store.commit("name", val);
+      }
+    },
+    error() {
+      return this.$store.getters.getError;
+    },
+    sending() {
+      return this.$store.getters.getLoading;
+    },
+    loggedIn() {
+      return this.$store.getters.isLoggedIn;
+    },
+    /**
           @description current date formated
          */
-      date() {
-        moment.locale("de");
-        return moment(new Date()).format("LL");
+    date() {
+      moment.locale("de");
+      return moment(new Date()).format("LL");
+    },
+    editTitle: {
+      get() {
+        return this.$store.getters.editTitle;
       },
-      editTitle: {
-        get() {
-          return this.$store.getters.editTitle;
-        },
-        set(val) {
-          this.$store.commit("editTitle", val);
-        }
-      },
-      editBody: {
-        get() {
-          return this.$store.getters.editBody;
-        },
-        set(val) {
-          this.$store.commit("editBody", val);
-        }
-      },
-      editId() {
-        return this.$store.getters.editId;
+      set(val) {
+        this.$store.commit("editTitle", val);
       }
+    },
+    editBody: {
+      get() {
+        return this.$store.getters.editBody;
+      },
+      set(val) {
+        this.$store.commit("editBody", val);
+      }
+    },
+    editId() {
+      return this.$store.getters.editId;
     }
-  };
-
+  }
+};
 </script>
