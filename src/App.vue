@@ -5,8 +5,6 @@
       <md-tab id="tab-referenzen" md-label="referenzen" to="/referenzen" />
       <md-tab id="tab-kunden" md-label="kunden" to="/kunden" />
       <md-tab id="tab-aktuelles" md-label="aktuelles" to="/aktuelles" />
-      <!-- <md-tab id="tab-newcard" md-label="card" to="/card">
-      </md-tab> -->
     </md-tabs>
 
     <div id="themeswitch">
@@ -23,7 +21,7 @@
     </transition>
     <br>
 
-    <footer id="footer" class="footer">
+    <footer id="footer" :class="theme?'light':'dark'">
       <ul v-if="$store.state.route.path != '/admin'">
         <li>
           <router-link to="/impressum" tag="span">Impressum</router-link>
@@ -50,153 +48,155 @@
 </template>
 
 <script>
-  import Vue from 'vue'
+import Vue from "vue";
 
-  export default {
-    name: "Header",
-    data: () => ({
-      duration: 4000
-    }),
-    methods: {
-      clearError() {
+export default {
+  name: "Header",
+  data: () => ({
+    duration: 4000
+  }),
+  methods: {
+    clearError() {
+      this.$store.commit("clearError");
+    },
+    swipe_Right(direction) {
+      switch (this.$store.state.route.path) {
+        case "/referenzen":
+          this.$router.push("/leistungen");
+          break;
+        case "/kunden":
+          this.$router.push("/referenzen");
+          break;
+        case "/aktuelles":
+          this.$router.push("/kunden");
+          break;
+        case "/leistungen":
+          this.$router.push("/aktuelles");
+          break;
+      }
+    },
+    swipe_Left(direction) {
+      switch (this.$store.state.route.path) {
+        case "/referenzen":
+          this.$router.push("/kunden");
+          break;
+        case "/kunden":
+          this.$router.push("/aktuelles");
+          break;
+        case "/aktuelles":
+          this.$router.push("/leistungen");
+          break;
+        case "/leistungen":
+          this.$router.push("/referenzen");
+          break;
+      }
+    },
+    changeTheme() {
+      this.theme = !this.theme;
+      if (this.theme) {
+        Vue.material.theming.theme = "light";
+      } else {
+        Vue.material.theming.theme = "default";
+      }
+    }
+  },
+  computed: {
+    error: {
+      get() {
+        return this.$store.getters.getError;
+      },
+      set(val) {
         this.$store.commit("clearError");
-      },
-      swipe_Right(direction) {
-        switch (this.$store.state.route.path) {
-          case "/referenzen":
-            this.$router.push("/leistungen");
-            break;
-          case "/kunden":
-            this.$router.push("/referenzen");
-            break;
-          case "/aktuelles":
-            this.$router.push("/kunden");
-            break;
-          case "/leistungen":
-            this.$router.push("/aktuelles");
-            break;
-        }
-      },
-      swipe_Left(direction) {
-        switch (this.$store.state.route.path) {
-          case "/referenzen":
-            this.$router.push("/kunden");
-            break;
-          case "/kunden":
-            this.$router.push("/aktuelles");
-            break;
-          case "/aktuelles":
-            this.$router.push("/leistungen");
-            break;
-          case "/leistungen":
-            this.$router.push("/referenzen");
-            break;
-        }
-      },
-      changeTheme() {
-        this.theme = !this.theme
-        this.show = !this.show
-        if (this.theme) {
-          Vue.material.theming.theme = 'light'
-        } else {
-          Vue.material.theming.theme = 'default'
-        }
-        localStorage.setItem('theme', this.theme)
       }
     },
-    computed: {
-      error: {
-        get() {
-          return this.$store.getters.getError;
-        },
-        set(val) {
-          this.$store.commit("clearError");
-        }
+    theme: {
+      get() {
+        return this.$store.state.general.theme;
       },
-      theme: {
-        get() {
-          return this.$store.state.general.theme
-        },
-        set(val) {
-          this.$store.commit('setTheme', val)
-        }
+      set(val) {
+        this.$store.commit("setTheme", val);
       }
-    },
-  };
-
+    }
+  }
+};
 </script>
 
 <style>
-  html {
-    overflow-x: hidden;
-  }
+html {
+  overflow-x: hidden;
+}
 
-  #tabs {
-    min-height: 98vh;
-  }
+#tabs {
+  min-height: 98vh;
+}
 
-  #footer {
-    width: 100vw;
-    height: 5%;
-    background-color: rgb(68, 68, 68);
-    position: absolute;
-    left: 0;
-    bottom: 0;
-    position: fixed;
-    z-index: 1000;
-  }
+#footer {
+  width: 100vw;
+  height: 5%;
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  position: fixed;
+  z-index: 1000;
+}
 
-  #errorBar {
-    z-index: 9001;
-  }
+#footer.light {
+  background-color: rgb(214, 214, 214);
+}
 
-  #app {
-    font-family: "Avenir", Helvetica, Arial, sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    text-align: center;
-    color: #2c3e50;
-    margin-top: 60px;
-  }
+#footer.dark {
+  background-color: rgb(68, 68, 68);
+}
+#errorBar {
+  z-index: 9001;
+}
 
-  #spacer {
-    width: 10px;
-  }
+#app {
+  font-family: "Avenir", Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  color: #2c3e50;
+  margin-top: 60px;
+}
 
-  .page-enter-active,
-  .page-leave-active {
-    transition: opacity 0.2s, transform 0.35s;
-  }
+#spacer {
+  width: 10px;
+}
 
-  .page-enter,
-  .page-leave-to {
-    opacity: 0;
-    transform: translateY(-30%);
-  }
+.page-enter-active,
+.page-leave-active {
+  transition: opacity 0.2s, transform 0.35s;
+}
 
-  .footer span {
-    cursor: pointer;
-  }
+.page-enter,
+.page-leave-to {
+  opacity: 0;
+  transform: translateY(-30%);
+}
 
-  .footer span:hover {
-    font-weight: bold;
-  }
+#footer span {
+  cursor: pointer;
+}
 
-  .footer ul {
-    list-style-type: none;
-  }
+#footer span:hover {
+  font-weight: bold;
+}
 
-  .footer li {
-    float: left;
-    margin-right: 1%;
-  }
+#footer ul {
+  list-style-type: none;
+}
 
-  #themeswitch {
-    position: fixed;
-    top: 13px;
-    left: 13px;
-    z-index: 3;
-    cursor: pointer;
-  }
+#footer li {
+  float: left;
+  margin-right: 1%;
+}
 
+#themeswitch {
+  position: absolute;
+  top: 13px;
+  left: 13px;
+  z-index: 3;
+  cursor: pointer;
+}
 </style>
