@@ -1,22 +1,19 @@
 var axios = require("axios");
 
 export default {
-  getNews({
-    commit,
-    state
-  }) {
+  getNews({ dispatch, commit, state }) {
     console.log("news abrufen");
     commit("loading", true);
     commit("clearError");
     return new Promise((resolve, reject) => {
       axios
         .get(state.settings.serverIp + "/news")
-        .then(function (response) {
+        .then(function(response) {
           commit("loading", false);
           commit("news", response.data);
           resolve(response);
         })
-        .catch(function (error) {
+        .catch(function(error) {
           reject(error);
           commit("loading", false);
           commit("error", "Fehler beim abrufen: " + error);
@@ -24,11 +21,7 @@ export default {
     });
   },
 
-  login({
-    dispatch,
-    commit,
-    state
-  }) {
+  login({ dispatch, commit, state }) {
     if (!state.auth.name || !state.auth.pw) {
       commit("error", "One of the field was empty");
       return;
@@ -42,12 +35,12 @@ export default {
     return new Promise((resolve, reject) => {
       axios
         .post(state.settings.serverIp + "/login", a)
-        .then(function (response) {
+        .then(function(response) {
           commit("token", response.data.token);
           commit("loading", false);
           resolve(response.data.token);
         })
-        .catch(function (error) {
+        .catch(function(error) {
           commit("loading", false);
           commit("error", "Fehler beim anmelden");
           reject(error);
@@ -55,11 +48,7 @@ export default {
     });
   },
 
-  delete({
-    dispatch,
-    commit,
-    state
-  }, id) {
+  delete({ dispatch, commit, state }, id) {
     commit("clearError");
     commit("loading", true);
     return new Promise((resolve, reject) => {
@@ -70,23 +59,19 @@ export default {
             user: state.auth.name
           }
         })
-        .then(function (response) {
+        .then(function(response) {
           commit("loading", false);
           dispatch("getNews");
           resolve(response);
         })
-        .catch(function (error) {
+        .catch(function(error) {
           reject(error);
           commit("loading", false);
           commit("error", "Fehler beim Speichern: " + error);
         });
     });
   },
-  new({
-    dispatch,
-    commit,
-    state
-  }) {
+  new({ dispatch, commit, state }) {
     if (!state.newPost.title || !state.auth.name) {
       commit("error", "One of the field was empty");
       return;
@@ -106,22 +91,18 @@ export default {
             user: state.auth.name
           }
         })
-        .then(function (response) {
+        .then(function(response) {
           commit("loading", false);
           resolve(response);
         })
-        .catch(function (error) {
+        .catch(function(error) {
           reject(error);
           commit("loading", false);
           commit("error", "Fehler beim Speichern: " + error);
         });
     });
   },
-  edit({
-    dispatch,
-    commit,
-    state
-  }, id) {
+  edit({ dispatch, commit, state }, id) {
     if (!state.edit.title || !state.edit.body) {
       commit("error", "One of the field was empty");
       return;
@@ -140,11 +121,11 @@ export default {
             user: state.auth.name
           }
         })
-        .then(function (response) {
+        .then(function(response) {
           commit("loading", false);
           resolve(response);
         })
-        .catch(function (error) {
+        .catch(function(error) {
           reject(error);
           commit("loading", false);
           commit("error", "Fehler beim Speichern: " + error);
@@ -152,19 +133,12 @@ export default {
     });
   },
 
-  postImage({
-    dispatch,
-    commit,
-    state
-  }, obj) {
+  postImage({ dispatch, commit, state }, obj) {
     if (!obj.file || !obj.file.name) {
-      return new Promise((resolve) => {
-        resolve()
-      })
+      return new Promise.resolve();
     }
     let data = new FormData();
     data.append("image", obj.file, obj.file.name);
-    console.log(data.getAll, "error")
     const config = {
       headers: {
         token: state.auth.token,
@@ -176,21 +150,42 @@ export default {
     return new Promise((resolve, reject) => {
       return axios
         .post(state.settings.serverIp + "/image/" + obj.id, data, config)
-        .then(function (response) {
+        .then(function(response) {
           commit("loading", false);
           resolve(response);
         })
-        .catch(function (error) {
+        .catch(function(error) {
           reject(error);
           commit("loading", false);
           commit("error", "Fehler beim Speichern: " + error);
         });
     });
   },
+  postMessageForm({ dispatch, commit, state }, obj) {
+    if (!obj.email || !obj.betreff || !obj.name || !obj.text) {
+      return new Promise.resolve();
+    }
+    console.log(obj)
 
-  success({
-    commit
-  }, message) {
+    commit("clearError");
+    commit("loading", true);
+    return new Promise((resolve, reject) => {
+      return axios
+        .post(state.settings.serverIp + "/contact", obj)
+        .then(function(response) {
+          dispatch("success", "Nachricht abgesendet");
+          commit("loading", false);
+          resolve(response);
+        })
+        .catch(function(error) {
+          commit("loading", false);
+          commit("error", "Fehler: möglicherweise zu viele Nachrichten gesendet!");
+          reject(error, "bitte kein Spam!");
+        });
+    });
+  },
+
+  success({ commit }, message) {
     commit("success", message);
     setTimeout(() => {
       commit("clearSuccess");

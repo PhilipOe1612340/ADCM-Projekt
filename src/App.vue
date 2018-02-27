@@ -44,6 +44,7 @@
       <span>{{error}}</span>
       <md-button class="md-primary" @click="clearError">Schließen</md-button>
     </md-snackbar>
+    <md-snackbar id="errorBar" :md-active.sync="showSnackbar">{{success}}</md-snackbar>
   </div>
 </template>
 
@@ -118,6 +119,22 @@ export default {
       },
       set(val) {
         this.$store.commit("setTheme", val);
+      }
+    },
+    success: {
+      get() {
+        return this.$store.getters.getSuccess;
+      },
+      set(val) {
+        this.$store.commit("clearSuccess");
+      }
+    },
+    showSnackbar: {
+      get() {
+        return this.success ? true : false;
+      },
+      set(val) {
+        this.$store.commit("clearSuccess");
       }
     }
   }

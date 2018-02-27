@@ -15,7 +15,7 @@
                 <div class="md-layout-item md-small-size-100">
                   <md-field :class="getValidationClass('name')">
                     <label for="first-name">Name</label>
-                    <md-input name="first-name" id="first-name" autocomplete="given-name" v-model="form.name" :disabled="sending" />
+                    <md-input name="first-name" id="first-name" autocomplete="given-name" v-model="form.name" :disabled="loading" />
                     <span class="md-error" v-if="!$v.form.name.required">Ihr Name wird benötigt</span>
                     <span class="md-error" v-else-if="!$v.form.name.minlength">Invalid first name</span>
                   </md-field>
@@ -24,7 +24,7 @@
 
               <md-field :class="getValidationClass('email')">
                 <label for="email">Email</label>
-                <md-input type="email" name="email" id="email" autocomplete="email" v-model="form.email" :disabled="sending" />
+                <md-input type="email" name="email" id="email" autocomplete="email" v-model="form.email" :disabled="loading" />
                 <span class="md-error" v-if="!$v.form.email.required">Ihre Email wird benötigt</span>
                 <span class="md-error" v-else-if="!$v.form.email.email">Invalid email</span>
               </md-field>
@@ -33,7 +33,7 @@
                 <div class="md-layout-item md-small-size-100">
                   <md-field :class="getValidationClass('betreff')">
                     <label for="first-name">Betreff</label>
-                    <md-input name="first-name" autocomplete="given-name" v-model="form.betreff" :disabled="sending" />
+                    <md-input name="first-name" autocomplete="given-name" v-model="form.betreff" :disabled="loading" />
                   </md-field>
                 </div>
               </div>
@@ -44,14 +44,14 @@
               </md-field>
             </md-card-content>
 
-            <md-progress-bar md-mode="indeterminate" v-if="sending" />
+            <md-progress-bar md-mode="indeterminate" v-if="loading" />
 
             <md-card-actions>
-              <md-button type="submit" class="md-primary" @click="validateUser" :disabled="sending">Absenden</md-button>
+              <md-button type="submit" class="md-primary" @click="validateUser" :disabled="loading">Absenden</md-button>
             </md-card-actions>
           </md-card>
 
-          <md-snackbar :md-active.sync="userSaved">Ihre Nachricht wurde zugestellt</md-snackbar>
+
         </form>
       </div>
       <div class="md-layout-item md-large-size-35 md-medium-size-45 md-small-size-95">
@@ -86,11 +86,11 @@ export default {
   mixins: [validationMixin],
   data: () => ({
     form: {
-      Name: null,
-      email: null
-    },
-    userSaved: false,
-    sending: false
+      name: null,
+      email: null,
+      text: null,
+      betreff: null
+    }
   }),
   validations: {
     form: {
@@ -130,15 +130,13 @@ export default {
       this.form.text = null;
     },
     saveUser() {
-      this.sending = true;
-
-      // Instead of this timeout, here you can call your API
-      window.setTimeout(() => {
-        this.lastUser = `${this.form.name} ${this.form.lastName}`;
-        this.userSaved = true;
-        this.sending = false;
-        this.clearForm();
-      }, 1500);
+      this.$store.dispatch("postMessageForm", {
+        email: this.form.email,
+        betreff: this.form.betreff,
+        name: this.form.name,
+        text: this.form.text
+      });
+      // this.clearForm();
     },
     validateUser() {
       this.$v.$touch();
@@ -147,6 +145,19 @@ export default {
         this.saveUser();
       }
     }
+  },
+  computed: {
+    error: {
+      get() {
+        return this.$store.getters.getError;
+      },
+      set(val) {
+        this.$store.commit("clearError");
+      }
+    },
+    loading() {
+      return this.$store.getters.getLoading;
+    },
   }
 };
 </script>

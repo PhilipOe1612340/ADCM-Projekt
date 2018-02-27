@@ -3,8 +3,15 @@ module.exports = {
     state.apiState.error = cause;
   },
 
-  clearError(state, cause) {
+  clearError(state) {
     state.apiState.error = null;
+  },
+  success(state, cause) {
+    state.apiState.success = cause;
+  },
+
+  clearSuccess(state) {
+    state.apiState.success = "";
   },
 
   loading(state, status) {
@@ -14,14 +21,12 @@ module.exports = {
   news(state, news) {
     news.forEach(element => {
       if (element.image) {
-        element.image = state.settings.serverIp + "/" + element.image
+        element.image = state.settings.serverIp + "/" + element.image;
       }
       delete element._id;
     });
     if (state.route.path !== "/admin") {
-      news = news.filter(n =>
-        state.route.path === "/" + n.type
-      )
+      news = news.filter(n => state.route.path === "/" + n.type);
     }
     state.news = news.reverse();
   },
@@ -75,6 +80,6 @@ module.exports = {
     state.edit.title = val;
   },
   setTheme: (state, val) => {
-    state.general.theme = val
+    state.general.theme = val;
   }
 };

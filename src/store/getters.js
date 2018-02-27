@@ -5,6 +5,9 @@ export default {
   getLoading: state => {
     return state.apiState.loading;
   },
+  getSuccess: state => {
+    return state.apiState.success;
+  },
   getNews: state => {
     return state.news;
   },

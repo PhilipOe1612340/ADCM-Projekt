@@ -1,7 +1,8 @@
 export default {
   apiState: {
     error: null,
-    loading: false
+    loading: false,
+    success: "",
   },
   news: [],
   settings: {
