@@ -15,7 +15,7 @@
                 <div class="md-layout-item md-small-size-100">
                   <md-field :class="getValidationClass('name')">
                     <label for="first-name">Name</label>
-                    <md-input name="first-name" id="first-name" autocomplete="name" v-model="form.name" :disabled="loading" />
+                    <md-input type="text" name="first-name" id="first-name" autocomplete="name" v-model="form.name" :disabled="loading" />
                     <span class="md-error" v-if="!$v.form.name.required">Ihr Name wird benötigt</span>
                     <span class="md-error" v-else-if="!$v.form.name.minlength">Invalid first name</span>
                   </md-field>
@@ -24,14 +24,14 @@
                     <label for="email">Email</label>
                     <md-input type="email" name="email" id="email" autocomplete="email" v-model="form.email" :disabled="loading" />
                     <span class="md-error" v-if="!$v.form.email.required">Ihre Email wird benötigt</span>
-                    <span class="md-error" v-else-if="!$v.form.email.email">Invalid email</span>
+                    <span class="md-error" v-else-if="!$v.form.email.email">Email falsch</span>
                   </md-field>
 
                   <md-field :class="getValidationClass('betreff')">
                     <label for="first-name">Betreff</label>
                     <md-input type="search" name="first-name" autocomplete="off" v-model="form.betreff" :disabled="loading" />
+                    <span class="md-error" v-if="!$v.form.betreff.required">Betreff wird benötigt</span>
                   </md-field>
-
 
                   <md-field>
                     <label>Ihre Mitteilung</label>
@@ -111,7 +111,6 @@ export default {
   methods: {
     getValidationClass(fieldName) {
       const field = this.$v.form[fieldName];
-
       if (field) {
         return {
           "md-invalid": field.$invalid && field.$dirty
@@ -119,11 +118,14 @@ export default {
       }
     },
     clearForm() {
-      this.$v.$reset();
       this.form.name = null;
-      this.form.email = null;
+      this.form.email = "";
       this.form.betreff = null;
       this.form.text = null;
+      this.$v.form.name.$reset();
+      this.$v.form.email.$reset();
+      this.$v.form.betreff.$reset();
+      this.$v.form.text.$reset();
     },
     saveUser() {
       this.$store
@@ -133,7 +135,9 @@ export default {
           name: this.form.name,
           text: this.form.text
         })
-      this.clearForm();
+        .then(() => {
+          this.clearForm();
+        });
     },
     validateUser() {
       this.$v.$touch();
@@ -178,6 +182,6 @@ export default {
 }
 
 input:-webkit-autofill {
-    -webkit-box-shadow: 0 0 0 30px rgb(90, 90, 90) inset;
+  -webkit-box-shadow: 0 0 0 30px rgb(90, 90, 90) inset;
 }
 </style>
