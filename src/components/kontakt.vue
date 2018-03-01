@@ -15,7 +15,7 @@
                 <div class="md-layout-item md-small-size-100">
                   <md-field :class="getValidationClass('name')">
                     <label for="first-name">Name</label>
-                    <md-input name="first-name" id="first-name" autocomplete="given-name" v-model="form.name" :disabled="loading" />
+                    <md-input name="first-name" id="first-name" autocomplete="name" v-model="form.name" :disabled="loading" />
                     <span class="md-error" v-if="!$v.form.name.required">Ihr Name wird benötigt</span>
                     <span class="md-error" v-else-if="!$v.form.name.minlength">Invalid first name</span>
                   </md-field>
@@ -29,7 +29,7 @@
 
                   <md-field :class="getValidationClass('betreff')">
                     <label for="first-name">Betreff</label>
-                    <md-input name="first-name" autocomplete="given-name" v-model="form.betreff" :disabled="loading" />
+                    <md-input type="search" name="first-name" autocomplete="off" v-model="form.betreff" :disabled="loading" />
                   </md-field>
 
 
@@ -175,5 +175,9 @@ export default {
     display: block;
     background: md-get-palette-color(red, 200);
   }
+}
+
+input:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0 30px rgb(90, 90, 90) inset;
 }
 </style>
