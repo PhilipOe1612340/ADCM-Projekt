@@ -19,31 +19,27 @@
                     <span class="md-error" v-if="!$v.form.name.required">Ihr Name wird benötigt</span>
                     <span class="md-error" v-else-if="!$v.form.name.minlength">Invalid first name</span>
                   </md-field>
-                </div>
-              </div>
 
-              <md-field :class="getValidationClass('email')">
-                <label for="email">Email</label>
-                <md-input type="email" name="email" id="email" autocomplete="email" v-model="form.email" :disabled="loading" />
-                <span class="md-error" v-if="!$v.form.email.required">Ihre Email wird benötigt</span>
-                <span class="md-error" v-else-if="!$v.form.email.email">Invalid email</span>
-              </md-field>
+                  <md-field :class="getValidationClass('email')">
+                    <label for="email">Email</label>
+                    <md-input type="email" name="email" id="email" autocomplete="email" v-model="form.email" :disabled="loading" />
+                    <span class="md-error" v-if="!$v.form.email.required">Ihre Email wird benötigt</span>
+                    <span class="md-error" v-else-if="!$v.form.email.email">Invalid email</span>
+                  </md-field>
 
-              <div class="md-layout md-gutter">
-                <div class="md-layout-item md-small-size-100">
                   <md-field :class="getValidationClass('betreff')">
                     <label for="first-name">Betreff</label>
                     <md-input name="first-name" autocomplete="given-name" v-model="form.betreff" :disabled="loading" />
                   </md-field>
+
+
+                  <md-field>
+                    <label>Ihre Mitteilung</label>
+                    <md-textarea v-model="form.text" md-counter="300"></md-textarea>
+                  </md-field>
                 </div>
               </div>
-
-              <md-field>
-                <label>Ihre Mitteilung</label>
-                <md-textarea v-model="form.text" md-counter="300"></md-textarea>
-              </md-field>
             </md-card-content>
-
             <md-progress-bar md-mode="indeterminate" v-if="loading" />
 
             <md-card-actions>
@@ -130,13 +126,14 @@ export default {
       this.form.text = null;
     },
     saveUser() {
-      this.$store.dispatch("postMessageForm", {
-        email: this.form.email,
-        betreff: this.form.betreff,
-        name: this.form.name,
-        text: this.form.text
-      });
-      // this.clearForm();
+      this.$store
+        .dispatch("postMessageForm", {
+          email: this.form.email,
+          betreff: this.form.betreff,
+          name: this.form.name,
+          text: this.form.text
+        })
+      this.clearForm();
     },
     validateUser() {
       this.$v.$touch();
@@ -157,7 +154,7 @@ export default {
     },
     loading() {
       return this.$store.getters.getLoading;
-    },
+    }
   }
 };
 </script>

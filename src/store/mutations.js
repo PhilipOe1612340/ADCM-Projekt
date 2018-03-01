@@ -13,6 +13,9 @@ module.exports = {
   clearSuccess(state) {
     state.apiState.success = "";
   },
+  sendable(state, bool) {
+    state.apiState.sendable = bool;
+  },
 
   loading(state, status) {
     state.apiState.loading = status;

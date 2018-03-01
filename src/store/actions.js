@@ -162,11 +162,17 @@ export default {
     });
   },
   postMessageForm({ dispatch, commit, state }, obj) {
-    if (!obj.email || !obj.betreff || !obj.name || !obj.text) {
-      return new Promise.resolve();
+    if (
+      !state.apiState.sendable ||
+      !obj.email ||
+      !obj.betreff ||
+      !obj.name ||
+      !obj.text
+    ) {
+      return;
+    } else {
+      commit("sendable", false);
     }
-    console.log(obj)
-
     commit("clearError");
     commit("loading", true);
     return new Promise((resolve, reject) => {
@@ -179,7 +185,10 @@ export default {
         })
         .catch(function(error) {
           commit("loading", false);
-          commit("error", "Fehler: möglicherweise zu viele Nachrichten gesendet!");
+          commit(
+            "error",
+            "Fehler: möglicherweise zu viele Nachrichten gesendet!"
+          );
           reject(error, "bitte kein Spam!");
         });
     });
@@ -188,6 +197,8 @@ export default {
   success({ commit }, message) {
     commit("success", message);
     setTimeout(() => {
+      commit("sendable", true);
+      console.log("reset");
       commit("clearSuccess");
     }, 4500);
   }

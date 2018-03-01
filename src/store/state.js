@@ -3,6 +3,7 @@ export default {
     error: null,
     loading: false,
     success: "",
+    sendable: true,
   },
   news: [],
   settings: {
