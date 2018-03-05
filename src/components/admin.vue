@@ -418,6 +418,10 @@ h1 {
   margin-bottom: 10px !important;
 }
 
+input:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 30px rgb(90, 90, 90) inset;
+}
+
 #dial {
   position: fixed;
   bottom: 50px;
