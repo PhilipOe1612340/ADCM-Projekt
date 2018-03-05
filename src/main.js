@@ -8,7 +8,15 @@ import "vue-material/dist/vue-material.min.css"
 import "./theme.scss"
 import Vue2TouchEvents from "vue2-touch-events"
 import VueCookies from 'vue-cookies'
+import Raven from 'raven-js';
+import RavenVue from 'raven-js/plugins/vue';
+
 Vue.use(require('vue-shortkey'))
+
+Raven
+    .config('https://c9d1539f10da47fda0b8662bb15b2b6e@sentry.io/298742')
+    .addPlugin(RavenVue, Vue)
+    .install();
 
 Vue.use(VueCookies)
 Vue.use(Vue2TouchEvents);
