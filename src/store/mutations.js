@@ -28,9 +28,6 @@ module.exports = {
       }
       delete element._id;
     });
-    if (state.route.path !== "/admin") {
-      news = news.filter(n => state.route.path === "/" + n.type);
-    }
     state.news = news.reverse();
   },
   newsEdit(state, id) {

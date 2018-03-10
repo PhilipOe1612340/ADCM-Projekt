@@ -9,7 +9,11 @@ export default {
     return state.apiState.success;
   },
   getNews: state => {
-    return state.news;
+    var news = state.news;
+    if (state.route.path !== "/admin") {
+      news = news.filter(n => state.route.path === "/" + n.type);
+    }
+    return news;
   },
   isLoggedIn: state => {
     return state.auth.token && state.auth.name;
@@ -30,12 +34,12 @@ export default {
     return state.newPost.type;
   },
   editBody: state => {
-    return state.edit.body
+    return state.edit.body;
   },
   editTitle: state => {
     return state.edit.title;
   },
   editId: state => {
     return state.edit.id;
-  },
+  }
 };
