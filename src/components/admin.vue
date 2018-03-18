@@ -89,25 +89,25 @@
             Leistungen
           </span>
           <card id="card" v-bind="card" v-for="card in lNews" :key="card.articleId" :editable="true" :edit="editId == card.articleId"
-            v-on:delete="prepareDelete(card.articleId)" class="md-layout-item md-xlarge-size-33 md-medium-size-50 md-small-size-80"
+            v-on:delete="prepareDelete(card.articleId)" class="md-layout-item md-xlarge-size-40 md-medium-size-50 md-small-size-70 md-xsmall-size-100"
           />
           <span v-if="rNews.length > 0" id="CardDescription" class="md-layout-item md-size-100 md-display-3">
             Referenzen
           </span>
           <card id="card" v-bind="card" v-for="card in rNews" :key="card.articleId" :editable="true" :edit="editId == card.articleId"
-            v-on:delete="prepareDelete(card.articleId)" class="md-layout-item md-xlarge-size-33 md-medium-size-50 md-small-size-80"
+            v-on:delete="prepareDelete(card.articleId)" class="md-layout-item md-xlarge-size-40 md-medium-size-50 md-small-size-70 md-xsmall-size-100"
           />
           <span v-if="kNews.length > 0" id="CardDescription" class="md-layout-item md-size-100 md-display-3">
             Kunden
           </span>
           <card id="card" v-bind="card" v-for="card in kNews" :key="card.articleId" :editable="true" :edit="editId == card.articleId"
-            v-on:delete="prepareDelete(card.articleId)" class="md-layout-item md-xlarge-size-33 md-medium-size-50 md-small-size-80"
+            v-on:delete="prepareDelete(card.articleId)" class="md-layout-item md-xlarge-size-40 md-medium-size-50 md-small-size-70 md-xsmall-size-100"
           />
           <span v-if="aNews.length > 0" id="CardDescription" class="md-layout-item md-size-100 md-display-3">
             Aktuelles
           </span>
           <card id="card" v-bind="card" v-for="card in aNews" :key="card.articleId" :editable="true" :edit="editId == card.articleId"
-            v-on:delete="prepareDelete(card.articleId)" class="md-layout-item md-xlarge-size-33 md-medium-size-50 md-small-size-80"
+            v-on:delete="prepareDelete(card.articleId)" class="md-layout-item md-xlarge-size-40 md-medium-size-50 md-small-size-70 md-xsmall-size-100"
           />
         </div>
       <br>
@@ -374,7 +374,6 @@ export default {
 }
 
 #articleHeader {
-  width: 95%;
   max-width: 1300px;
   margin: auto;
 }
@@ -384,18 +383,21 @@ export default {
   overflow: hidden;
 }
 
+#komplett {
+  padding-bottom: 30vh;
+}
+
 #card {
-  margin: 0px 15px 15px 15px;
+  min-width: 40vw;
+  /* min-width: 300px; */
+  margin: 0 1% 15px 1%;
   display: block;
 }
 
 #card,
 #newCard,
 #loginCard {
-  width: 60%;
   max-width: 1000px;
-  min-width: 350px;
-  padding: 10px;
 }
 
 #newCard,
@@ -408,12 +410,8 @@ h1 {
   text-align: center;
 }
 
-#komplett {
-  width: 98vw;
-  padding: 10px;
-}
-
 #CardDescription {
+  margin-top: 10vh;
   margin-left: 20% !important;
   margin-bottom: 10px !important;
 }
@@ -424,8 +422,10 @@ input:-webkit-autofill {
 
 #dial {
   position: fixed;
-  bottom: 83px;
-  right: 2%;
+  bottom: 40px;
+  right: 5px;
+  margin-right: 2%;
+  margin-bottom: 3vh;
   z-index: 200;
 }
 

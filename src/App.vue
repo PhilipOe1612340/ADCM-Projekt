@@ -129,7 +129,7 @@ export default {
 </script>
 
 <style>
-html {
+#tabs {
   overflow-x: hidden;
 }
 
@@ -138,8 +138,10 @@ html {
 }
 
 #footer {
-  width: 100vw;
+  width: 100%;
   height: 5%;
+  min-height: 35px;
+  max-height: 60px;
   position: absolute;
   left: 0;
   bottom: 0;
