@@ -27,14 +27,15 @@
             <img class="image" :src="images[currentImageID].src" :alt="images[currentImageID].src" />
             <div v-if="images.length > 1">
               <div id="zurueck">
-                <button @click="zurueck">&#10094;</button>
+                <button title="vorheriges Bild" @click="zurueck">&#10094;</button>
               </div>
               <div id="vor">
-                <button @click="vor">&#10095;</button>
+                <button title="nächstes Bild" @click="vor">&#10095;</button>
               </div>
+            <md-progress-bar md-mode="determinate" :md-value="((currentImageID+1)/images.length)*100"></md-progress-bar>
             </div>
             <div id="loeschen">
-              <button @click="loeschen">&#9587;</button>
+              <button title="Bild löschen" @click="loeschen">&#9587;</button>
             </div>
           </md-card-media>
         <form class="md-layout" @submit.prevent="editCard">
@@ -56,11 +57,12 @@
       <img class="image" v-if="images.length > currentImageID" :src="images[currentImageID].src" :alt="images[currentImageID].src" />
         <div v-if="images.length > 1">
           <div id="zurueck">
-            <button @click="zurueck">&#10094;</button>
+            <button title="vorheriges Bild" @click="zurueck">&#10094;</button>
           </div>
           <div id="vor">
-            <button @click="vor">&#10095;</button>
+            <button title="nächstes Bild" @click="vor">&#10095;</button>
           </div>
+          <md-progress-bar md-mode="determinate" :md-value="((currentImageID+1)/images.length)*100"></md-progress-bar>
         </div>
     </md-card-media>
 
@@ -138,12 +140,14 @@ export default {
   methods: {
     picUpload() {
       if (this.fileSet) {
-        return this.$store.dispatch("postImage", {
-          id: this.articleId,
-          files: document.getElementById("fileUpload").files
-        }).then(()=>{
-          this.fileSet = null;
-        });
+        return this.$store
+          .dispatch("postImage", {
+            id: this.articleId,
+            files: document.getElementById("fileUpload").files
+          })
+          .then(() => {
+            this.fileSet = null;
+          });
       } else {
         return new Promise(resolve => {
           resolve();
@@ -285,10 +289,12 @@ button {
   font-size: 20pt;
   z-index: 50s;
   margin: 0;
+  padding-bottom: 4px;
+  padding-left: 4px;
   width: 45px;
   height: 45px;
   border: 0;
-  background: none;
+  background: rgba(215, 234, 252, 0.664);
   box-shadow: none;
   border-radius: 3px;
 }

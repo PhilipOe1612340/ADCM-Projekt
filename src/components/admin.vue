@@ -180,6 +180,7 @@ export default {
     showNewArticle() {
       this.type = null;
       this.edit = true;
+      this.fileSet = null;
       setTimeout(() => {
         window.scrollTo(0, 0);
       }, 20);
