@@ -23,7 +23,7 @@
             <md-textarea id="inhalt" type="Inhalt" name="Inhalt" v-model="editBody" :disabled="sending" />
           </md-field>
           </form>
-          <md-card-media md-ratio="4:3">
+          <md-card-media md-ratio="4:3" v-touch:swipe.left="vor" v-touch:swipe.right="zurueck">
             <img class="image" :src="images[currentImageID].src" :alt="images[currentImageID].src" />
             <div v-if="images.length > 1">
               <div id="zurueck">
@@ -52,7 +52,7 @@
         </div>
       </div>
     </md-card-content>
-    <md-card-media v-if="images[currentImageID].src && editId != articleId" md-ratio="4:3">
+    <md-card-media v-if="images[currentImageID].src && editId != articleId" md-ratio="4:3" v-touch:swipe.left="vor" v-touch:swipe.right="zurueck">
       <img class="image" :src="images[currentImageID].src" :alt="images[currentImageID].src" />
         <div v-if="images.length > 1">
           <div id="zurueck">
