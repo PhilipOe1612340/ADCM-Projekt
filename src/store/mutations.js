@@ -28,6 +28,7 @@ module.exports = {
           return { src: state.settings.serverIp + "/" + img, key: i };
         });
       }
+      delete element.__v;
       delete element.image;
       delete element._id;
     });

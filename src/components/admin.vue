@@ -89,25 +89,25 @@
             Leistungen
           </span>
           <card id="card" v-bind="card" v-for="card in lNews" :key="card.articleId" :editable="true" :edit="editId == card.articleId"
-            v-on:delete="prepareDelete(card.articleId)" class="md-layout-item md-xlarge-size-20 md-large-size-33 md-medium-size-50 md-small-size-80"
+            v-on:delete="prepareDelete(card.articleId)" class="md-layout-item md-xlarge-size-33 md-medium-size-50 md-small-size-80"
           />
           <span v-if="rNews.length > 0" id="CardDescription" class="md-layout-item md-size-100 md-display-3">
             Referenzen
           </span>
           <card id="card" v-bind="card" v-for="card in rNews" :key="card.articleId" :editable="true" :edit="editId == card.articleId"
-            v-on:delete="prepareDelete(card.articleId)" class="md-layout-item md-xlarge-size-20 md-large-size-33 md-medium-size-50 md-small-size-80"
+            v-on:delete="prepareDelete(card.articleId)" class="md-layout-item md-xlarge-size-33 md-medium-size-50 md-small-size-80"
           />
           <span v-if="kNews.length > 0" id="CardDescription" class="md-layout-item md-size-100 md-display-3">
             Kunden
           </span>
           <card id="card" v-bind="card" v-for="card in kNews" :key="card.articleId" :editable="true" :edit="editId == card.articleId"
-            v-on:delete="prepareDelete(card.articleId)" class="md-layout-item md-xlarge-size-20 md-large-size-33 md-medium-size-50 md-small-size-80"
+            v-on:delete="prepareDelete(card.articleId)" class="md-layout-item md-xlarge-size-33 md-medium-size-50 md-small-size-80"
           />
           <span v-if="aNews.length > 0" id="CardDescription" class="md-layout-item md-size-100 md-display-3">
             Aktuelles
           </span>
           <card id="card" v-bind="card" v-for="card in aNews" :key="card.articleId" :editable="true" :edit="editId == card.articleId"
-            v-on:delete="prepareDelete(card.articleId)" class="md-layout-item md-xlarge-size-20 md-large-size-33 md-medium-size-50 md-small-size-80"
+            v-on:delete="prepareDelete(card.articleId)" class="md-layout-item md-xlarge-size-33 md-medium-size-50 md-small-size-80"
           />
         </div>
       <br>
@@ -165,8 +165,8 @@ export default {
       this.$store.dispatch("getNews");
     },
     /**
-          send login credentials to the server and set cookies
-         */
+     * send login credentials to the server and set cookies
+     */
     newLogin() {
       this.$store.dispatch("login").then(token => {
         this.$cookies.set("token", token, 20 * 60);
@@ -175,8 +175,8 @@ export default {
       });
     },
     /**
-          show the NEW ARTCLE CARD and scroll up
-         */
+     * show the NEW ARTCLE CARD and scroll up
+     */
     showNewArticle() {
       this.type = null;
       this.edit = true;
@@ -188,8 +188,8 @@ export default {
       return this.news.filter(el => el.type === filter);
     },
     /**
-          close NEW ARTCLE CARD
-         */
+     * close NEW ARTCLE CARD
+     */
     closeNewArticle() {
       this.newType = null;
       this.edit = false;
@@ -209,16 +209,16 @@ export default {
       this.deleteActive = false;
     },
     /**
-          delete cookies and login creds
-         */
+     * delete cookies and login creds
+     */
     logout() {
       this.$cookies.set("token", null, 1);
       this.$cookies.set("un", null, 1);
       this.$store.commit("cookie", {});
     },
     /**
-          get news from server
-         */
+     * get news from server
+     */
     loadNews() {
       this.$store.dispatch("getNews");
     },
@@ -227,8 +227,8 @@ export default {
       this.loadNews();
     },
     /**
-          post new article to the server, reload and hide card
-         */
+     * post new article to the server, reload and hide card
+     */
     createNewArticle() {
       this.$store.dispatch("new").then(res => {
         this.picUpload(res.data.articleId).then(() => {
@@ -238,20 +238,18 @@ export default {
       });
     },
     /**
-          edit the content of a card by id
-         */
+     * edit the content of a card by id
+     */
     editCard(id) {
       this.$store.commit("newsEdit", id);
     },
     closeCard(id) {
       this.$store.commit("closeEdit");
     },
+
     /**
-          send the modified content and reload
-         */
-    /**
-          cancel edit of article
-         */
+     * cancel edit of article
+     */
     cancelCardEdit() {
       this.$store.commit("closeEdit");
     }
@@ -387,6 +385,7 @@ export default {
 
 #card {
   margin: 0px 15px 15px 15px;
+  display: block;
 }
 
 #card,
@@ -425,7 +424,7 @@ input:-webkit-autofill {
 #dial {
   position: fixed;
   bottom: 83px;
-  right: 66px;
+  right: 2%;
   z-index: 200;
 }
 
