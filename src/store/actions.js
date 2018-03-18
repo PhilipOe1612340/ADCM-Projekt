@@ -71,6 +71,31 @@ export default {
         });
     });
   },
+
+  rmImage({ dispatch, commit, state }, id) {
+    commit("clearError");
+    commit("loading", true);
+    return new Promise((resolve, reject) => {
+      axios
+        .get(state.settings.serverIp + "/image/" + state.edit.id + "/" + id, {
+          headers: {
+            token: state.auth.token,
+            user: state.auth.name
+          }
+        })
+        .then(function(response) {
+          commit("loading", false);
+          dispatch("getNews");
+          resolve(response);
+        })
+        .catch(function(error) {
+          reject(error);
+          commit("loading", false);
+          commit("error", "Fehler beim Speichern: " + error);
+        });
+    });
+  },
+
   new({ dispatch, commit, state }) {
     if (!state.newPost.title || !state.auth.name) {
       commit("error", "One of the field was empty");

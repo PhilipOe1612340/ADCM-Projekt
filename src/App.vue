@@ -51,7 +51,9 @@ export default {
     clearError() {
       this.$store.commit("clearError");
     },
-    swipe_Right(direction) {
+    swipe_Right(direction, event) {
+      if(event.path.length > 8) return;
+
       switch (this.$store.state.route.path) {
         case "/referenzen":
           this.$router.push("/leistungen");
@@ -67,7 +69,9 @@ export default {
           break;
       }
     },
-    swipe_Left(direction) {
+    swipe_Left(direction, event) {
+      if(event.path.length > 8) return;
+
       switch (this.$store.state.route.path) {
         case "/referenzen":
           this.$router.push("/kunden");

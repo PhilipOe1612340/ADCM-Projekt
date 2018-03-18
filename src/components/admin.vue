@@ -424,8 +424,8 @@ input:-webkit-autofill {
 
 #dial {
   position: fixed;
-  bottom: 50px;
-  right: 30px;
+  bottom: 83px;
+  right: 66px;
   z-index: 200;
 }
 

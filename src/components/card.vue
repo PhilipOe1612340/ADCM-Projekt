@@ -22,12 +22,22 @@
             <label for="Inhalt">Inhalt</label>
             <md-textarea id="inhalt" type="Inhalt" name="Inhalt" v-model="editBody" :disabled="sending" />
           </md-field>
-          <div class="imageWrapper" v-if="editId != articleId">
-            <div v-for="img in images" :key="img.key">
-              <img class="image" :src="img.src" :alt="img.src" />
-              <br>
+          </form>
+          <md-card-media md-ratio="4:3">
+            <img class="image" :src="images[currentImageID].src" :alt="images[currentImageID].src" />
+            <div v-if="images.length > 1">
+              <div id="zurueck">
+                <button @click="zurueck">&#10094;</button>
+              </div>
+              <div id="vor">
+                <button @click="vor">&#10095;</button>
+              </div>
             </div>
-          </div>
+            <div id="loeschen">
+              <button @click="loeschen">&#9587;</button>
+            </div>
+          </md-card-media>
+        <form class="md-layout" @submit.prevent="editCard">
           <md-field id="upload">
             <label>Bild hinzufügen</label>
             <md-file v-model="fileSet" accept="image/*" id="fileUpload" placeholder="Bild hinzufügen" multiple />
@@ -42,12 +52,19 @@
         </div>
       </div>
     </md-card-content>
-      <div class="imageWrapper" v-if="images.length > 0 && editId != articleId">
-        <div v-for="img in images" :key="img.key">
-          <img class="image" :src="img.src" :alt="img.src" />
-          <br>
+    <md-card-media v-if="images[currentImageID].src && editId != articleId" md-ratio="4:3">
+      <img class="image" :src="images[currentImageID].src" :alt="images[currentImageID].src" />
+        <div v-if="images.length > 1">
+          <div id="zurueck">
+            <button @click="zurueck">&#10094;</button>
+          </div>
+          <div id="vor">
+            <button @click="vor">&#10095;</button>
+          </div>
         </div>
-      </div>
+    </md-card-media>
+
+
     <!-- buttons -->
     <md-card-expand id="buttons">
       <md-card-actions md-alignment="space-between">
@@ -111,6 +128,7 @@ export default {
 
   // [articleId,datum,body,title,edit,image],
   data: () => ({
+    currentImageID: 0,
     fileSet: null,
     deleteId: null,
     deleteActive: false,
@@ -122,6 +140,8 @@ export default {
         return this.$store.dispatch("postImage", {
           id: this.articleId,
           files: document.getElementById("fileUpload").files
+        }).then(()=>{
+          this.fileSet = null;
         });
       } else {
         return new Promise(resolve => {
@@ -129,12 +149,27 @@ export default {
         });
       }
     },
+    vor() {
+      this.currentImageID += 1;
+      this.currentImageID = this.currentImageID % this.images.length;
+    },
+    zurueck() {
+      this.currentImageID -= 1;
+      this.currentImageID =
+        this.currentImageID < 0 ? this.images.length - 1 : this.currentImageID;
+    },
+    loeschen() {
+      this.$store.dispatch("rmImage", this.currentImageID).then(() => {
+        this.images.splice(this.currentImageID, 1);
+        this.vor();
+      });
+    },
     emitDelete() {
       this.$emit("delete");
     },
     /**
-          edit the content of a card by id
-         */
+     * edit the content of a card by id
+     */
     editCard() {
       this.$store.commit("newsEdit", this.articleId);
     },
@@ -216,15 +251,58 @@ export default {
 </script>
 
 <style>
-.imageWrapper {
-  overflow-x: hidden;
-  max-height: 250px;
+button {
+  z-index: 100;
 }
-img.image {
-  height: 200px;
-  width: auto;
-  object-fit: cover;
-  display: block;
-  float: left;
+
+#vor {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+#zurueck {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+#loeschen {
+  position: absolute;
+  padding: 0;
+  right: 0px;
+  top: 25px;
+  color: red;
+}
+
+#loeschen > *,
+#vor > *,
+#zurueck > * {
+  text-shadow: rgb(151, 151, 151) 0px 0px 15px;
+  font-size: 20pt;
+  z-index: 50s;
+  margin: 0;
+  width: 45px;
+  height: 45px;
+  border: 0;
+  background: none;
+  box-shadow: none;
+  border-radius: 3px;
+}
+
+#vor > *:hover,
+#zurueck > *:hover {
+  text-shadow: none;
+  box-shadow: 0px 0px 10px black;
+  background: rgba(215, 234, 252, 0.5);
+}
+
+#loeschen > *:hover {
+  text-shadow: none;
+  box-shadow: 0px 0px 10px black;
+  background: rgb(255, 43, 43);
+  color: black;
 }
 </style>
