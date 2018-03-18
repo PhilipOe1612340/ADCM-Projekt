@@ -46,14 +46,14 @@
       </div>
       <!-- normal body -->
       <div v-else>
-        <div v-if="editable">
+         <div v-if="editable || images.length < 1">
           <span v-html="body"></span>
           <br> {{datum}}
         </div>
       </div>
     </md-card-content>
-    <md-card-media v-if="images && editId != articleId" md-ratio="4:3" v-touch:swipe.left="vor" v-touch:swipe.right="zurueck">
-      <img class="image" :src="images[currentImageID].src" :alt="images[currentImageID].src" />
+    <md-card-media v-if="images.length > currentImageID && editId != articleId" md-ratio="4:3" v-touch:swipe.left="vor" v-touch:swipe.right="zurueck">
+      <img class="image" v-if="images.length > currentImageID" :src="images[currentImageID].src" :alt="images[currentImageID].src" />
         <div v-if="images.length > 1">
           <div id="zurueck">
             <button @click="zurueck">&#10094;</button>
