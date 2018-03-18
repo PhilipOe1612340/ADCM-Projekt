@@ -7,7 +7,6 @@ const aktuelles = () => import("@/components/aktuelles");
 const kontakt = () => import("@/components/kontakt");
 const impressum = () => import("@/components/impressum");
 const admin = () => import("@/components/admin");
-const raphisSpielwiese = () => import("@/components/raphisSpielwiese");
 
 Vue.use(Router);
 
@@ -44,9 +43,5 @@ export default new Router({
       path: "/admin",
       component: admin
     },
-    {
-      path: "/card",
-      component: raphisSpielwiese
-    }
   ]
 });
