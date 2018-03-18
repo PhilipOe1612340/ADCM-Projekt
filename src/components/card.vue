@@ -22,26 +22,34 @@
             <label for="Inhalt">Inhalt</label>
             <md-textarea id="inhalt" type="Inhalt" name="Inhalt" v-model="editBody" :disabled="sending" />
           </md-field>
-          <md-field>
-            <label>Bild hochladen</label>
-            <md-file v-model="fileSet" accept="image/*" id="fileUpload" :placeholder="image?image + ' ersetzen':'Bild hinzufügen'" />
+          <div class="imageWrapper" v-if="editId != articleId">
+            <div v-for="img in images" :key="img.key">
+              <img class="image" :src="img.src" :alt="img.src" />
+              <br>
+            </div>
+          </div>
+          <md-field id="upload">
+            <label>Bild hinzufügen</label>
+            <md-file v-model="fileSet" accept="image/*" id="fileUpload" placeholder="Bild hinzufügen" multiple />
           </md-field>
         </form>
       </div>
       <!-- normal body -->
       <div v-else>
-        <div v-if="!editable && !image">
-          <span  v-html="body"></span>
+        <div v-if="!editable && images.length < 0">
+          <span v-html="body"></span>
           <br> {{datum}}
         </div>
       </div>
     </md-card-content>
-    <md-card-media v-if="image && image.indexOf('undefined') == -1 && editId != articleId">
-      <img v-if="image" :src="image" :alt="image" />
-      <br>
-    </md-card-media>
+      <div class="imageWrapper" v-if="images.length > 0 && editId != articleId">
+        <div v-for="img in images" :key="img.key">
+          <img class="image" :src="img.src" :alt="img.src" />
+          <br>
+        </div>
+      </div>
     <!-- buttons -->
-    <md-card-expand>
+    <md-card-expand id="buttons">
       <md-card-actions md-alignment="space-between">
         <div v-if="editable">
           <md-button v-if="edit" @click.native="cancelCardEdit(articleId)" class="md-primary">Abbrechen</md-button>
@@ -49,7 +57,7 @@
           <md-button v-if="edit" @click.native="sendEdit" class="md-primary">Speichern</md-button>
           <md-button v-else @click.native="emitDelete" class="md-primary">Löschen</md-button>
         </div>
-        <md-card-expand-trigger v-if="!editable && image">
+        <md-card-expand-trigger v-if="!editable && images.length > 0">
           <md-button>mehr lesen</md-button>
         </md-card-expand-trigger>
       </md-card-actions>
@@ -87,8 +95,8 @@ export default {
       type: Boolean,
       default: false
     },
-    image: {
-      type: String
+    images: {
+      type: Array
     },
     articleId: {
       validator: function(value) {
@@ -113,7 +121,7 @@ export default {
       if (this.fileSet) {
         return this.$store.dispatch("postImage", {
           id: this.articleId,
-          file: document.getElementById("fileUpload").files[0]
+          files: document.getElementById("fileUpload").files
         });
       } else {
         return new Promise(resolve => {
@@ -206,3 +214,17 @@ export default {
   }
 };
 </script>
+
+<style>
+.imageWrapper {
+  overflow-x: hidden;
+  max-height: 250px;
+}
+img.image {
+  height: 200px;
+  width: auto;
+  object-fit: cover;
+  display: block;
+  float: left;
+}
+</style>

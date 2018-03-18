@@ -69,7 +69,7 @@
                 </md-field>
                 <md-field>
                   <label>Bild hochladen</label>
-                  <md-file v-model="fileSet" id="fileUpload" accept="image/*" placeholder="Bild hinzufügen" />
+                  <md-file v-model="fileSet" id="fileUpload" accept="image/*" placeholder="Bild hinzufügen" multiple/>
                 </md-field>
               </form>
               {{date}}
@@ -88,25 +88,25 @@
           <span v-if="lNews.length > 0" id="CardDescription" class="md-layout-item md-size-100 md-display-3">
             Leistungen
           </span>
-          <card id="card" v-once v-cloak v-bind="card" v-for="card in lNews" :key="card.articleId" :editable="true" :edit="editId == card.articleId"
+          <card id="card" v-bind="card" v-for="card in lNews" :key="card.articleId" :editable="true" :edit="editId == card.articleId"
             v-on:delete="prepareDelete(card.articleId)" class="md-layout-item md-xlarge-size-20 md-large-size-33 md-medium-size-50 md-small-size-80"
           />
           <span v-if="rNews.length > 0" id="CardDescription" class="md-layout-item md-size-100 md-display-3">
             Referenzen
           </span>
-          <card id="card" v-once v-cloak v-bind="card" v-for="card in rNews" :key="card.articleId" :editable="true" :edit="editId == card.articleId"
+          <card id="card" v-bind="card" v-for="card in rNews" :key="card.articleId" :editable="true" :edit="editId == card.articleId"
             v-on:delete="prepareDelete(card.articleId)" class="md-layout-item md-xlarge-size-20 md-large-size-33 md-medium-size-50 md-small-size-80"
           />
           <span v-if="kNews.length > 0" id="CardDescription" class="md-layout-item md-size-100 md-display-3">
             Kunden
           </span>
-          <card id="card" v-once v-cloak v-bind="card" v-for="card in kNews" :key="card.articleId" :editable="true" :edit="editId == card.articleId"
+          <card id="card" v-bind="card" v-for="card in kNews" :key="card.articleId" :editable="true" :edit="editId == card.articleId"
             v-on:delete="prepareDelete(card.articleId)" class="md-layout-item md-xlarge-size-20 md-large-size-33 md-medium-size-50 md-small-size-80"
           />
           <span v-if="aNews.length > 0" id="CardDescription" class="md-layout-item md-size-100 md-display-3">
             Aktuelles
           </span>
-          <card id="card" v-once v-cloak v-bind="card" v-for="card in aNews" :key="card.articleId" :editable="true" :edit="editId == card.articleId"
+          <card id="card" v-bind="card" v-for="card in aNews" :key="card.articleId" :editable="true" :edit="editId == card.articleId"
             v-on:delete="prepareDelete(card.articleId)" class="md-layout-item md-xlarge-size-20 md-large-size-33 md-medium-size-50 md-small-size-80"
           />
         </div>
@@ -149,7 +149,7 @@ export default {
       if (this.fileSet) {
         return this.$store.dispatch("postImage", {
           id,
-          file: document.getElementById("fileUpload").files[0]
+          files: document.getElementById("fileUpload").files
         });
       } else {
         return new Promise(resolve => {

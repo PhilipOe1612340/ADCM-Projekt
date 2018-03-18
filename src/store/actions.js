@@ -134,11 +134,14 @@ export default {
   },
 
   postImage({ dispatch, commit, state }, obj) {
-    if (!obj.file || !obj.file.name) {
+    if (!obj.files) {
       return new Promise.resolve();
     }
     let data = new FormData();
-    data.append("image", obj.file, obj.file.name);
+    for (let idx = 0; idx < obj.files.length; idx++) {
+      const file = obj.files[idx];
+      data.append("image", file, file.name);
+    }
     const config = {
       headers: {
         token: state.auth.token,

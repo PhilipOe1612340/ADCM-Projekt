@@ -20,7 +20,7 @@
 
     <!-- main cards list -->
     <div class="md-layout md-gutter md-alignment-top-center">
-      <card id="card" v-once v-cloak v-bind="card" filter="aktuelles" v-for="card in news" :key="card.articleId" class="md-layout-item md-xlarge-size-20 md-large-size-30 md-medium-size-45 md-small-size-95"
+      <card id="card" v-cloak v-bind="card" filter="aktuelles" v-for="card in news" :key="card.articleId" class="md-layout-item md-xlarge-size-20 md-large-size-30 md-medium-size-45 md-small-size-95"
       />
     </div>
   <br>

@@ -24,8 +24,11 @@ module.exports = {
   news(state, news) {
     news.forEach(element => {
       if (element.image) {
-        element.image = state.settings.serverIp + "/" + element.image;
+        element.images = element.image.map((img, i) => {
+          return { src: state.settings.serverIp + "/" + img, key: i };
+        });
       }
+      delete element.image;
       delete element._id;
     });
     state.news = news.reverse();

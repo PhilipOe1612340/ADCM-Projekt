@@ -7,15 +7,6 @@
       <md-tab id="tab-aktuelles" md-label="aktuelles" to="/aktuelles" />
     </md-tabs>
 
-    <div id="themeswitch">
-      <span class="clickable" v-if="theme === false" @click="changeTheme">
-        <md-icon class="md-primary">wb_sunny</md-icon>
-      </span>
-      <span class="clickable" v-else @click="changeTheme">
-        <md-icon>brightness_3</md-icon>
-      </span>
-    </div>
-
     <transition name="page" mode="out-in">
       <router-view></router-view>
     </transition>
@@ -92,14 +83,6 @@ export default {
           break;
       }
     },
-    changeTheme() {
-      this.theme = !this.theme;
-      if (this.theme) {
-        Vue.material.theming.theme = "light";
-      } else {
-        Vue.material.theming.theme = "default";
-      }
-    }
   },
   beforeMount() {
     this.$store.dispatch("getNews");
