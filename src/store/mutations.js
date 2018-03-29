@@ -23,13 +23,12 @@ module.exports = {
 
   news(state, news) {
     news.forEach(element => {
-      if (element.image) {
-        element.images = element.image.map((img, i) => {
-          return { src: state.settings.serverIp + "/" + img, key: i };
+      if (element.images) {
+        element.images = element.images.map((img, i) => {
+          return { src: state.settings.serverIp + "/" + img.src, key: i, desc: img.desc };
         });
       }
       delete element.__v;
-      delete element.image;
       delete element._id;
     });
     state.news = news.reverse();
