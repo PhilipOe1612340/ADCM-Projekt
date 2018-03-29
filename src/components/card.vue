@@ -24,12 +24,10 @@
           </md-field>
         </form>
         <md-card-media v-if="images.length > 0" md-ratio="4:3" v-touch:swipe.left="vor" v-touch:swipe.right="zurueck">
-          <img class="image" 
-          :srcset="images[currentImageID].src + '-320.webp 320w,' +
+          <img class="image" :srcset="images[currentImageID].src + '-320.webp 320w,' +
           images[currentImageID].src + '-640.webp 640w,' +
-          images[currentImageID].src + '-960.webp 960w'"
-          :src="images[currentImageID].src+'-640.webp'" 
-          :alt="images[currentImageID].desc" />
+          images[currentImageID].src + '-960.webp 960w'" :src="images[currentImageID].src+'-640.webp'" :alt="images[currentImageID].desc"
+          />
           <div v-if="images.length > 1">
             <div id="zurueck">
               <button title="vorheriges Bild" @click="zurueck">&#10094;</button>
@@ -59,12 +57,9 @@
       </div>
     </md-card-content>
     <md-card-media v-if="images.length > currentImageID && editId != articleId" md-ratio="4:3" v-touch:swipe.left="vor" v-touch:swipe.right="zurueck">
-      <img class="image" v-if="images.length > currentImageID" 
-      :srcset="images[currentImageID].src + '-320.webp 320w,' +
+      <img class="image" v-if="images.length > currentImageID" :srcset="images[currentImageID].src + '-320.webp 320w,' +
           images[currentImageID].src + '-640.webp 640w,' +
-          images[currentImageID].src + '-960.webp 960w'"
-      :src="images[currentImageID].src" 
-      :alt="images[currentImageID].src"
+          images[currentImageID].src + '-960.webp 960w'" :src="images[currentImageID].src" :alt="images[currentImageID].desc"
       />
       <div v-if="images.length > 1">
         <div id="zurueck">
