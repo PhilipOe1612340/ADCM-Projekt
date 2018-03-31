@@ -222,7 +222,7 @@
         var end = el.selectionEnd;
         middle = start === end ? middle : this.editBody.slice(start, end);
         console.log(el.selectionStart, el.selectionEnd)
-        this.editBody = [this.editBody.slice(0, start), string1, middle, string2, this.editBod.slice(end)].join('');
+        this.editBody = [this.editBody.slice(0, start), string1, middle, string2, this.editBody.slice(end)].join('');
       },
       vor() {
         this.currentImageID += 1;
