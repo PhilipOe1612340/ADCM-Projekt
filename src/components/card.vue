@@ -18,24 +18,26 @@
       <!-- body edit -->
       <div v-if="edit">
         <md-switch class="md-primary" v-model="vorschau">Vorschau</md-switch>
-        <md-button v-if="!vorschau" title="Link hinzufügen" class="md-icon-button rightButton" @click="addLink">
-          <md-icon>link</md-icon>
-        </md-button>
-        <md-button v-if="!vorschau" title="kuriv" class="md-icon-button rightButton" @click="addItalic">
-          <md-icon>format_italic</md-icon>
-        </md-button>
-        <md-button v-if="!vorschau" title="fett" class="md-icon-button rightButton" @click="addBold">
-          <md-icon>format_bold</md-icon>
-        </md-button>
-        <md-button v-if="!vorschau" title="Absatz hinzufügen" class="md-icon-button rightButton" @click="addBreak">
-          <md-icon>subdirectory_arrow_left</md-icon>
-        </md-button>
-        <md-button v-if="!vorschau" title="Paragraph hinzufügen" class="md-icon-button rightButton" @click="addParagraph">
-          <md-icon>view_headline</md-icon>
-        </md-button>
-        <md-button v-if="!vorschau" title="Überschrift hinzufügen" class="md-icon-button rightButton" @click="addHeadline">
-          <md-icon>line_weight</md-icon>
-        </md-button>
+        <div id="tools">
+          <md-button v-if="!vorschau" title="Link hinzufügen" class="md-icon-button rightButton" @click="addLink">
+            <md-icon>link</md-icon>
+          </md-button>
+          <md-button v-if="!vorschau" title="kuriv" class="md-icon-button rightButton" @click="addItalic">
+            <md-icon>format_italic</md-icon>
+          </md-button>
+          <md-button v-if="!vorschau" title="fett" class="md-icon-button rightButton" @click="addBold">
+            <md-icon>format_bold</md-icon>
+          </md-button>
+          <md-button v-if="!vorschau" title="Absatz hinzufügen" class="md-icon-button rightButton" @click="addBreak">
+            <md-icon>subdirectory_arrow_left</md-icon>
+          </md-button>
+          <md-button v-if="!vorschau" title="Paragraph hinzufügen" class="md-icon-button rightButton" @click="addParagraph">
+            <md-icon>view_headline</md-icon>
+          </md-button>
+          <md-button v-if="!vorschau" title="Überschrift hinzufügen" class="md-icon-button rightButton" @click="addHeadline">
+            <md-icon>line_weight</md-icon>
+          </md-button>
+        </div>
 
         <br>
         <div id="vorschau" v-if="vorschau">
@@ -199,30 +201,34 @@
         }
       },
       addBreak() {
-        this.add(null, null, "<br>")
+        this.add("", "", "<br>")
       },
       addLink() {
-        this.add("<a href=\" URL \">", "LINK TEXT", "</a>")
+        this.add("<a href=\"  http://www.example.com  \" target=\"_blank\" rel=\"noopener\">", "  LINK TEXT  ", "</a>")
       },
       addBold() {
-        this.add("<b>", " FETT", "</b>")
+        this.add("<b>", "  FETT  ", "</b>")
       },
       addItalic() {
-        this.add("<i>", "KURSIV", "</i>")
+        this.add("<i>", "  KURSIV  ", "</i>")
       },
       addParagraph() {
-        this.add("<p>\n", "PARAGRAPH", "\n</p>")
+        this.add("<p>\n", "    PARAGRAPH", "\n</p>")
       },
       addHeadline() {
-        this.add("<h3>", "ÜBERSCHRIFT", "</h3>")
+        this.add("<h3>", "  ÜBERSCHRIFT  ", "</h3>")
       },
       add(string1, middle, string2) {
         var el = document.getElementById("inhalt");
         var start = el.selectionStart;
         var end = el.selectionEnd;
         middle = start === end ? middle : this.editBody.slice(start, end);
-        console.log(el.selectionStart, el.selectionEnd)
         this.editBody = [this.editBody.slice(0, start), string1, middle, string2, this.editBody.slice(end)].join('');
+        el.focus();
+
+        setTimeout(() => {
+          el.setSelectionRange(start + string1.length, start + string1.length + middle.length);
+        }, 100)
       },
       vor() {
         this.currentImageID += 1;
@@ -394,6 +400,20 @@
 
   .rightButton {
     float: right;
+  }
+  .md-switch{
+    margin-right: 100px;
+  }
+
+  #tools {
+    display: inline-block;
+    position: relative;
+    top: 10px;
+  }
+
+  #tools > * {
+    margin-left: 0;
+    margin-right: 0;
   }
 
 </style>
