@@ -17,31 +17,62 @@
     <md-card-content>
       <!-- body edit -->
       <div v-if="edit">
-        <form class="md-layout" @submit.prevent="editCard">
+        <md-switch class="md-primary" v-model="vorschau">Vorschau</md-switch>
+        <md-button v-if="!vorschau" title="Link hinzufügen" class="md-icon-button rightButton" @click="addLink">
+          <md-icon>link</md-icon>
+        </md-button>
+        <md-button v-if="!vorschau" title="kuriv" class="md-icon-button rightButton" @click="addItalic">
+          <md-icon>format_italic</md-icon>
+        </md-button>
+        <md-button v-if="!vorschau" title="fett" class="md-icon-button rightButton" @click="addBold">
+          <md-icon>format_bold</md-icon>
+        </md-button>
+        <md-button v-if="!vorschau" title="Absatz hinzufügen" class="md-icon-button rightButton" @click="addBreak">
+          <md-icon>subdirectory_arrow_left</md-icon>
+        </md-button>
+        <md-button v-if="!vorschau" title="Paragraph hinzufügen" class="md-icon-button rightButton" @click="addParagraph">
+          <md-icon>view_headline</md-icon>
+        </md-button>
+        <md-button v-if="!vorschau" title="Überschrift hinzufügen" class="md-icon-button rightButton" @click="addHeadline">
+          <md-icon>line_weight</md-icon>
+        </md-button>
+
+        <br>
+        <div id="vorschau" v-if="vorschau">
+          <span class="md-subheading" v-html="editBody"></span>
+        </div>
+        <form v-else class="md-layout" @submit.prevent="editCard">
           <md-field>
             <label for="Inhalt">Inhalt</label>
             <md-textarea id="inhalt" type="Inhalt" name="Inhalt" v-model="editBody" :disabled="sending" />
           </md-field>
         </form>
-        <md-card-media v-if="images.length > 0" md-ratio="4:3" v-touch:swipe.left="vor" v-touch:swipe.right="zurueck">
-          <img class="image" :srcset="images[currentImageID].src + '-320.webp 320w,' +
-          images[currentImageID].src + '-640.webp 640w,' +
-          images[currentImageID].src + '-960.webp 960w'" :src="images[currentImageID].src+'-640.webp'" :alt="images[currentImageID].desc"
-          />
-          <div v-if="images.length > 1">
-            <div id="zurueck">
-              <button title="vorheriges Bild" @click="zurueck">&#10094;</button>
+
+        <md-card-media-cover v-if="images.length > 0" md-solid>
+          <md-card-media md-ratio="4:3" v-touch:swipe.left="vor" v-touch:swipe.right="zurueck">
+            <img class="image" v-if="images.length > currentImageID" :srcset="images[currentImageID].src + '-320.webp 320w,' +
+                  images[currentImageID].src + '-640.webp 640w,' +
+                  images[currentImageID].src + '-960.webp 960w'" :src="images[currentImageID].src" :alt="images[currentImageID].desc"
+            />
+            <md-card-area v-if="images[currentImageID].desc != null">
+              <md-card-header>
+                <span class="md-title">{{images[currentImageID].desc}}</span>
+              </md-card-header>
+            </md-card-area>
+            <div v-if="images.length > 1">
+              <div id="zurueck">
+                <button title="vorheriges Bild" @click="zurueck">&#10094;</button>
+              </div>
+              <div id="vor">
+                <button title="nächstes Bild" @click="vor">&#10095;</button>
+              </div>
+              <md-progress-bar md-mode="determinate" :md-value="((currentImageID+1)/images.length)*100"></md-progress-bar>
             </div>
-            <div id="vor">
-              <button title="nächstes Bild" @click="vor">&#10095;</button>
-            </div>
-            <md-progress-bar md-mode="determinate" :md-value="((currentImageID+1)/images.length)*100"></md-progress-bar>
-          </div>
-          <div id="loeschen">
-            <button title="Bild löschen" @click="loeschen">&#9587;</button>
-          </div>
-        </md-card-media>
+          </md-card-media>
+        </md-card-media-cover>
+
         <form class="md-layout" @submit.prevent="editCard">
+          </md-field>
           <md-field id="upload">
             <label>Bild hinzufügen</label>
             <md-file v-model="fileSet" accept="image/*" id="fileUpload" placeholder="Bild hinzufügen" multiple />
@@ -56,22 +87,28 @@
         </div>
       </div>
     </md-card-content>
-    <md-card-media v-if="images.length > currentImageID && editId != articleId" md-ratio="4:3" v-touch:swipe.left="vor" v-touch:swipe.right="zurueck">
-      <img class="image" v-if="images.length > currentImageID" :srcset="images[currentImageID].src + '-320.webp 320w,' +
-          images[currentImageID].src + '-640.webp 640w,' +
-          images[currentImageID].src + '-960.webp 960w'" :src="images[currentImageID].src" :alt="images[currentImageID].desc"
-      />
-      <div v-if="images.length > 1">
-        <div id="zurueck">
-          <button title="vorheriges Bild" @click="zurueck">&#10094;</button>
+    <md-card-media-cover v-if="images.length > currentImageID && editId != articleId" md-solid>
+      <md-card-media md-ratio="4:3" v-touch:swipe.left="vor" v-touch:swipe.right="zurueck">
+        <img class="image" v-if="images.length > currentImageID" :srcset="images[currentImageID].src + '-320.webp 320w,' +
+            images[currentImageID].src + '-640.webp 640w,' +
+            images[currentImageID].src + '-960.webp 960w'" :src="images[currentImageID].src" :alt="images[currentImageID].desc"
+        />
+        <md-card-area v-if="images[currentImageID].desc != null">
+          <md-card-header>
+            <span class="md-title">{{images[currentImageID].desc}}</span>
+          </md-card-header>
+        </md-card-area>
+        <div v-if="images.length > 1">
+          <div id="zurueck">
+            <button title="vorheriges Bild" @click="zurueck">&#10094;</button>
+          </div>
+          <div id="vor">
+            <button title="nächstes Bild" @click="vor">&#10095;</button>
+          </div>
+          <md-progress-bar md-mode="determinate" :md-value="((currentImageID+1)/images.length)*100"></md-progress-bar>
         </div>
-        <div id="vor">
-          <button title="nächstes Bild" @click="vor">&#10095;</button>
-        </div>
-        <md-progress-bar md-mode="determinate" :md-value="((currentImageID+1)/images.length)*100"></md-progress-bar>
-      </div>
-    </md-card-media>
-
+      </md-card-media>
+    </md-card-media-cover>
 
     <!-- buttons -->
     <md-card-expand id="buttons">
@@ -141,7 +178,8 @@
       fileSet: null,
       deleteId: null,
       deleteActive: false,
-      duration: 5000
+      duration: 5000,
+      vorschau: false
     }),
     methods: {
       picUpload() {
@@ -159,6 +197,32 @@
             resolve();
           });
         }
+      },
+      addBreak() {
+        this.add(null, null, "<br>")
+      },
+      addLink() {
+        this.add("<a href=\" URL \">", "LINK TEXT", "</a>")
+      },
+      addBold() {
+        this.add("<b>", " FETT", "</b>")
+      },
+      addItalic() {
+        this.add("<i>", "KURSIV", "</i>")
+      },
+      addParagraph() {
+        this.add("<p>\n", "PARAGRAPH", "\n</p>")
+      },
+      addHeadline() {
+        this.add("<h3>", "ÜBERSCHRIFT", "</h3>")
+      },
+      add(string1, middle, string2) {
+        var el = document.getElementById("inhalt");
+        var start = el.selectionStart;
+        var end = el.selectionEnd;
+        middle = start === end ? middle : this.editBody.slice(start, end);
+        console.log(el.selectionStart, el.selectionEnd)
+        this.editBody = [this.editBody.slice(0, start), string1, middle, string2, this.editBod.slice(end)].join('');
       },
       vor() {
         this.currentImageID += 1;
@@ -263,6 +327,14 @@
 </script>
 
 <style>
+  #vorschau {
+    border: 1px solid transparent;
+    border-color: var(--md-theme-default-primary, #7cb9ff);
+    padding: 10px;
+    border-radius: 3px;
+    min-height: 110px;
+  }
+
   button {
     z-index: 100;
   }
@@ -318,6 +390,10 @@
     box-shadow: 0px 0px 10px black;
     background: rgb(255, 43, 43);
     color: black;
+  }
+
+  .rightButton {
+    float: right;
   }
 
 </style>

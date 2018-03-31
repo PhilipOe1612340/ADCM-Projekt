@@ -115,7 +115,7 @@
 
       <!-- fist visit text -->
       <md-empty-state v-if="news.length == 0 && !edit" md-icon="add" md-label="Noch keine Artikel" md-description="Erstellen Sie Ihren ersten Artikel!">
-        <md-button class="md-primary md-raised" @click="showNewArticle">Artikel erstellen</md-button>
+        <md-button class="md-secondary md-raised" @click="showNewArticle">Artikel erstellen</md-button>
       </md-empty-state>
       <!-- bottom corner button -->
       <md-button id="dial" class="md-fab md-primary" @click="showNewArticle">
