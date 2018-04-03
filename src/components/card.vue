@@ -18,24 +18,26 @@
       <!-- body edit -->
       <div v-if="edit">
         <md-switch class="md-primary" v-model="vorschau">Vorschau</md-switch>
-        <md-button v-if="!vorschau" title="Link hinzufügen" class="md-icon-button rightButton" @click="addLink">
-          <md-icon>link</md-icon>
-        </md-button>
-        <md-button v-if="!vorschau" title="kuriv" class="md-icon-button rightButton" @click="addItalic">
-          <md-icon>format_italic</md-icon>
-        </md-button>
-        <md-button v-if="!vorschau" title="fett" class="md-icon-button rightButton" @click="addBold">
-          <md-icon>format_bold</md-icon>
-        </md-button>
-        <md-button v-if="!vorschau" title="Absatz hinzufügen" class="md-icon-button rightButton" @click="addBreak">
-          <md-icon>subdirectory_arrow_left</md-icon>
-        </md-button>
-        <md-button v-if="!vorschau" title="Paragraph hinzufügen" class="md-icon-button rightButton" @click="addParagraph">
-          <md-icon>view_headline</md-icon>
-        </md-button>
-        <md-button v-if="!vorschau" title="Überschrift hinzufügen" class="md-icon-button rightButton" @click="addHeadline">
-          <md-icon>line_weight</md-icon>
-        </md-button>
+        <div id="tools">
+          <md-button v-if="!vorschau" title="Link hinzufügen" class="md-icon-button rightButton" @click="addLink">
+            <md-icon>link</md-icon>
+          </md-button>
+          <md-button v-if="!vorschau" title="kuriv" class="md-icon-button rightButton" @click="addItalic">
+            <md-icon>format_italic</md-icon>
+          </md-button>
+          <md-button v-if="!vorschau" title="fett" class="md-icon-button rightButton" @click="addBold">
+            <md-icon>format_bold</md-icon>
+          </md-button>
+          <md-button v-if="!vorschau" title="Absatz hinzufügen" class="md-icon-button rightButton" @click="addBreak">
+            <md-icon>subdirectory_arrow_left</md-icon>
+          </md-button>
+          <md-button v-if="!vorschau" title="Paragraph hinzufügen" class="md-icon-button rightButton" @click="addParagraph">
+            <md-icon>view_headline</md-icon>
+          </md-button>
+          <md-button v-if="!vorschau" title="Überschrift hinzufügen" class="md-icon-button rightButton" @click="addHeadline">
+            <md-icon>line_weight</md-icon>
+          </md-button>
+        </div>
 
         <br>
         <div id="vorschau" v-if="vorschau">
@@ -409,6 +411,14 @@ export default {
   border-radius: 3px;
 }
 
+.rightButton {
+  float: right;
+}
+
+.md-switch {
+  margin-right: 100px;
+}
+
 #vor > *:hover,
 #zurueck > *:hover {
   text-shadow: none;
@@ -425,5 +435,16 @@ export default {
 
 .rightButton {
   float: right;
+}
+
+#tools {
+  display: inline-block;
+  position: relative;
+  top: 10px;
+}
+
+#tools > * {
+  margin-left: 0;
+  margin-right: 0;
 }
 </style>

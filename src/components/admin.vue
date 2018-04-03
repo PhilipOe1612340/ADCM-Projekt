@@ -84,12 +84,12 @@
 
               <br>
               <div id="vorschau" v-if="vorschau">
-                <span class="md-subheading" v-html="editBody"></span>
+                <span class="md-subheading" v-html="body"></span>
               </div>
               <form v-else class="md-layout" @submit.prevent="editCard">
                 <md-field>
                   <label for="Inhalt">Inhalt</label>
-                  <md-textarea id="inhalt" type="Inhalt" name="Inhalt" v-model="editBody" :disabled="sending" />
+                  <md-textarea id="inhalt" type="Inhalt" name="Inhalt" v-model="body" :disabled="sending" />
                 </md-field>
               </form>
               <form class="md-layout" id="border" @submit.prevent="editCard">
@@ -218,17 +218,17 @@ export default {
       var el = document.getElementById("inhalt");
       var start = el.selectionStart;
       var end = el.selectionEnd;
-      middle = start === end ? middle : this.editBody.slice(start, end);
-      if (this.editBody) {
-        this.editBody = [
-          this.editBody.slice(0, start),
+      middle = start === end ? middle : this.body.slice(start, end);
+      if (this.body) {
+        this.body = [
+          this.body.slice(0, start),
           string1,
           middle,
           string2,
-          this.editBody.slice(end)
+          this.body.slice(end)
         ].join("");
       } else {
-        this.editBody = [string1, middle, string2].join("");
+        this.body = [string1, middle, string2].join("");
       }
     },
     checkLogin() {
@@ -415,14 +415,6 @@ export default {
       },
       set(val) {
         this.$store.commit("editTitle", val);
-      }
-    },
-    editBody: {
-      get() {
-        return this.$store.getters.editBody;
-      },
-      set(val) {
-        this.$store.commit("editBody", val);
       }
     },
     type: {
