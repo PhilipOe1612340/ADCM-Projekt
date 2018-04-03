@@ -44,7 +44,7 @@
         </div>
       </div>
       <!-- Progress bar -->
-      <md-progress-bar v-if="sending" md-mode="indeterminate" />
+      <md-progress-bar v-if="sending" md-mode="query" />
       <div id="articlelayout">
         <!-- New article card -->
         <div v-if="edit">
@@ -62,16 +62,47 @@
               </form>
             </md-card-header>
             <md-card-content>
-              <form class="md-layout" @submit.prevent="createNewArticle">
+              <md-switch class="md-primary" v-model="vorschau">Vorschau</md-switch>
+              <md-button v-if="!vorschau" title="Link hinzufügen" class="md-icon-button rightButton" @click="addLink">
+                <md-icon>link</md-icon>
+              </md-button>
+              <md-button v-if="!vorschau" title="kuriv" class="md-icon-button rightButton" @click="addItalic">
+                <md-icon>format_italic</md-icon>
+              </md-button>
+              <md-button v-if="!vorschau" title="fett" class="md-icon-button rightButton" @click="addBold">
+                <md-icon>format_bold</md-icon>
+              </md-button>
+              <md-button v-if="!vorschau" title="Absatz hinzufügen" class="md-icon-button rightButton" @click="addBreak">
+                <md-icon>subdirectory_arrow_left</md-icon>
+              </md-button>
+              <md-button v-if="!vorschau" title="Paragraph hinzufügen" class="md-icon-button rightButton" @click="addParagraph">
+                <md-icon>view_headline</md-icon>
+              </md-button>
+              <md-button v-if="!vorschau" title="Überschrift hinzufügen" class="md-icon-button rightButton" @click="addHeadline">
+                <md-icon>line_weight</md-icon>
+              </md-button>
+
+              <br>
+              <div id="vorschau" v-if="vorschau">
+                <span class="md-subheading" v-html="editBody"></span>
+              </div>
+              <form v-else class="md-layout" @submit.prevent="editCard">
                 <md-field>
                   <label for="Inhalt">Inhalt</label>
-                  <md-textarea id="inhalt" type="Inhalt" name="Inhalt" v-model="body" :disabled="sending" />
-                </md-field>
-                <md-field>
-                  <label>Bild hochladen</label>
-                  <md-file v-model="fileSet" id="fileUpload" accept="image/*" placeholder="Bild hinzufügen" multiple/>
+                  <md-textarea id="inhalt" type="Inhalt" name="Inhalt" v-model="editBody" :disabled="sending" />
                 </md-field>
               </form>
+              <form class="md-layout" id="border" @submit.prevent="editCard">
+                <md-field id="Beschreibung">
+                  <label for="Beschreibung">Beschreibung</label>
+                  <md-input name="Beschreibung" autocomplete="off" v-model="desc" :disabled="sending" />
+                </md-field>
+                <md-field id="upload">
+                  <label>Bild hinzufügen</label>
+                  <md-file v-model="fileSet" accept="image/*" id="fileUpload" placeholder="Bild hinzufügen" />
+                </md-field>
+              </form>
+              <br>
               {{date}}
             </md-card-content>
             <md-card-actions>
@@ -139,22 +170,65 @@ export default {
   },
   data: () => ({
     fileSet: null,
+    desc: null,
     deleteId: null,
     deleteActive: false,
     edit: false,
-    duration: 5000
+    duration: 5000,
+    vorschau: false
   }),
   methods: {
     picUpload(id) {
       if (this.fileSet) {
-        return this.$store.dispatch("postImage", {
-          id,
-          files: document.getElementById("fileUpload").files
-        });
+        return this.$store
+          .dispatch("postImage", {
+            id,
+            files: document.getElementById("fileUpload").files,
+            description: this.desc
+          })
+          .then(() => {
+            this.fileSet = null;
+            this.desc = null;
+          });
       } else {
         return new Promise(resolve => {
           resolve();
         });
+      }
+    },
+    addBreak() {
+      this.add(null, null, "<br>");
+    },
+    addLink() {
+      this.add('<a href=" URL ">', "LINK TEXT", "</a>");
+    },
+    addBold() {
+      this.add("<b>", " FETT", "</b>");
+    },
+    addItalic() {
+      this.add("<i>", "KURSIV", "</i>");
+    },
+    addParagraph() {
+      this.add("<p>\n", "PARAGRAPH", "\n</p>");
+    },
+    addHeadline() {
+      this.add("<h3>", "ÜBERSCHRIFT", "</h3>");
+    },
+    add(string1, middle, string2) {
+      var el = document.getElementById("inhalt");
+      var start = el.selectionStart;
+      var end = el.selectionEnd;
+      middle = start === end ? middle : this.editBody.slice(start, end);
+      if (this.editBody) {
+        this.editBody = [
+          this.editBody.slice(0, start),
+          string1,
+          middle,
+          string2,
+          this.editBody.slice(end)
+        ].join("");
+      } else {
+        this.editBody = [string1, middle, string2].join("");
       }
     },
     checkLogin() {
@@ -404,6 +478,7 @@ export default {
 #loginCard {
   margin: auto;
   margin-top: 40px;
+  padding: 5px;
 }
 
 h1 {
@@ -426,7 +501,7 @@ input:-webkit-autofill {
   right: 5px;
   margin-right: 2%;
   margin-bottom: 3vh;
-  z-index: 200;
+  z-index: 30;
 }
 
 #refresh {
@@ -442,5 +517,16 @@ input:-webkit-autofill {
 textarea#inhalt {
   padding: 15px 15px 30px;
   height: 150px !important;
+}
+
+#border {
+  border: 1px solid lightgray;
+  border-radius: 3px;
+  padding-right: 10px;
+  padding-left: 10px;
+}
+
+#Beschreibung {
+  margin-left: 35px;
 }
 </style>

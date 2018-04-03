@@ -40,7 +40,7 @@
                 </div>
               </div>
             </md-card-content>
-            <md-progress-bar md-mode="indeterminate" v-if="loading" />
+            <md-progress-bar md-mode="query" v-if="loading" />
 
             <md-card-actions>
               <md-button type="submit" class="md-primary" @click="validateUser" :disabled="loading">Absenden</md-button>
@@ -50,7 +50,7 @@
 
         </form>
       </div>
-      <!-- <div class="md-layout-item md-large-size-35 md-medium-size-45 md-small-size-95"> 
+      <!-- <div class="md-layout-item md-large-size-35 md-medium-size-45 md-small-size-95">
         Agentur_dcm<br/>
         Agentur für Design und Fotographie</p>
         <p>dcm Galerie<br/>

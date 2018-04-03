@@ -159,18 +159,18 @@ export default {
   },
 
   postImage({ dispatch, commit, state }, obj) {
-    if (!obj.files) {
-      return new Promise.resolve();
+    if (!obj.file || !obj.description) {
+      return new Promise(res => res());
     }
     let data = new FormData();
-    for (let idx = 0; idx < obj.files.length; idx++) {
-      const file = obj.files[idx];
-      data.append("image", file, file.name);
-    }
+    const file = obj.file;
+    data.append("image", file, file.name);
+
     const config = {
       headers: {
         token: state.auth.token,
-        user: state.auth.name
+        user: state.auth.name,
+        desc: obj.description
       }
     };
     commit("clearError");
