@@ -102,8 +102,7 @@
                   <md-file v-model="fileSet" accept="image/*" id="fileUpload" placeholder="Bild hinzufügen" />
                 </md-field>
               </form>
-              <br>
-              {{date}}
+              <br> {{date}}
             </md-card-content>
             <md-card-actions>
               <md-button type="submit" v-if="!title && !body" class="md-secondary" @click.native="closeNewArticle" :disabled="sending">Schließen</md-button>
@@ -141,7 +140,7 @@
             v-on:delete="prepareDelete(card.articleId)" class="md-layout-item md-xlarge-size-40 md-medium-size-50 md-small-size-70 md-xsmall-size-100"
           />
         </div>
-      <br>
+        <br>
       </div>
 
       <!-- fist visit text -->
@@ -160,365 +159,370 @@
 </template>
 
 <script>
-import moment from "moment";
-import card from "./card.vue";
+  import moment from "moment";
+  import card from "./card.vue";
 
-export default {
-  name: "admin",
-  components: {
-    card
-  },
-  data: () => ({
-    fileSet: null,
-    desc: null,
-    deleteId: null,
-    deleteActive: false,
-    edit: false,
-    duration: 5000,
-    vorschau: false
-  }),
-  methods: {
-    picUpload(id) {
-      if (this.fileSet) {
-        return this.$store
-          .dispatch("postImage", {
-            id,
-            files: document.getElementById("fileUpload").files,
-            description: this.desc
-          })
-          .then(() => {
-            this.fileSet = null;
-            this.desc = null;
+  export default {
+    name: "admin",
+    components: {
+      card
+    },
+    data: () => ({
+      fileSet: null,
+      desc: null,
+      deleteId: null,
+      deleteActive: false,
+      edit: false,
+      duration: 5000,
+      vorschau: false
+    }),
+    methods: {
+      picUpload(id) {
+        if (this.fileSet) {
+          return this.$store
+            .dispatch("postImage", {
+              id,
+              files: document.getElementById("fileUpload").files,
+              description: this.desc
+            })
+            .then(() => {
+              this.fileSet = null;
+              this.desc = null;
+            });
+        } else {
+          return new Promise(resolve => {
+            resolve();
           });
-      } else {
-        return new Promise(resolve => {
-          resolve();
+        }
+      },
+      addBreak() {
+        this.add(null, null, "<br>");
+      },
+      addLink() {
+        this.add('<a href=" URL ">', "LINK TEXT", "</a>");
+      },
+      addBold() {
+        this.add("<b>", " FETT", "</b>");
+      },
+      addItalic() {
+        this.add("<i>", "KURSIV", "</i>");
+      },
+      addParagraph() {
+        this.add("<p>\n", "PARAGRAPH", "\n</p>");
+      },
+      addHeadline() {
+        this.add("<h3>", "ÜBERSCHRIFT", "</h3>");
+      },
+      add(string1, middle, string2) {
+        var el = document.getElementById("inhalt");
+        var start = el.selectionStart;
+        var end = el.selectionEnd;
+        middle = start === end ? middle : this.body.slice(start, end);
+        if (this.body) {
+          this.body = [
+            this.body.slice(0, start),
+            string1,
+            middle,
+            string2,
+            this.body.slice(end)
+          ].join("");
+        } else {
+          this.body = [string1, middle, string2].join("");
+        }
+      },
+      checkLogin() {
+        this.$store.commit("cookie", {
+          token: this.$cookies.get("token"),
+          name: this.$cookies.get("un")
         });
-      }
-    },
-    addBreak() {
-      this.add(null, null, "<br>");
-    },
-    addLink() {
-      this.add('<a href=" URL ">', "LINK TEXT", "</a>");
-    },
-    addBold() {
-      this.add("<b>", " FETT", "</b>");
-    },
-    addItalic() {
-      this.add("<i>", "KURSIV", "</i>");
-    },
-    addParagraph() {
-      this.add("<p>\n", "PARAGRAPH", "\n</p>");
-    },
-    addHeadline() {
-      this.add("<h3>", "ÜBERSCHRIFT", "</h3>");
-    },
-    add(string1, middle, string2) {
-      var el = document.getElementById("inhalt");
-      var start = el.selectionStart;
-      var end = el.selectionEnd;
-      middle = start === end ? middle : this.body.slice(start, end);
-      if (this.body) {
-        this.body = [
-          this.body.slice(0, start),
-          string1,
-          middle,
-          string2,
-          this.body.slice(end)
-        ].join("");
-      } else {
-        this.body = [string1, middle, string2].join("");
-      }
-    },
-    checkLogin() {
-      this.$store.commit("cookie", {
-        token: this.$cookies.get("token"),
-        name: this.$cookies.get("un")
-      });
-      this.$store.dispatch("getNews");
-    },
-    /**
-     * send login credentials to the server and set cookies
-     */
-    newLogin() {
-      this.$store.dispatch("login").then(token => {
-        this.$cookies.set("token", token, 20 * 60);
-        this.$cookies.set("un", this.name, 20 * 60);
-        this.pw = null;
-      });
-    },
-    /**
-     * show the NEW ARTCLE CARD and scroll up
-     */
-    showNewArticle() {
-      this.type = null;
-      this.edit = true;
-      this.fileSet = null;
-      setTimeout(() => {
-        window.scrollTo(0, 0);
-      }, 20);
-    },
-    filterNews(filter) {
-      return this.news.filter(el => el.type === filter);
-    },
-    /**
-     * close NEW ARTCLE CARD
-     */
-    closeNewArticle() {
-      this.newType = null;
-      this.edit = false;
-      this.$store.commit("title");
-      this.$store.commit("body");
-    },
-    cancelDelete() {
-      this.deleteActive = false;
-      this.deleteId = null;
-    },
-    prepareDelete(id) {
-      this.deleteActive = true;
-      this.deleteId = id;
-    },
-    reallyDelete() {
-      this.$store.dispatch("delete", this.deleteId);
-      this.deleteActive = false;
-    },
-    /**
-     * delete cookies and login creds
-     */
-    logout() {
-      this.$cookies.set("token", null, 1);
-      this.$cookies.set("un", null, 1);
-      this.$store.commit("cookie", {});
-    },
-    /**
-     * get news from server
-     */
-    loadNews() {
-      this.$store.dispatch("getNews");
-    },
-    refresh() {
-      this.cancelCardEdit();
-      this.loadNews();
-    },
-    /**
-     * post new article to the server, reload and hide card
-     */
-    createNewArticle() {
-      this.$store.dispatch("new").then(res => {
-        this.picUpload(res.data.articleId).then(() => {
-          this.$store.dispatch("getNews");
-          this.closeNewArticle();
+        this.$store.dispatch("getNews");
+      },
+      /**
+       * send login credentials to the server and set cookies
+       */
+      newLogin() {
+        this.$store.dispatch("login").then(token => {
+          this.$cookies.set("token", token, 20 * 60);
+          this.$cookies.set("un", this.name, 20 * 60);
+          this.pw = null;
         });
-      });
-    },
-    /**
-     * edit the content of a card by id
-     */
-    editCard(id) {
-      this.$store.commit("newsEdit", id);
-    },
-    closeCard(id) {
-      this.$store.commit("closeEdit");
-    },
+      },
+      /**
+       * show the NEW ARTCLE CARD and scroll up
+       */
+      showNewArticle() {
+        this.type = null;
+        this.edit = true;
+        this.fileSet = null;
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+        }, 20);
+      },
+      filterNews(filter) {
+        return this.news.filter(el => el.type === filter);
+      },
+      /**
+       * close NEW ARTCLE CARD
+       */
+      closeNewArticle() {
+        this.newType = null;
+        this.edit = false;
+        this.$store.commit("title");
+        this.$store.commit("body");
+      },
+      cancelDelete() {
+        this.deleteActive = false;
+        this.deleteId = null;
+      },
+      prepareDelete(id) {
+        this.deleteActive = true;
+        this.deleteId = id;
+      },
+      reallyDelete() {
+        this.$store.dispatch("delete", this.deleteId);
+        this.deleteActive = false;
+      },
+      /**
+       * delete cookies and login creds
+       */
+      logout() {
+        this.$cookies.set("token", null, 1);
+        this.$cookies.set("un", null, 1);
+        this.$store.commit("cookie", {});
+      },
+      /**
+       * get news from server
+       */
+      loadNews() {
+        this.$store.dispatch("getNews");
+      },
+      refresh() {
+        this.cancelCardEdit();
+        this.loadNews();
+      },
+      /**
+       * post new article to the server, reload and hide card
+       */
+      createNewArticle() {
+        this.$store.dispatch("new").then(res => {
+          this.picUpload(res.data.articleId).then(() => {
+            this.$store.dispatch("getNews");
+            this.closeNewArticle();
+          });
+        });
+      },
+      /**
+       * edit the content of a card by id
+       */
+      editCard(id) {
+        this.$store.commit("newsEdit", id);
+      },
+      closeCard(id) {
+        this.$store.commit("closeEdit");
+      },
 
-    /**
-     * cancel edit of article
-     */
-    cancelCardEdit() {
-      this.$store.commit("closeEdit");
+      /**
+       * cancel edit of article
+       */
+      cancelCardEdit() {
+        this.$store.commit("closeEdit");
+      }
+    },
+    beforeMount() {
+      this.checkLogin();
+      window['ga-disable-UA-113316168-1'] = navigator.doNotTrack === "1";
+      ga('set', 'page', '/admin');
+      ga('send', 'pageview');
+    },
+    computed: {
+      error: {
+        get() {
+          return this.$store.getters.getError;
+        },
+        set(val) {
+          this.$store.commit("clearError");
+        }
+      },
+      pw: {
+        get() {
+          return this.$store.getters.pw;
+        },
+        set(val) {
+          this.$store.commit("pw", val);
+        }
+      },
+      name: {
+        get() {
+          return this.$store.getters.name;
+        },
+        set(val) {
+          this.$store.commit("name", val);
+        }
+      },
+      title: {
+        get() {
+          return this.$store.getters.title;
+        },
+        set(val) {
+          this.$store.commit("title", val);
+        }
+      },
+      body: {
+        get() {
+          return this.$store.getters.body;
+        },
+        set(val) {
+          this.$store.commit("body", val);
+        }
+      },
+      sending() {
+        return this.$store.getters.getLoading;
+      },
+      loggedIn() {
+        return this.$store.getters.isLoggedIn;
+      },
+      /**
+            @description current date formated
+           */
+      date() {
+        moment.locale("de");
+        return moment(new Date()).format("LL");
+      },
+      /**
+            @description gets news array and converts date
+           */
+      news() {
+        var news = this.$store.getters.getNews;
+        moment.locale("de");
+        news.forEach(card => {
+          card.datum = moment(card.date).format("LL");
+        });
+        return news;
+      },
+      aNews() {
+        return this.filterNews("aktuelles");
+      },
+      lNews() {
+        return this.filterNews("leistungen");
+      },
+      kNews() {
+        return this.filterNews("kunden");
+      },
+      rNews() {
+        return this.filterNews("referenzen");
+      },
+      editTitle: {
+        get() {
+          return this.$store.getters.editTitle;
+        },
+        set(val) {
+          this.$store.commit("editTitle", val);
+        }
+      },
+      type: {
+        get() {
+          return this.$store.getters.getType;
+        },
+        set(val) {
+          this.$store.commit("setType", val);
+        }
+      },
+      editId() {
+        return this.$store.getters.editId;
+      }
     }
-  },
-  beforeMount() {
-    this.checkLogin();
-  },
-  computed: {
-    error: {
-      get() {
-        return this.$store.getters.getError;
-      },
-      set(val) {
-        this.$store.commit("clearError");
-      }
-    },
-    pw: {
-      get() {
-        return this.$store.getters.pw;
-      },
-      set(val) {
-        this.$store.commit("pw", val);
-      }
-    },
-    name: {
-      get() {
-        return this.$store.getters.name;
-      },
-      set(val) {
-        this.$store.commit("name", val);
-      }
-    },
-    title: {
-      get() {
-        return this.$store.getters.title;
-      },
-      set(val) {
-        this.$store.commit("title", val);
-      }
-    },
-    body: {
-      get() {
-        return this.$store.getters.body;
-      },
-      set(val) {
-        this.$store.commit("body", val);
-      }
-    },
-    sending() {
-      return this.$store.getters.getLoading;
-    },
-    loggedIn() {
-      return this.$store.getters.isLoggedIn;
-    },
-    /**
-          @description current date formated
-         */
-    date() {
-      moment.locale("de");
-      return moment(new Date()).format("LL");
-    },
-    /**
-          @description gets news array and converts date
-         */
-    news() {
-      var news = this.$store.getters.getNews;
-      moment.locale("de");
-      news.forEach(card => {
-        card.datum = moment(card.date).format("LL");
-      });
-      return news;
-    },
-    aNews() {
-      return this.filterNews("aktuelles");
-    },
-    lNews() {
-      return this.filterNews("leistungen");
-    },
-    kNews() {
-      return this.filterNews("kunden");
-    },
-    rNews() {
-      return this.filterNews("referenzen");
-    },
-    editTitle: {
-      get() {
-        return this.$store.getters.editTitle;
-      },
-      set(val) {
-        this.$store.commit("editTitle", val);
-      }
-    },
-    type: {
-      get() {
-        return this.$store.getters.getType;
-      },
-      set(val) {
-        this.$store.commit("setType", val);
-      }
-    },
-    editId() {
-      return this.$store.getters.editId;
-    }
-  }
-};
+  };
+
 </script>
 
 
 <style scoped>
-#articlelayout,
-#cardContainer {
-  width: 98vw;
-}
+  #articlelayout,
+  #cardContainer {
+    width: 98vw;
+  }
 
-#articleHeader {
-  max-width: 1300px;
-  margin: auto;
-}
+  #articleHeader {
+    max-width: 1300px;
+    margin: auto;
+  }
 
-#card > * {
-  word-wrap: break-word;
-  overflow: hidden;
-}
+  #card>* {
+    word-wrap: break-word;
+    overflow: hidden;
+  }
 
-#komplett {
-  padding-bottom: 30vh;
-}
+  #komplett {
+    padding-bottom: 30vh;
+  }
 
-#card {
-  min-width: 40vw;
-  /* min-width: 300px; */
-  margin: 0 1% 15px 1%;
-  display: block;
-}
+  #card {
+    min-width: 40vw;
+    /* min-width: 300px; */
+    margin: 0 1% 15px 1%;
+    display: block;
+  }
 
-#card,
-#newCard,
-#loginCard {
-  max-width: 1000px;
-}
+  #card,
+  #newCard,
+  #loginCard {
+    max-width: 1000px;
+  }
 
-#newCard,
-#loginCard {
-  margin: auto;
-  margin-top: 40px;
-  padding: 5px;
-}
+  #newCard,
+  #loginCard {
+    margin: auto;
+    margin-top: 40px;
+    padding: 5px;
+  }
 
-h1 {
-  text-align: center;
-}
+  h1 {
+    text-align: center;
+  }
 
-#CardDescription {
-  margin-top: 10vh;
-  margin-left: 20% !important;
-  margin-bottom: 10px !important;
-}
+  #CardDescription {
+    margin-top: 10vh;
+    margin-left: 20% !important;
+    margin-bottom: 10px !important;
+  }
 
-input:-webkit-autofill {
-  -webkit-box-shadow: 0 0 0 30px rgb(90, 90, 90) inset;
-}
+  input:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0 30px rgb(90, 90, 90) inset;
+  }
 
-#dial {
-  position: fixed;
-  bottom: 40px;
-  right: 5px;
-  margin-right: 2%;
-  margin-bottom: 3vh;
-  z-index: 30;
-}
+  #dial {
+    position: fixed;
+    bottom: 40px;
+    right: 5px;
+    margin-right: 2%;
+    margin-bottom: 3vh;
+    z-index: 30;
+  }
 
-#refresh {
-  padding-top: 11px;
-}
+  #refresh {
+    padding-top: 11px;
+  }
 
-#logout {
-  padding-top: 8px;
-  margin-right: 0;
-  float: right;
-}
+  #logout {
+    padding-top: 8px;
+    margin-right: 0;
+    float: right;
+  }
 
-textarea#inhalt {
-  padding: 15px 15px 30px;
-  height: 150px !important;
-}
+  textarea#inhalt {
+    padding: 15px 15px 30px;
+    height: 150px !important;
+  }
 
-#border {
-  border: 1px solid lightgray;
-  border-radius: 3px;
-  padding-right: 10px;
-  padding-left: 10px;
-}
+  #border {
+    border: 1px solid lightgray;
+    border-radius: 3px;
+    padding-right: 10px;
+    padding-left: 10px;
+  }
 
-#Beschreibung {
-  margin-left: 35px;
-}
+  #Beschreibung {
+    margin-left: 35px;
+  }
+
 </style>
