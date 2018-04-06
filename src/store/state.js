@@ -1,11 +1,13 @@
 export default {
   apiState: {
     error: null,
-    loading: false
+    loading: false,
+    success: "",
+    sendable: true,
   },
   news: [],
   settings: {
-    serverIp: "http://18.219.159.9:3000"
+    serverIp: "http://13.59.241.105:3000"
   },
   auth: {
     isLoggedIn: false,
@@ -15,7 +17,8 @@ export default {
   },
   newPost: {
     title: null,
-    body: null
+    body: null,
+    type: null,
   },
   edit: {
     title: null,

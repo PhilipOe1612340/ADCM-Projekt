@@ -15,46 +15,42 @@
                 <div class="md-layout-item md-small-size-100">
                   <md-field :class="getValidationClass('name')">
                     <label for="first-name">Name</label>
-                    <md-input name="first-name" id="first-name" autocomplete="given-name" v-model="form.name" :disabled="sending" />
+                    <md-input type="text" name="first-name" id="first-name" autocomplete="name" v-model="form.name" :disabled="loading" />
                     <span class="md-error" v-if="!$v.form.name.required">Ihr Name wird benötigt</span>
                     <span class="md-error" v-else-if="!$v.form.name.minlength">Invalid first name</span>
                   </md-field>
-                </div>
-              </div>
 
-              <md-field :class="getValidationClass('email')">
-                <label for="email">Email</label>
-                <md-input type="email" name="email" id="email" autocomplete="email" v-model="form.email" :disabled="sending" />
-                <span class="md-error" v-if="!$v.form.email.required">Ihre Email wird benötigt</span>
-                <span class="md-error" v-else-if="!$v.form.email.email">Invalid email</span>
-              </md-field>
+                  <md-field :class="getValidationClass('email')">
+                    <label for="email">Email</label>
+                    <md-input type="email" name="email" id="email" autocomplete="email" v-model="form.email" :disabled="loading" />
+                    <span class="md-error" v-if="!$v.form.email.required">Ihre Email wird benötigt</span>
+                    <span class="md-error" v-else-if="!$v.form.email.email">Email falsch</span>
+                  </md-field>
 
-              <div class="md-layout md-gutter">
-                <div class="md-layout-item md-small-size-100">
                   <md-field :class="getValidationClass('betreff')">
                     <label for="first-name">Betreff</label>
-                    <md-input name="first-name" autocomplete="given-name" v-model="form.betreff" :disabled="sending" />
+                    <md-input type="search" name="first-name" autocomplete="off" v-model="form.betreff" :disabled="loading" />
+                    <span class="md-error" v-if="!$v.form.betreff.required">Betreff wird benötigt</span>
+                  </md-field>
+
+                  <md-field>
+                    <label>Ihre Mitteilung</label>
+                    <md-textarea v-model="form.text" md-counter="300"></md-textarea>
                   </md-field>
                 </div>
               </div>
-
-              <md-field>
-                <label>Ihre Mitteilung</label>
-                <md-textarea v-model="form.text" md-counter="300"></md-textarea>
-              </md-field>
             </md-card-content>
-
-            <md-progress-bar md-mode="indeterminate" v-if="sending" />
+            <md-progress-bar md-mode="query" v-if="loading" />
 
             <md-card-actions>
-              <md-button type="submit" class="md-primary" @click="validateUser" :disabled="sending">Absenden</md-button>
+              <md-button type="submit" class="md-primary" @click="validateUser" :disabled="loading">Absenden</md-button>
             </md-card-actions>
           </md-card>
 
-          <md-snackbar :md-active.sync="userSaved">Ihre Nachricht wurde zugestellt</md-snackbar>
+
         </form>
       </div>
-      <div class="md-layout-item md-large-size-35 md-medium-size-45 md-small-size-95">
+      <!-- <div class="md-layout-item md-large-size-35 md-medium-size-45 md-small-size-95">
         Agentur_dcm<br/>
         Agentur für Design und Fotographie</p>
         <p>dcm Galerie<br/>
@@ -66,7 +62,7 @@
         <p>Tel	+49 (0)711 300 36 91<br/> </p>
         Email <a href="mailto:info@agentur-dcm.de">info@agentur-dcm.de</a>
       </div>
-      <div class="md-layout-item md-large-size-5 md-medium-hide"></div>
+      <div class="md-layout-item md-large-size-5 md-medium-hide"></div>-->
     </div>
   </div>
 </template>
@@ -86,11 +82,11 @@ export default {
   mixins: [validationMixin],
   data: () => ({
     form: {
-      Name: null,
-      email: null
-    },
-    userSaved: false,
-    sending: false
+      name: null,
+      email: null,
+      text: null,
+      betreff: null
+    }
   }),
   validations: {
     form: {
@@ -115,7 +111,6 @@ export default {
   methods: {
     getValidationClass(fieldName) {
       const field = this.$v.form[fieldName];
-
       if (field) {
         return {
           "md-invalid": field.$invalid && field.$dirty
@@ -123,22 +118,26 @@ export default {
       }
     },
     clearForm() {
-      this.$v.$reset();
       this.form.name = null;
-      this.form.email = null;
+      this.form.email = "";
       this.form.betreff = null;
       this.form.text = null;
+      this.$v.form.name.$reset();
+      this.$v.form.email.$reset();
+      this.$v.form.betreff.$reset();
+      this.$v.form.text.$reset();
     },
     saveUser() {
-      this.sending = true;
-
-      // Instead of this timeout, here you can call your API
-      window.setTimeout(() => {
-        this.lastUser = `${this.form.name} ${this.form.lastName}`;
-        this.userSaved = true;
-        this.sending = false;
-        this.clearForm();
-      }, 1500);
+      this.$store
+        .dispatch("postMessageForm", {
+          email: this.form.email,
+          betreff: this.form.betreff,
+          name: this.form.name,
+          text: this.form.text
+        })
+        .then(() => {
+          this.clearForm();
+        });
     },
     validateUser() {
       this.$v.$touch();
@@ -146,6 +145,19 @@ export default {
       if (!this.$v.$invalid) {
         this.saveUser();
       }
+    }
+  },
+  computed: {
+    error: {
+      get() {
+        return this.$store.getters.getError;
+      },
+      set(val) {
+        this.$store.commit("clearError");
+      }
+    },
+    loading() {
+      return this.$store.getters.getLoading;
     }
   }
 };
@@ -167,5 +179,9 @@ export default {
     display: block;
     background: md-get-palette-color(red, 200);
   }
+}
+
+input:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 30px rgb(90, 90, 90) inset;
 }
 </style>

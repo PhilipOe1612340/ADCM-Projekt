@@ -44,12 +44,16 @@
         </div>
       </div>
       <!-- Progress bar -->
-      <md-progress-bar v-if="sending" md-mode="indeterminate" />
+      <md-progress-bar v-if="sending" md-mode="query" />
       <div id="articlelayout">
         <!-- New article card -->
         <div v-if="edit">
-          <md-card id="card">
+          <md-card id="newCard">
             <md-card-header>
+              <md-radio class="md-primary" v-model="type" value="leistungen">Leistungen</md-radio>
+              <md-radio class="md-primary" v-model="type" value="referenzen">Referenzen</md-radio>
+              <md-radio class="md-primary" v-model="type" value="kunden">Kunden</md-radio>
+              <md-radio class="md-primary" v-model="type" value="aktuelles">Aktuelles</md-radio>
               <form class="md-layout" @submit.prevent="createNewArticle">
                 <md-field>
                   <label for="Überschrift">Überschrift</label>
@@ -58,54 +62,96 @@
               </form>
             </md-card-header>
             <md-card-content>
-              <form class="md-layout" @submit.prevent="createNewArticle">
+              <md-switch class="md-primary" v-model="vorschau">Vorschau</md-switch>
+              <md-button v-if="!vorschau" title="Link hinzufügen" class="md-icon-button rightButton" @click="addLink">
+                <md-icon>link</md-icon>
+              </md-button>
+              <md-button v-if="!vorschau" title="kuriv" class="md-icon-button rightButton" @click="addItalic">
+                <md-icon>format_italic</md-icon>
+              </md-button>
+              <md-button v-if="!vorschau" title="fett" class="md-icon-button rightButton" @click="addBold">
+                <md-icon>format_bold</md-icon>
+              </md-button>
+              <md-button v-if="!vorschau" title="Absatz hinzufügen" class="md-icon-button rightButton" @click="addBreak">
+                <md-icon>subdirectory_arrow_left</md-icon>
+              </md-button>
+              <md-button v-if="!vorschau" title="Paragraph hinzufügen" class="md-icon-button rightButton" @click="addParagraph">
+                <md-icon>view_headline</md-icon>
+              </md-button>
+              <md-button v-if="!vorschau" title="Überschrift hinzufügen" class="md-icon-button rightButton" @click="addHeadline">
+                <md-icon>line_weight</md-icon>
+              </md-button>
+
+              <br>
+              <div id="vorschau" v-if="vorschau">
+                <span class="md-subheading" v-html="body"></span>
+              </div>
+              <form v-else class="md-layout" @submit.prevent="editCard">
                 <md-field>
                   <label for="Inhalt">Inhalt</label>
                   <md-textarea id="inhalt" type="Inhalt" name="Inhalt" v-model="body" :disabled="sending" />
                 </md-field>
-                <md-field>
-                  <label>Bild hochladen</label>
-                  <md-file v-model="fileSet" id="fileUpload" accept="image/*" placeholder="Bild hinzufügen" />
+              </form>
+              <form class="md-layout" id="border" @submit.prevent="editCard">
+                <md-field id="Beschreibung">
+                  <label for="Beschreibung">Beschreibung</label>
+                  <md-input name="Beschreibung" autocomplete="off" v-model="desc" :disabled="sending" />
+                </md-field>
+                <md-field id="upload">
+                  <label>Bild hinzufügen</label>
+                  <md-file v-model="fileSet" accept="image/*" id="fileUpload" placeholder="Bild hinzufügen" />
                 </md-field>
               </form>
+              <br>
               {{date}}
             </md-card-content>
             <md-card-actions>
               <md-button type="submit" v-if="!title && !body" class="md-secondary" @click.native="closeNewArticle" :disabled="sending">Schließen</md-button>
               <md-button type="submit" v-else class="md-secondary" @click.native="closeNewArticle" :disabled="sending">Löschen</md-button>
-              <md-button type="submit" class="md-primary" @click.native="createNewArticle" :disabled="!title || !body">Absenden</md-button>
+              <md-button type="submit" class="md-primary" @click.native="createNewArticle" :disabled="!title || !body || !type">Absenden</md-button>
             </md-card-actions>
           </md-card>
         </div>
         <br>
 
         <!-- Main list of articels -->
-        <div v-for="card in news" :key="card.articleId">
-          <card v-bind="card" editable="true" :edit="editId == card.articleId" v-on:delete="prepareDelete(card.articleId)" />
-          <br>
+        <div class="md-layout md-gutter md-alignment-top-center">
+          <span v-if="lNews.length > 0" id="CardDescription" class="md-layout-item md-size-100 md-display-3">
+            Leistungen
+          </span>
+          <card id="card" v-bind="card" v-for="card in lNews" :key="card.articleId" :editable="true" :edit="editId == card.articleId"
+            v-on:delete="prepareDelete(card.articleId)" class="md-layout-item md-xlarge-size-40 md-medium-size-50 md-small-size-70 md-xsmall-size-100"
+          />
+          <span v-if="rNews.length > 0" id="CardDescription" class="md-layout-item md-size-100 md-display-3">
+            Referenzen
+          </span>
+          <card id="card" v-bind="card" v-for="card in rNews" :key="card.articleId" :editable="true" :edit="editId == card.articleId"
+            v-on:delete="prepareDelete(card.articleId)" class="md-layout-item md-xlarge-size-40 md-medium-size-50 md-small-size-70 md-xsmall-size-100"
+          />
+          <span v-if="kNews.length > 0" id="CardDescription" class="md-layout-item md-size-100 md-display-3">
+            Kunden
+          </span>
+          <card id="card" v-bind="card" v-for="card in kNews" :key="card.articleId" :editable="true" :edit="editId == card.articleId"
+            v-on:delete="prepareDelete(card.articleId)" class="md-layout-item md-xlarge-size-40 md-medium-size-50 md-small-size-70 md-xsmall-size-100"
+          />
+          <span v-if="aNews.length > 0" id="CardDescription" class="md-layout-item md-size-100 md-display-3">
+            Aktuelles
+          </span>
+          <card id="card" v-bind="card" v-for="card in aNews" :key="card.articleId" :editable="true" :edit="editId == card.articleId"
+            v-on:delete="prepareDelete(card.articleId)" class="md-layout-item md-xlarge-size-40 md-medium-size-50 md-small-size-70 md-xsmall-size-100"
+          />
         </div>
+      <br>
       </div>
 
       <!-- fist visit text -->
       <md-empty-state v-if="news.length == 0 && !edit" md-icon="add" md-label="Noch keine Artikel" md-description="Erstellen Sie Ihren ersten Artikel!">
-        <md-button class="md-primary md-raised" @click="showNewArticle">Artikel erstellen</md-button>
+        <md-button class="md-secondary md-raised" @click="showNewArticle">Artikel erstellen</md-button>
       </md-empty-state>
       <!-- bottom corner button -->
-      <md-speed-dial class="md-bottom-right" md-direction="top" id="fab" md-event="hover">
-        <md-speed-dial-target class="md-primary">
-          <md-icon class="md-morph-initial">add</md-icon>
-          <md-icon class="md-morph-final">close</md-icon>
-        </md-speed-dial-target>
-        <!-- button buttons -->
-        <md-speed-dial-content>
-          <md-button v-shortkey="['ctrl', 'alt', 'o']" @shortkey="showNewArticle" @click="showNewArticle" class="md-icon-button">
-            <md-icon>add</md-icon>
-          </md-button>
-          <md-button class="md-icon-button">
-            <md-icon>event</md-icon>
-          </md-button>
-        </md-speed-dial-content>
-      </md-speed-dial>
+      <md-button id="dial" class="md-fab md-primary" @click="showNewArticle">
+        <md-icon>add</md-icon>
+      </md-button>
       <!-- Delete Confirm Tab -->
       <md-dialog-confirm :md-active.sync="deleteActive" md-title="Wollen Sie diesen Artikel wirklich löschen?" md-confirm-text="Löschen"
         md-cancel-text="Abbrechen" @md-cancel="cancelDelete" @md-confirm="reallyDelete" />
@@ -124,26 +170,66 @@ export default {
   },
   data: () => ({
     fileSet: null,
+    desc: null,
     deleteId: null,
     deleteActive: false,
     edit: false,
-    duration: 5000
+    duration: 5000,
+    vorschau: false
   }),
   methods: {
     picUpload(id) {
       if (this.fileSet) {
-        return this.$store.dispatch("postImage", {
-          id,
-          file: document.getElementById("fileUpload").files[0]
-        });
+        return this.$store
+          .dispatch("postImage", {
+            id,
+            files: document.getElementById("fileUpload").files,
+            description: this.desc
+          })
+          .then(() => {
+            this.fileSet = null;
+            this.desc = null;
+          });
       } else {
         return new Promise(resolve => {
           resolve();
         });
       }
     },
-    clearError() {
-      this.$store.commit("clearError");
+    addBreak() {
+      this.add(null, null, "<br>");
+    },
+    addLink() {
+      this.add('<a href=" URL ">', "LINK TEXT", "</a>");
+    },
+    addBold() {
+      this.add("<b>", " FETT", "</b>");
+    },
+    addItalic() {
+      this.add("<i>", "KURSIV", "</i>");
+    },
+    addParagraph() {
+      this.add("<p>\n", "PARAGRAPH", "\n</p>");
+    },
+    addHeadline() {
+      this.add("<h3>", "ÜBERSCHRIFT", "</h3>");
+    },
+    add(string1, middle, string2) {
+      var el = document.getElementById("inhalt");
+      var start = el.selectionStart;
+      var end = el.selectionEnd;
+      middle = start === end ? middle : this.body.slice(start, end);
+      if (this.body) {
+        this.body = [
+          this.body.slice(0, start),
+          string1,
+          middle,
+          string2,
+          this.body.slice(end)
+        ].join("");
+      } else {
+        this.body = [string1, middle, string2].join("");
+      }
     },
     checkLogin() {
       this.$store.commit("cookie", {
@@ -153,8 +239,8 @@ export default {
       this.$store.dispatch("getNews");
     },
     /**
-        send login credentials to the server and set cookies
-       */
+     * send login credentials to the server and set cookies
+     */
     newLogin() {
       this.$store.dispatch("login").then(token => {
         this.$cookies.set("token", token, 20 * 60);
@@ -163,18 +249,24 @@ export default {
       });
     },
     /**
-        show the NEW ARTCLE CARD and scroll up
-       */
+     * show the NEW ARTCLE CARD and scroll up
+     */
     showNewArticle() {
+      this.type = null;
       this.edit = true;
+      this.fileSet = null;
       setTimeout(() => {
         window.scrollTo(0, 0);
       }, 20);
     },
+    filterNews(filter) {
+      return this.news.filter(el => el.type === filter);
+    },
     /**
-        close NEW ARTCLE CARD
-       */
+     * close NEW ARTCLE CARD
+     */
     closeNewArticle() {
+      this.newType = null;
       this.edit = false;
       this.$store.commit("title");
       this.$store.commit("body");
@@ -192,16 +284,16 @@ export default {
       this.deleteActive = false;
     },
     /**
-        delete cookies and login creds
-       */
+     * delete cookies and login creds
+     */
     logout() {
       this.$cookies.set("token", null, 1);
       this.$cookies.set("un", null, 1);
       this.$store.commit("cookie", {});
     },
     /**
-        get news from server
-       */
+     * get news from server
+     */
     loadNews() {
       this.$store.dispatch("getNews");
     },
@@ -210,8 +302,8 @@ export default {
       this.loadNews();
     },
     /**
-        post new article to the server, reload and hide card
-       */
+     * post new article to the server, reload and hide card
+     */
     createNewArticle() {
       this.$store.dispatch("new").then(res => {
         this.picUpload(res.data.articleId).then(() => {
@@ -221,20 +313,18 @@ export default {
       });
     },
     /**
-        edit the content of a card by id
-       */
+     * edit the content of a card by id
+     */
     editCard(id) {
       this.$store.commit("newsEdit", id);
     },
     closeCard(id) {
       this.$store.commit("closeEdit");
     },
+
     /**
-        send the modified content and reload
-       */
-    /**
-        cancel edit of article
-       */
+     * cancel edit of article
+     */
     cancelCardEdit() {
       this.$store.commit("closeEdit");
     }
@@ -243,6 +333,14 @@ export default {
     this.checkLogin();
   },
   computed: {
+    error: {
+      get() {
+        return this.$store.getters.getError;
+      },
+      set(val) {
+        this.$store.commit("clearError");
+      }
+    },
     pw: {
       get() {
         return this.$store.getters.pw;
@@ -275,9 +373,6 @@ export default {
         this.$store.commit("body", val);
       }
     },
-    error() {
-      return this.$store.getters.getError;
-    },
     sending() {
       return this.$store.getters.getLoading;
     },
@@ -285,15 +380,15 @@ export default {
       return this.$store.getters.isLoggedIn;
     },
     /**
-        @description current date formated
-       */
+          @description current date formated
+         */
     date() {
       moment.locale("de");
       return moment(new Date()).format("LL");
     },
     /**
-        @description gets news array and converts date
-       */
+          @description gets news array and converts date
+         */
     news() {
       var news = this.$store.getters.getNews;
       moment.locale("de");
@@ -301,6 +396,18 @@ export default {
         card.datum = moment(card.date).format("LL");
       });
       return news;
+    },
+    aNews() {
+      return this.filterNews("aktuelles");
+    },
+    lNews() {
+      return this.filterNews("leistungen");
+    },
+    kNews() {
+      return this.filterNews("kunden");
+    },
+    rNews() {
+      return this.filterNews("referenzen");
     },
     editTitle: {
       get() {
@@ -310,12 +417,12 @@ export default {
         this.$store.commit("editTitle", val);
       }
     },
-    editBody: {
+    type: {
       get() {
-        return this.$store.getters.editBody;
+        return this.$store.getters.getType;
       },
       set(val) {
-        this.$store.commit("editBody", val);
+        this.$store.commit("setType", val);
       }
     },
     editId() {
@@ -333,34 +440,60 @@ export default {
 }
 
 #articleHeader {
-  width: 95%;
   max-width: 1300px;
   margin: auto;
 }
 
+#card > * {
+  word-wrap: break-word;
+  overflow: hidden;
+}
+
+#komplett {
+  padding-bottom: 30vh;
+}
+
+#card {
+  min-width: 40vw;
+  /* min-width: 300px; */
+  margin: 0 1% 15px 1%;
+  display: block;
+}
+
 #card,
+#newCard,
 #loginCard {
-  width: 60%;
   max-width: 1000px;
-  min-width: 350px;
+}
+
+#newCard,
+#loginCard {
   margin: auto;
-  margin-top: 50px;
-  padding: 10px;
+  margin-top: 40px;
+  padding: 5px;
 }
 
 h1 {
   text-align: center;
 }
 
-#komplett {
-  width: 98vw;
-  padding: 10px;
+#CardDescription {
+  margin-top: 10vh;
+  margin-left: 20% !important;
+  margin-bottom: 10px !important;
 }
 
-#fab {
+input:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 30px rgb(90, 90, 90) inset;
+}
+
+#dial {
   position: fixed;
-  right: 30px;
-  bottom: 50px;
+  bottom: 40px;
+  right: 5px;
+  margin-right: 2%;
+  margin-bottom: 3vh;
+  z-index: 30;
 }
 
 #refresh {
@@ -376,5 +509,16 @@ h1 {
 textarea#inhalt {
   padding: 15px 15px 30px;
   height: 150px !important;
+}
+
+#border {
+  border: 1px solid lightgray;
+  border-radius: 3px;
+  padding-right: 10px;
+  padding-left: 10px;
+}
+
+#Beschreibung {
+  margin-left: 35px;
 }
 </style>

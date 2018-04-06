@@ -17,45 +17,125 @@
     <md-card-content>
       <!-- body edit -->
       <div v-if="edit">
-        <form class="md-layout" @submit.prevent="editCard">
+        <md-switch class="md-primary" v-model="vorschau">Vorschau</md-switch>
+        <div id="tools">
+          <md-button v-if="!vorschau" title="Link hinzufügen" class="md-icon-button rightButton" @click="addLink">
+            <md-icon>link</md-icon>
+          </md-button>
+          <md-button v-if="!vorschau" title="kuriv" class="md-icon-button rightButton" @click="addItalic">
+            <md-icon>format_italic</md-icon>
+          </md-button>
+          <md-button v-if="!vorschau" title="fett" class="md-icon-button rightButton" @click="addBold">
+            <md-icon>format_bold</md-icon>
+          </md-button>
+          <md-button v-if="!vorschau" title="Absatz hinzufügen" class="md-icon-button rightButton" @click="addBreak">
+            <md-icon>subdirectory_arrow_left</md-icon>
+          </md-button>
+          <md-button v-if="!vorschau" title="Paragraph hinzufügen" class="md-icon-button rightButton" @click="addParagraph">
+            <md-icon>view_headline</md-icon>
+          </md-button>
+          <md-button v-if="!vorschau" title="Überschrift hinzufügen" class="md-icon-button rightButton" @click="addHeadline">
+            <md-icon>line_weight</md-icon>
+          </md-button>
+        </div>
+
+        <br>
+        <div id="vorschau" v-if="vorschau">
+          <span class="md-subheading" v-html="editBody"></span>
+        </div>
+        <form v-else class="md-layout" @submit.prevent="editCard">
           <md-field>
             <label for="Inhalt">Inhalt</label>
             <md-textarea id="inhalt" type="Inhalt" name="Inhalt" v-model="editBody" :disabled="sending" />
           </md-field>
-          <md-field>
-            <label>Bild hochladen</label>
-            <md-file v-model="fileSet" accept="image/*" id="fileUpload" :placeholder="image?image + ' ersetzen':'Bild hinzufügen'"
+        </form>
+
+        <md-card-media-cover v-if="images.length > 0" md-solid>
+          <md-card-media md-ratio="4:3" v-touch:swipe.left="vor" v-touch:swipe.right="zurueck">
+            <img class="image" v-if="images.length > currentImageID" :srcset="images[currentImageID].src + '-320.webp 320w,' +
+                  images[currentImageID].src + '-640.webp 640w,' +
+                  images[currentImageID].src + '-960.webp 960w'" :src="images[currentImageID].src" :alt="images[currentImageID].desc"
             />
+            <md-card-area v-if="images[currentImageID].desc != null">
+              <md-card-header>
+                <span class="md-title">{{images[currentImageID].desc}}</span>
+              </md-card-header>
+            </md-card-area>
+            <div v-if="images.length > 1">
+              <div id="zurueck">
+                <button title="vorheriges Bild" @click="zurueck">&#10094;</button>
+              </div>
+              <div id="vor">
+                <button title="nächstes Bild" @click="vor">&#10095;</button>
+              </div>
+              <md-progress-bar md-mode="determinate" :md-value="(currentImageID+1)/images.length*100"></md-progress-bar>
+            </div>
+            <div id="loeschen">
+              <button title="Bild löschen" @click="loeschen">&#9587;</button>
+            </div>
+          </md-card-media>
+        </md-card-media-cover>
+        <form class="md-layout" id="border" @submit.prevent="editCard">
+          <md-field id="Beschreibung">
+            <label for="Beschreibung">Beschreibung</label>
+            <md-input name="Beschreibung" autocomplete="off" v-model="desc" :disabled="sending" />
+          </md-field>
+          <md-field id="upload">
+            <label>Bild hinzufügen</label>
+            <md-file v-model="fileSet" accept="image/*" id="fileUpload" placeholder="Bild hinzufügen" />
           </md-field>
         </form>
       </div>
       <!-- normal body -->
       <div v-else>
-        <span v-html="body"></span>
-        <br> {{datum}}
+        <div v-if="editable || images.length < 1">
+          <span v-html="body" />
+          <br>
+          {{datum}}
+        </div>
       </div>
     </md-card-content>
-    <md-card-media v-if="image && image.indexOf('undefined') == -1 && editId != articleId">
-      <img v-if="image" :src="image" :alt="image" />
-      <br>
-    </md-card-media>
+    <md-card-media-cover v-if="images.length > currentImageID && editId != articleId" md-solid>
+      <md-card-media md-ratio="4:3" v-touch:swipe.left="vor" v-touch:swipe.right="zurueck">
+        <img class="image" v-if="images.length > currentImageID" :srcset="images[currentImageID].src + '-320.webp 320w,' +
+            images[currentImageID].src + '-640.webp 640w,' +
+            images[currentImageID].src + '-960.webp 960w'" :src="images[currentImageID].src" :alt="images[currentImageID].desc"
+        />
+        <md-card-area v-if="images[currentImageID].desc != null">
+          <md-card-header>
+            <span class="md-title">{{images[currentImageID].desc}}</span>
+          </md-card-header>
+        </md-card-area>
+        <div v-if="images.length > 1">
+          <div id="zurueck">
+            <button title="vorheriges Bild" @click="zurueck">&#10094;</button>
+          </div>
+          <div id="vor">
+            <button title="nächstes Bild" @click="vor">&#10095;</button>
+          </div>
+          <md-progress-bar md-mode="determinate" :md-value="((currentImageID+1)/images.length)*100"></md-progress-bar>
+        </div>
+      </md-card-media>
+    </md-card-media-cover>
+
     <!-- buttons -->
-    <md-card-expand>
-      <md-card-actions md-alignment="space-between" >
+    <md-card-expand id="buttons">
+      <md-card-actions md-alignment="space-between">
         <div v-if="editable">
           <md-button v-if="edit" @click.native="cancelCardEdit(articleId)" class="md-primary">Abbrechen</md-button>
           <md-button v-else @click.native="editCard" class="md-primary">Bearbeiten</md-button>
           <md-button v-if="edit" @click.native="sendEdit" class="md-primary">Speichern</md-button>
           <md-button v-else @click.native="emitDelete" class="md-primary">Löschen</md-button>
         </div>
-        <md-card-expand-trigger v-if="!edit">
-            <md-button>mehr lesen</md-button>
+        <md-card-expand-trigger v-if="!editable && images.length > 0">
+          <md-button>mehr lesen</md-button>
         </md-card-expand-trigger>
       </md-card-actions>
 
       <md-card-expand-content>
         <md-card-content>
           <span v-html="body"></span>
+          <br> {{datum}}
         </md-card-content>
       </md-card-expand-content>
     </md-card-expand>
@@ -85,44 +165,102 @@ export default {
       type: Boolean,
       default: false
     },
-    image: {
-      validator: function(value) {
-        return value > 10;
-      }
+    images: {
+      type: Array,
+      default: () => []
     },
     articleId: {
       validator: function(value) {
         return value > 0;
       }
+    },
+    type: {
+      type: String,
+      default: "aktuelles"
     }
   },
 
   // [articleId,datum,body,title,edit,image],
   data: () => ({
+    currentImageID: 0,
+    vorschau: false,
     fileSet: null,
     deleteId: null,
     deleteActive: false,
-    duration: 5000
+    duration: 5000,
+    desc: null
   }),
   methods: {
     picUpload() {
       if (this.fileSet) {
-        return this.$store.dispatch("postImage", {
-          id: this.articleId,
-          file: document.getElementById("fileUpload").files[0]
-        });
-      } else {
-        return new Promise(resolve => {
-          resolve();
-        });
+        return this.$store
+          .dispatch("postImage", {
+            id: this.articleId,
+            file: document.getElementById("fileUpload").files[0],
+            description: this.desc
+          })
+          .then(() => {
+            this.fileSet = null;
+            this.desc = null;
+          });
       }
+    },
+    addBreak() {
+      this.add(null, null, "<br>");
+    },
+    addLink() {
+      this.add('<a href=" URL ">', "LINK TEXT", "</a>");
+    },
+    addBold() {
+      this.add("<b>", " FETT", "</b>");
+    },
+    addItalic() {
+      this.add("<i>", "KURSIV", "</i>");
+    },
+    addParagraph() {
+      this.add("<p>\n", "PARAGRAPH", "\n</p>");
+    },
+    addHeadline() {
+      this.add("<h3>", "ÜBERSCHRIFT", "</h3>");
+    },
+    add(string1, middle, string2) {
+      var el = document.getElementById("inhalt");
+      var start = el.selectionStart;
+      var end = el.selectionEnd;
+      middle = start === end ? middle : this.editBody.slice(start, end);
+      if (this.editBody) {
+        this.editBody = [
+          this.editBody.slice(0, start),
+          string1,
+          middle,
+          string2,
+          this.editBody.slice(end)
+        ].join("");
+      } else {
+        this.editBody = [string1, middle, string2].join("");
+      }
+    },
+    vor() {
+      this.currentImageID += 1;
+      this.currentImageID = this.currentImageID % this.images.length;
+    },
+    zurueck() {
+      this.currentImageID -= 1;
+      this.currentImageID =
+        this.currentImageID < 0 ? this.images.length - 1 : this.currentImageID;
+    },
+    loeschen() {
+      this.$store.dispatch("rmImage", this.currentImageID).then(() => {
+        this.images.splice(this.currentImageID, 1);
+        this.vor();
+      });
     },
     emitDelete() {
       this.$emit("delete");
     },
     /**
-        edit the content of a card by id
-       */
+     * edit the content of a card by id
+     */
     editCard() {
       this.$store.commit("newsEdit", this.articleId);
     },
@@ -130,19 +268,20 @@ export default {
       this.$store.commit("closeEdit");
     },
     /**
-        send the modified content and reload
-       */
+            send the modified content and reload
+           */
     sendEdit() {
-      this.$store.dispatch("edit", this.articleId).then(res => {
-        this.picUpload(this.articleId).then(() => {
-          this.$store.dispatch("getNews");
-          this.cancelCardEdit();
-        });
+      let p = [];
+      p.push(this.$store.dispatch("edit", this.articleId));
+      p.push(this.picUpload());
+      Promise.all(p).then(() => {
+        this.$store.dispatch("getNews");
+        this.cancelCardEdit();
       });
     },
     /**
-        cancel edit of article
-       */
+            cancel edit of article
+           */
     cancelCardEdit() {
       this.$store.commit("closeEdit");
     }
@@ -174,22 +313,11 @@ export default {
       return this.$store.getters.isLoggedIn;
     },
     /**
-        @description current date formated
-       */
+            @description current date formated
+           */
     date() {
       moment.locale("de");
       return moment(new Date()).format("LL");
-    },
-    /**
-        @description gets news array and converts date
-       */
-    news() {
-      var news = this.$store.getters.getNews;
-      moment.locale("de");
-      news.forEach(card => {
-        datum = moment(date).format("LL");
-      });
-      return news;
     },
     editTitle: {
       get() {
@@ -213,3 +341,110 @@ export default {
   }
 };
 </script>
+
+<style>
+.md-card-header,
+.md-card-content {
+  padding-bottom: 0;
+}
+
+#border {
+  border: 1px solid lightgray;
+  border-radius: 3px;
+  padding-right: 10px;
+  padding-left: 10px;
+}
+
+#Beschreibung {
+  margin-left: 35px;
+}
+
+#vorschau {
+  margin-bottom: 18px;
+  border: 1px solid transparent;
+  border-color: var(--md-theme-default-primary, #7cb9ff);
+  padding: 10px;
+  border-radius: 3px;
+  min-height: 110px;
+}
+
+/* button {
+  z-index: 10;
+} */
+
+#vor {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+#zurueck {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+#loeschen {
+  position: absolute;
+  padding: 0;
+  right: 0px;
+  top: 25px;
+  color: red;
+}
+
+#loeschen > *,
+#vor > *,
+#zurueck > * {
+  text-shadow: rgb(151, 151, 151) 0px 0px 15px;
+  font-size: 20pt;
+  z-index: 20;
+  margin: 0;
+  padding-bottom: 4px;
+  padding-left: 4px;
+  width: 45px;
+  height: 45px;
+  border: 0;
+  background: rgba(215, 234, 252, 0.664);
+  box-shadow: none;
+  border-radius: 3px;
+}
+
+.rightButton {
+  float: right;
+}
+
+.md-switch {
+  margin-right: 100px;
+}
+
+#vor > *:hover,
+#zurueck > *:hover {
+  text-shadow: none;
+  box-shadow: 0px 0px 10px black;
+  background: rgba(215, 234, 252, 0.5);
+}
+
+#loeschen > *:hover {
+  text-shadow: none;
+  box-shadow: 0px 0px 10px black;
+  background: rgb(255, 43, 43);
+  color: black;
+}
+
+.rightButton {
+  float: right;
+}
+
+#tools {
+  display: inline-block;
+  position: relative;
+  top: 10px;
+}
+
+#tools > * {
+  margin-left: 0;
+  margin-right: 0;
+}
+</style>

@@ -3,8 +3,18 @@ module.exports = {
     state.apiState.error = cause;
   },
 
-  clearError(state, cause) {
+  clearError(state) {
     state.apiState.error = null;
+  },
+  success(state, cause) {
+    state.apiState.success = cause;
+  },
+
+  clearSuccess(state) {
+    state.apiState.success = "";
+  },
+  sendable(state, bool) {
+    state.apiState.sendable = bool;
   },
 
   loading(state, status) {
@@ -13,9 +23,12 @@ module.exports = {
 
   news(state, news) {
     news.forEach(element => {
-      if(element.image){
-        element.image = state.settings.serverIp + "/" + element.image
+      if (element.images) {
+        element.images = element.images.map((img, i) => {
+          return { src: state.settings.serverIp + "/" + img.src, key: i, desc: img.desc };
+        });
       }
+      delete element.__v;
       delete element._id;
     });
     state.news = news.reverse();
@@ -60,6 +73,9 @@ module.exports = {
   title(state, val) {
     state.newPost.title = val;
   },
+  setType(state, val) {
+    state.newPost.type = val;
+  },
   editBody(state, val) {
     state.edit.body = val;
   },
@@ -67,6 +83,6 @@ module.exports = {
     state.edit.title = val;
   },
   setTheme: (state, val) => {
-    state.general.theme = val
+    state.general.theme = val;
   }
 };

@@ -1,8 +1,6 @@
 <template>
-  <div>
-
+  <!-- <div id="impr"> 
     <h1>Impressum</h1>
-
     <div>
       <span>agentur_dcm</span><br />
       <span>agentur für design und photographie</span><br />
@@ -23,33 +21,19 @@
       <p>Inhaltlich Verantwortlicher gemäß § 6 MDStV: Daniel Keller</p>
       <p>Haftungshinweis: Keine Haftung für Inhalte externer links. Für die Inhalte verlinkter Seiten sind ausschließlich deren Betreiber verantwortlich.<br />Diese Erklärung gilt für alle Links auf dieser Website. Sollte Sie bemerken, dass Links unserer Website auf Seiten verweise, deren Inhalte gegen geltendes Recht verstossen, benachrichtigen Sie uns bitte sofort. Wird werden diese Links dann umgehen von unseren Seiten entfernen.</p>
     </div>
-
-
-
-  </div>
+  </div>-->
 </template>
 
-<script>
-export default {
-  name: "HelloWorld",
-  data() {
-    return {
-    };
-  },
-  methods: {
-    // test() {
-    //   this.msg += 5;
-    // }
-  },
-  computed: {
-    // error: {
-    //   get() {
-    //     return this.$store.getters.getError;
-    //   },
-    //   set(val) {
-    //     this.$store.commit("error", val);
-    //   }
-    // }
+<style scoped>
+  #impr {
+    width: 50%;
+    min-width: 300px;
+    margin: auto;
   }
-};
-</script>
+
+  #legal {
+    color: rgb(194, 194, 194);
+    line-height: 12pt;
+  }
+
+</style>

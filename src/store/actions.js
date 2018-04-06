@@ -1,7 +1,7 @@
 var axios = require("axios");
 
 export default {
-  getNews({ commit, state }) {
+  getNews({ dispatch, commit, state }) {
     console.log("news abrufen");
     commit("loading", true);
     commit("clearError");
@@ -54,12 +54,15 @@ export default {
     return new Promise((resolve, reject) => {
       axios
         .get(state.settings.serverIp + "/delete/" + id, {
-          headers: { token: state.auth.token, user: state.auth.name }
+          headers: {
+            token: state.auth.token,
+            user: state.auth.name
+          }
         })
         .then(function(response) {
           commit("loading", false);
           dispatch("getNews");
-          resolve();
+          resolve(response);
         })
         .catch(function(error) {
           reject(error);
@@ -68,18 +71,50 @@ export default {
         });
     });
   },
+
+  rmImage({ dispatch, commit, state }, id) {
+    commit("clearError");
+    commit("loading", true);
+    return new Promise((resolve, reject) => {
+      axios
+        .get(state.settings.serverIp + "/image/" + state.edit.id + "/" + id, {
+          headers: {
+            token: state.auth.token,
+            user: state.auth.name
+          }
+        })
+        .then(function(response) {
+          commit("loading", false);
+          dispatch("getNews");
+          resolve(response);
+        })
+        .catch(function(error) {
+          reject(error);
+          commit("loading", false);
+          commit("error", "Fehler beim Speichern: " + error);
+        });
+    });
+  },
+
   new({ dispatch, commit, state }) {
     if (!state.newPost.title || !state.auth.name) {
       commit("error", "One of the field was empty");
       return;
     }
-    let a = { title: state.newPost.title, body: state.newPost.body };
+    let a = {
+      title: state.newPost.title,
+      body: state.newPost.body,
+      type: state.newPost.type
+    };
     commit("clearError");
     commit("loading", true);
     return new Promise((resolve, reject) => {
       axios
         .post(state.settings.serverIp + "/neu", a, {
-          headers: { token: state.auth.token, user: state.auth.name }
+          headers: {
+            token: state.auth.token,
+            user: state.auth.name
+          }
         })
         .then(function(response) {
           commit("loading", false);
@@ -97,17 +132,23 @@ export default {
       commit("error", "One of the field was empty");
       return;
     }
-    let a = { title: state.edit.title, body: state.edit.body };
+    let a = {
+      title: state.edit.title,
+      body: state.edit.body
+    };
     commit("clearError");
     commit("loading", true);
     return new Promise((resolve, reject) => {
       axios
         .post(state.settings.serverIp + "/edit/" + id, a, {
-          headers: { token: state.auth.token, user: state.auth.name }
+          headers: {
+            token: state.auth.token,
+            user: state.auth.name
+          }
         })
         .then(function(response) {
           commit("loading", false);
-          resolve();
+          resolve(response);
         })
         .catch(function(error) {
           reject(error);
@@ -118,15 +159,18 @@ export default {
   },
 
   postImage({ dispatch, commit, state }, obj) {
-    if(!obj.file || obj.file.name){
-      return new Promise((resolve) => {resolve()})
+    if (!obj.file || !obj.description) {
+      return new Promise(res => res());
     }
     let data = new FormData();
-    data.append("image", obj.file, obj.file.name);
+    const file = obj.file;
+    data.append("image", file, file.name);
+
     const config = {
       headers: {
         token: state.auth.token,
-        user: state.auth.name
+        user: state.auth.name,
+        desc: obj.description
       }
     };
     commit("clearError");
@@ -136,7 +180,7 @@ export default {
         .post(state.settings.serverIp + "/image/" + obj.id, data, config)
         .then(function(response) {
           commit("loading", false);
-          resolve();
+          resolve(response);
         })
         .catch(function(error) {
           reject(error);
@@ -145,10 +189,44 @@ export default {
         });
     });
   },
+  postMessageForm({ dispatch, commit, state }, obj) {
+    if (
+      !state.apiState.sendable ||
+      !obj.email ||
+      !obj.betreff ||
+      !obj.name ||
+      !obj.text
+    ) {
+      return;
+    } else {
+      commit("sendable", false);
+    }
+    commit("clearError");
+    commit("loading", true);
+    return new Promise((resolve, reject) => {
+      return axios
+        .post(state.settings.serverIp + "/contact", obj)
+        .then(function(response) {
+          dispatch("success", "Nachricht abgesendet");
+          commit("loading", false);
+          resolve(response);
+        })
+        .catch(function(error) {
+          commit("loading", false);
+          commit(
+            "error",
+            "Fehler: möglicherweise zu viele Nachrichten gesendet!"
+          );
+          reject(error, "bitte kein Spam!");
+        });
+    });
+  },
 
   success({ commit }, message) {
     commit("success", message);
     setTimeout(() => {
+      commit("sendable", true);
+      console.log("reset");
       commit("clearSuccess");
     }, 4500);
   }

@@ -42,6 +42,6 @@ export default new Router({
     {
       path: "/admin",
       component: admin
-    }
+    },
   ]
 });
