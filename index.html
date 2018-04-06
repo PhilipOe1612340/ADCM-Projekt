@@ -6,7 +6,8 @@
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>dcm | agentur für design &amp; photographie</title>
   <script type="text/javascript" id="cookieinfo" src="//cookieinfoscript.com/js/cookieinfo.min.js" data-message="Wir benutzen Cookies. In dem Sie diese Webseite weiter benutzen stimmen Sie dazu zu."
-    data-linkmsg="Mehr Info" data-close-text="Verstanden" data-mask="true" data-mask-opacity="0.1" accept-on-scroll="true" data-link="#ADD8E6" data-bg="#808080" data-divlinkbg="#ADD8E6">
+    data-linkmsg="Mehr Info" data-close-text="Verstanden" data-mask="true" data-mask-opacity="0.1" accept-on-scroll="true"
+    data-link="#ADD8E6" data-bg="#808080" data-divlinkbg="#ADD8E6">
   </script>
 
   <!-- Google Analytics -->
@@ -23,6 +24,8 @@
       m.parentNode.insertBefore(a, m)
     })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
 
+    if (navigator.doNotTrack === "1") console.info("respecting 'do not track'")
+    window['ga-disable-UA-113316168-1'] = navigator.doNotTrack === "1";
     ga('create', 'UA-113316168-1', {
       'siteSpeedSampleRate': 100
     });
