@@ -24,6 +24,18 @@
   </div>-->
 </template>
 
+<script>
+  export default {
+    beforeMount() {
+      this.$store.dispatch("getNews");
+      window['ga-disable-UA-113316168-1'] = navigator.doNotTrack === "1";
+      ga('set', 'page', '/impressum');
+      ga('send', 'pageview');
+    }
+  }
+
+</script>
+
 <style scoped>
   #impr {
     width: 50%;

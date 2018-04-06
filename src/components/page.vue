@@ -50,7 +50,10 @@
       }
     },
     beforeMount() {
-      this.loadNews();
+      this.$store.dispatch("getNews");
+      window['ga-disable-UA-113316168-1'] = navigator.doNotTrack === "1";
+      ga('set', 'page', '/' + this.type);
+      ga('send', 'pageview');
     },
     computed: {
       url() {

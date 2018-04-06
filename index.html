@@ -23,9 +23,8 @@
       m.parentNode.insertBefore(a, m)
     })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
 
-    ga('create', 'UA-113316168-1', {
-      'siteSpeedSampleRate': 100
-    });
+    window['ga-disable-UA-113316168-1'] = navigator.doNotTrack === "1";
+    ga('create', 'UA-113316168-1', { 'siteSpeedSampleRate': 100 });
     ga('send', 'pageview');
 
   </script>
