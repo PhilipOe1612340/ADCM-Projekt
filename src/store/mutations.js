@@ -1,6 +1,10 @@
 module.exports = {
   error(state, cause) {
     state.apiState.error = cause;
+    ga('send', 'exception', {
+      'exDescription': cause,
+      'exFatal': false
+    });
   },
 
   clearError(state) {
