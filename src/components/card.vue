@@ -90,8 +90,7 @@
       <div v-else>
         <div v-if="editable || images.length < 1">
           <span v-html="body" />
-          <br>
-          {{datum}}
+          <br> {{datum}}
         </div>
       </div>
     </md-card-content>
@@ -128,7 +127,7 @@
           <md-button v-else @click.native="emitDelete" class="md-primary">Löschen</md-button>
         </div>
         <md-card-expand-trigger v-if="!editable && images.length > 0">
-          <md-button>mehr lesen</md-button>
+          <md-button @click.native="readmore">mehr lesen</md-button>
         </md-card-expand-trigger>
       </md-card-actions>
 
@@ -143,308 +142,336 @@
 </template>
 
 <script>
-import moment from "moment";
+  import moment from "moment";
 
-export default {
-  name: "admin",
-  props: {
-    datum: {
-      type: String
-    },
-    body: {
-      type: String
-    },
-    title: {
-      type: String
-    },
-    edit: {
-      type: Boolean,
-      default: false
-    },
-    editable: {
-      type: Boolean,
-      default: false
-    },
-    images: {
-      type: Array,
-      default: () => []
-    },
-    articleId: {
-      validator: function(value) {
-        return value > 0;
+  export default {
+    name: "admin",
+    props: {
+      datum: {
+        type: String
+      },
+      body: {
+        type: String
+      },
+      title: {
+        type: String
+      },
+      edit: {
+        type: Boolean,
+        default: false
+      },
+      editable: {
+        type: Boolean,
+        default: false
+      },
+      images: {
+        type: Array,
+        default: () => []
+      },
+      articleId: {
+        validator: function (value) {
+          return value > 0;
+        }
+      },
+      type: {
+        type: String,
+        default: "aktuelles"
       }
     },
-    type: {
-      type: String,
-      default: "aktuelles"
-    }
-  },
 
-  // [articleId,datum,body,title,edit,image],
-  data: () => ({
-    currentImageID: 0,
-    vorschau: false,
-    fileSet: null,
-    deleteId: null,
-    deleteActive: false,
-    duration: 5000,
-    desc: null
-  }),
-  methods: {
-    picUpload() {
-      if (this.fileSet) {
-        return this.$store
-          .dispatch("postImage", {
-            id: this.articleId,
-            file: document.getElementById("fileUpload").files[0],
-            description: this.desc
-          })
-          .then(() => {
-            this.fileSet = null;
-            this.desc = null;
+    // [articleId,datum,body,title,edit,image],
+    data: () => ({
+      currentImageID: 0,
+      vorschau: false,
+      fileSet: null,
+      deleteId: null,
+      deleteActive: false,
+      duration: 5000,
+      desc: null
+    }),
+    methods: {
+      picUpload() {
+        if (this.fileSet) {
+          return this.$store
+            .dispatch("postImage", {
+              id: this.articleId,
+              file: document.getElementById("fileUpload").files[0],
+              description: this.desc
+            })
+            .then(() => {
+              this.fileSet = null;
+              this.desc = null;
+            });
+        }
+      },
+      addBreak() {
+        this.add(null, null, "<br>");
+      },
+      addLink() {
+        this.add('<a href=" URL ">', "LINK TEXT", "</a>");
+      },
+      addBold() {
+        this.add("<b>", " FETT", "</b>");
+      },
+      addItalic() {
+        this.add("<i>", "KURSIV", "</i>");
+      },
+      addParagraph() {
+        this.add("<p>\n", "PARAGRAPH", "\n</p>");
+      },
+      addHeadline() {
+        this.add("<h3>", "ÜBERSCHRIFT", "</h3>");
+      },
+      add(string1, middle, string2) {
+        var el = document.getElementById("inhalt");
+        var start = el.selectionStart;
+        var end = el.selectionEnd;
+        middle = start === end ? middle : this.editBody.slice(start, end);
+        if (this.editBody) {
+          this.editBody = [
+            this.editBody.slice(0, start),
+            string1,
+            middle,
+            string2,
+            this.editBody.slice(end)
+          ].join("");
+        } else {
+          this.editBody = [string1, middle, string2].join("");
+        }
+      },
+      vor() {
+        this.currentImageID += 1;
+        this.currentImageID = this.currentImageID % this.images.length;
+        if (!this.editable) {
+          ga('send', {
+            hitType: 'event',
+            eventCategory: 'Picture',
+            eventAction: 'next',
+            eventLabel: this.title
           });
+        }
+      },
+      zurueck() {
+        this.currentImageID -= 1;
+        this.currentImageID =
+          this.currentImageID < 0 ? this.images.length - 1 : this.currentImageID;
+        if (!this.editable) {
+          ga('send', {
+            hitType: 'event',
+            eventCategory: 'Picture',
+            eventAction: 'back',
+            eventLabel: this.title
+          });
+        }
+      },
+      loeschen() {
+        this.$store.dispatch("rmImage", this.currentImageID).then(() => {
+          this.images.splice(this.currentImageID, 1);
+          this.vor();
+        });
+      },
+      readmore(){
+        if (!this.editable) {
+          ga('send', {
+            hitType: 'event',
+            eventCategory: 'Article',
+            eventAction: 'read more',
+            eventLabel: this.title
+          });
+        }
+      },
+      emitDelete() {
+        this.$emit("delete");
+      },
+      /**
+       * edit the content of a card by id
+       */
+      editCard() {
+        this.$store.commit("newsEdit", this.articleId);
+      },
+      closeCard(id) {
+        this.$store.commit("closeEdit");
+      },
+      /**
+              send the modified content and reload
+             */
+      sendEdit() {
+        let p = [];
+        p.push(this.$store.dispatch("edit", this.articleId));
+        p.push(this.picUpload());
+        Promise.all(p).then(() => {
+          this.$store.dispatch("getNews");
+          this.cancelCardEdit();
+        });
+      },
+      /**
+              cancel edit of article
+             */
+      cancelCardEdit() {
+        this.$store.commit("closeEdit");
       }
     },
-    addBreak() {
-      this.add(null, null, "<br>");
-    },
-    addLink() {
-      this.add('<a href=" URL ">', "LINK TEXT", "</a>");
-    },
-    addBold() {
-      this.add("<b>", " FETT", "</b>");
-    },
-    addItalic() {
-      this.add("<i>", "KURSIV", "</i>");
-    },
-    addParagraph() {
-      this.add("<p>\n", "PARAGRAPH", "\n</p>");
-    },
-    addHeadline() {
-      this.add("<h3>", "ÜBERSCHRIFT", "</h3>");
-    },
-    add(string1, middle, string2) {
-      var el = document.getElementById("inhalt");
-      var start = el.selectionStart;
-      var end = el.selectionEnd;
-      middle = start === end ? middle : this.editBody.slice(start, end);
-      if (this.editBody) {
-        this.editBody = [
-          this.editBody.slice(0, start),
-          string1,
-          middle,
-          string2,
-          this.editBody.slice(end)
-        ].join("");
-      } else {
-        this.editBody = [string1, middle, string2].join("");
+    computed: {
+      pw: {
+        get() {
+          return this.$store.getters.pw;
+        },
+        set(val) {
+          this.$store.commit("pw", val);
+        }
+      },
+      name: {
+        get() {
+          return this.$store.getters.name;
+        },
+        set(val) {
+          this.$store.commit("name", val);
+        }
+      },
+      error() {
+        return this.$store.getters.getError;
+      },
+      sending() {
+        return this.$store.getters.getLoading;
+      },
+      loggedIn() {
+        return this.$store.getters.isLoggedIn;
+      },
+      /**
+              @description current date formated
+             */
+      date() {
+        moment.locale("de");
+        return moment(new Date()).format("LL");
+      },
+      editTitle: {
+        get() {
+          return this.$store.getters.editTitle;
+        },
+        set(val) {
+          this.$store.commit("editTitle", val);
+        }
+      },
+      editBody: {
+        get() {
+          return this.$store.getters.editBody;
+        },
+        set(val) {
+          this.$store.commit("editBody", val);
+        }
+      },
+      editId() {
+        return this.$store.getters.editId;
       }
-    },
-    vor() {
-      this.currentImageID += 1;
-      this.currentImageID = this.currentImageID % this.images.length;
-    },
-    zurueck() {
-      this.currentImageID -= 1;
-      this.currentImageID =
-        this.currentImageID < 0 ? this.images.length - 1 : this.currentImageID;
-    },
-    loeschen() {
-      this.$store.dispatch("rmImage", this.currentImageID).then(() => {
-        this.images.splice(this.currentImageID, 1);
-        this.vor();
-      });
-    },
-    emitDelete() {
-      this.$emit("delete");
-    },
-    /**
-     * edit the content of a card by id
-     */
-    editCard() {
-      this.$store.commit("newsEdit", this.articleId);
-    },
-    closeCard(id) {
-      this.$store.commit("closeEdit");
-    },
-    /**
-            send the modified content and reload
-           */
-    sendEdit() {
-      let p = [];
-      p.push(this.$store.dispatch("edit", this.articleId));
-      p.push(this.picUpload());
-      Promise.all(p).then(() => {
-        this.$store.dispatch("getNews");
-        this.cancelCardEdit();
-      });
-    },
-    /**
-            cancel edit of article
-           */
-    cancelCardEdit() {
-      this.$store.commit("closeEdit");
     }
-  },
-  computed: {
-    pw: {
-      get() {
-        return this.$store.getters.pw;
-      },
-      set(val) {
-        this.$store.commit("pw", val);
-      }
-    },
-    name: {
-      get() {
-        return this.$store.getters.name;
-      },
-      set(val) {
-        this.$store.commit("name", val);
-      }
-    },
-    error() {
-      return this.$store.getters.getError;
-    },
-    sending() {
-      return this.$store.getters.getLoading;
-    },
-    loggedIn() {
-      return this.$store.getters.isLoggedIn;
-    },
-    /**
-            @description current date formated
-           */
-    date() {
-      moment.locale("de");
-      return moment(new Date()).format("LL");
-    },
-    editTitle: {
-      get() {
-        return this.$store.getters.editTitle;
-      },
-      set(val) {
-        this.$store.commit("editTitle", val);
-      }
-    },
-    editBody: {
-      get() {
-        return this.$store.getters.editBody;
-      },
-      set(val) {
-        this.$store.commit("editBody", val);
-      }
-    },
-    editId() {
-      return this.$store.getters.editId;
-    }
-  }
-};
+  };
+
 </script>
 
 <style>
-.md-card-header,
-.md-card-content {
-  padding-bottom: 0;
-}
+  .md-card-header,
+  .md-card-content {
+    padding-bottom: 0;
+  }
 
-#border {
-  border: 1px solid lightgray;
-  border-radius: 3px;
-  padding-right: 10px;
-  padding-left: 10px;
-}
+  #border {
+    border: 1px solid lightgray;
+    border-radius: 3px;
+    padding-right: 10px;
+    padding-left: 10px;
+  }
 
-#Beschreibung {
-  margin-left: 35px;
-}
+  #Beschreibung {
+    margin-left: 35px;
+  }
 
-#vorschau {
-  margin-bottom: 18px;
-  border: 1px solid transparent;
-  border-color: var(--md-theme-default-primary, #7cb9ff);
-  padding: 10px;
-  border-radius: 3px;
-  min-height: 110px;
-}
+  #vorschau {
+    margin-bottom: 18px;
+    border: 1px solid transparent;
+    border-color: var(--md-theme-default-primary, #7cb9ff);
+    padding: 10px;
+    border-radius: 3px;
+    min-height: 110px;
+  }
 
-/* button {
+  /* button {
   z-index: 10;
 } */
 
-#vor {
-  position: absolute;
-  right: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-}
+  #vor {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
 
-#zurueck {
-  position: absolute;
-  left: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-}
+  #zurueck {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
 
-#loeschen {
-  position: absolute;
-  padding: 0;
-  right: 0px;
-  top: 25px;
-  color: red;
-}
+  #loeschen {
+    position: absolute;
+    padding: 0;
+    right: 0px;
+    top: 25px;
+    color: red;
+  }
 
-#loeschen > *,
-#vor > *,
-#zurueck > * {
-  text-shadow: rgb(151, 151, 151) 0px 0px 15px;
-  font-size: 20pt;
-  z-index: 20;
-  margin: 0;
-  padding-bottom: 4px;
-  padding-left: 4px;
-  width: 45px;
-  height: 45px;
-  border: 0;
-  background: rgba(215, 234, 252, 0.664);
-  box-shadow: none;
-  border-radius: 3px;
-}
+  #loeschen>*,
+  #vor>*,
+  #zurueck>* {
+    text-shadow: rgb(151, 151, 151) 0px 0px 15px;
+    font-size: 20pt;
+    z-index: 20;
+    margin: 0;
+    padding-bottom: 4px;
+    padding-left: 4px;
+    width: 45px;
+    height: 45px;
+    border: 0;
+    background: rgba(215, 234, 252, 0.664);
+    box-shadow: none;
+    border-radius: 3px;
+  }
 
-.rightButton {
-  float: right;
-}
+  .rightButton {
+    float: right;
+  }
 
-.md-switch {
-  margin-right: 100px;
-}
+  .md-switch {
+    margin-right: 100px;
+  }
 
-#vor > *:hover,
-#zurueck > *:hover {
-  text-shadow: none;
-  box-shadow: 0px 0px 10px black;
-  background: rgba(215, 234, 252, 0.5);
-}
+  #vor>*:hover,
+  #zurueck>*:hover {
+    text-shadow: none;
+    box-shadow: 0px 0px 10px black;
+    background: rgba(215, 234, 252, 0.5);
+  }
 
-#loeschen > *:hover {
-  text-shadow: none;
-  box-shadow: 0px 0px 10px black;
-  background: rgb(255, 43, 43);
-  color: black;
-}
+  #loeschen>*:hover {
+    text-shadow: none;
+    box-shadow: 0px 0px 10px black;
+    background: rgb(255, 43, 43);
+    color: black;
+  }
 
-.rightButton {
-  float: right;
-}
+  .rightButton {
+    float: right;
+  }
 
-#tools {
-  display: inline-block;
-  position: relative;
-  top: 10px;
-}
+  #tools {
+    display: inline-block;
+    position: relative;
+    top: 10px;
+  }
 
-#tools > * {
-  margin-left: 0;
-  margin-right: 0;
-}
+  #tools>* {
+    margin-left: 0;
+    margin-right: 0;
+  }
+
 </style>

@@ -1,6 +1,10 @@
 module.exports = {
   error(state, cause) {
     state.apiState.error = cause;
+    ga('send', 'exception', {
+      'exDescription': cause,
+      'exFatal': false
+    });
   },
 
   clearError(state) {
@@ -25,7 +29,11 @@ module.exports = {
     news.forEach(element => {
       if (element.images) {
         element.images = element.images.map((img, i) => {
-          return { src: state.settings.serverIp + "/" + img.src, key: i, desc: img.desc };
+          return {
+            src: state.settings.serverIp + "/" + img.src,
+            key: i,
+            desc: img.desc
+          };
         });
       }
       delete element.__v;

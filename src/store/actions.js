@@ -39,6 +39,12 @@ export default {
           commit("token", response.data.token);
           commit("loading", false);
           resolve(response.data.token);
+          ga('send', {
+            hitType: 'event',
+            eventCategory: 'Admin',
+            eventAction: 'login',
+            eventLabel: 'admin'
+          });
         })
         .catch(function(error) {
           commit("loading", false);
@@ -63,6 +69,12 @@ export default {
           commit("loading", false);
           dispatch("getNews");
           resolve(response);
+          ga('send', {
+            hitType: 'event',
+            eventCategory: 'Admin',
+            eventAction: 'remove article',
+            eventLabel: 'admin'
+          });
         })
         .catch(function(error) {
           reject(error);
@@ -87,6 +99,12 @@ export default {
           commit("loading", false);
           dispatch("getNews");
           resolve(response);
+          ga('send', {
+            hitType: 'event',
+            eventCategory: 'Admin',
+            eventAction: 'remove image',
+            eventLabel: 'admin'
+          });
         })
         .catch(function(error) {
           reject(error);
@@ -119,6 +137,12 @@ export default {
         .then(function(response) {
           commit("loading", false);
           resolve(response);
+          ga('send', {
+            hitType: 'event',
+            eventCategory: 'Admin',
+            eventAction: 'new article',
+            eventLabel: 'admin'
+          });
         })
         .catch(function(error) {
           reject(error);
@@ -129,7 +153,7 @@ export default {
   },
   edit({ dispatch, commit, state }, id) {
     if (!state.edit.title || !state.edit.body) {
-      commit("error", "One of the field was empty");
+      commit("error", "One of the fields was empty");
       return;
     }
     let a = {
@@ -149,6 +173,12 @@ export default {
         .then(function(response) {
           commit("loading", false);
           resolve(response);
+          ga('send', {
+            hitType: 'event',
+            eventCategory: 'Admin',
+            eventAction: 'edit',
+            eventLabel: 'admin'
+          });
         })
         .catch(function(error) {
           reject(error);
@@ -180,6 +210,12 @@ export default {
         .post(state.settings.serverIp + "/image/" + obj.id, data, config)
         .then(function(response) {
           commit("loading", false);
+          ga('send', {
+            hitType: 'event',
+            eventCategory: 'Admin',
+            eventAction: 'add image',
+            eventLabel: 'admin'
+          });
           resolve(response);
         })
         .catch(function(error) {
@@ -210,6 +246,12 @@ export default {
           dispatch("success", "Nachricht abgesendet");
           commit("loading", false);
           resolve(response);
+            ga('send', {
+              hitType: 'event',
+              eventCategory: 'Kontakt',
+              eventAction: 'send',
+              eventLabel: 'Kontakt'
+            });
         })
         .catch(function(error) {
           commit("loading", false);
