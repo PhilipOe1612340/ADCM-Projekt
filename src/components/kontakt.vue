@@ -68,136 +68,129 @@
 </template>
 
 <script>
-  export default {
-    beforeMount() {
-      this.$store.dispatch("getNews");
-      window['ga-disable-UA-113316168-1'] = navigator.doNotTrack === "1";
-      ga('set', 'page', '/kontakt');
-      ga('send', 'pageview');
+import { validationMixin } from "vuelidate";
+import {
+  required,
+  email,
+  minLength,
+  maxLength
+} from "vuelidate/lib/validators";
+
+export default {
+  name: "FormValidation",
+  metaInfo: {
+    title: "Kontakt"
+  },
+  mixins: [validationMixin],
+  data: () => ({
+    form: {
+      name: null,
+      email: null,
+      text: null,
+      betreff: null
+    }
+  }),
+  validations: {
+    form: {
+      name: {
+        required,
+        minLength: minLength(3)
+      },
+      email: {
+        required,
+        email
+      },
+      text: {
+        required,
+        minLength: minLength(3)
+      },
+      betreff: {
+        required,
+        minLength: minLength(3)
+      }
+    }
+  },
+  beforeMount() {
+    this.$store.dispatch("getNews");
+    window["ga-disable-UA-113316168-1"] = navigator.doNotTrack === "1";
+    ga("set", "page", "/kontakt");
+    ga("send", "pageview");
+  },
+  methods: {
+    getValidationClass(fieldName) {
+      const field = this.$v.form[fieldName];
+      if (field) {
+        return {
+          "md-invalid": field.$invalid && field.$dirty
+        };
+      }
+    },
+    clearForm() {
+      this.form.name = null;
+      this.form.email = "";
+      this.form.betreff = null;
+      this.form.text = null;
+      this.$v.form.name.$reset();
+      this.$v.form.email.$reset();
+      this.$v.form.betreff.$reset();
+      this.$v.form.text.$reset();
+    },
+    saveUser() {
+      this.$store
+        .dispatch("postMessageForm", {
+          email: this.form.email,
+          betreff: this.form.betreff,
+          name: this.form.name,
+          text: this.form.text
+        })
+        .then(() => {
+          this.clearForm();
+        });
+    },
+    validateUser() {
+      this.$v.$touch();
+
+      if (!this.$v.$invalid) {
+        this.saveUser();
+      }
+    }
+  },
+  computed: {
+    error: {
+      get() {
+        return this.$store.getters.getError;
+      },
+      set(val) {
+        this.$store.commit("clearError");
+      }
+    },
+    loading() {
+      return this.$store.getters.getLoading;
     }
   }
-
-</script>
-
-<script>
-  import {
-    validationMixin
-  } from "vuelidate";
-  import {
-    required,
-    email,
-    minLength,
-    maxLength
-  } from "vuelidate/lib/validators";
-
-  export default {
-    name: "FormValidation",
-    mixins: [validationMixin],
-    data: () => ({
-      form: {
-        name: null,
-        email: null,
-        text: null,
-        betreff: null
-      }
-    }),
-    validations: {
-      form: {
-        name: {
-          required,
-          minLength: minLength(3)
-        },
-        email: {
-          required,
-          email
-        },
-        text: {
-          required,
-          minLength: minLength(3)
-        },
-        betreff: {
-          required,
-          minLength: minLength(3)
-        }
-      }
-    },
-    methods: {
-      getValidationClass(fieldName) {
-        const field = this.$v.form[fieldName];
-        if (field) {
-          return {
-            "md-invalid": field.$invalid && field.$dirty
-          };
-        }
-      },
-      clearForm() {
-        this.form.name = null;
-        this.form.email = "";
-        this.form.betreff = null;
-        this.form.text = null;
-        this.$v.form.name.$reset();
-        this.$v.form.email.$reset();
-        this.$v.form.betreff.$reset();
-        this.$v.form.text.$reset();
-      },
-      saveUser() {
-        this.$store
-          .dispatch("postMessageForm", {
-            email: this.form.email,
-            betreff: this.form.betreff,
-            name: this.form.name,
-            text: this.form.text
-          })
-          .then(() => {
-            this.clearForm();
-          });
-      },
-      validateUser() {
-        this.$v.$touch();
-
-        if (!this.$v.$invalid) {
-          this.saveUser();
-        }
-      }
-    },
-    computed: {
-      error: {
-        get() {
-          return this.$store.getters.getError;
-        },
-        set(val) {
-          this.$store.commit("clearError");
-        }
-      },
-      loading() {
-        return this.$store.getters.getLoading;
-      }
-    }
-  };
-
+};
 </script>
 
 <style lang="scss" scoped>
-  .md-progress-bar {
-    position: absolute;
-    top: 0;
-    right: 0;
-    left: 0;
+.md-progress-bar {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+}
+
+.md-layout-item {
+  overflow-x: hidden;
+  margin: 0 10px 10px 10px;
+
+  &:after {
+    width: 100%;
+    display: block;
+    background: md-get-palette-color(red, 200);
   }
+}
 
-  .md-layout-item {
-    overflow-x: hidden;
-    margin: 0 10px 10px 10px;
-
-    &:after {
-      width: 100%;
-      display: block;
-      background: md-get-palette-color(red, 200);
-    }
-  }
-
-  input:-webkit-autofill {
-    -webkit-box-shadow: 0 0 0 30px rgb(90, 90, 90) inset;
-  }
-
+input:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 30px rgb(90, 90, 90) inset;
+}
 </style>

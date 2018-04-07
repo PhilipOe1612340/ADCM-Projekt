@@ -5,11 +5,14 @@
 </template>
 
 <script>
-  import page from "./page.vue";
-  export default {
-    name: "aktuelles",
-    components: {
-      page
-    }
+import page from "./page.vue";
+export default {
+  name: "aktuelles",
+  metaInfo: {
+    title: "Aktuelles"
+  },
+  components: {
+    page
   }
+};
 </script>

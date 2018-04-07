@@ -42,175 +42,185 @@
 </template>
 
 <script>
-  import Vue from "vue";
+import Vue from "vue";
 
-  export default {
-    name: "Header",
-    data: () => ({
-      duration: 4000
-    }),
-    methods: {
-      clearError() {
-        this.$store.commit("clearError");
-      },
-      swipe_Right(direction, event) {
-        if (event.path.length > 8) return;
-
-        switch (this.$store.state.route.path) {
-          case "/referenzen":
-            this.$router.push("/leistungen");
-            break;
-          case "/kunden":
-            this.$router.push("/referenzen");
-            break;
-          case "/aktuelles":
-            this.$router.push("/kunden");
-            break;
-          case "/leistungen":
-            this.$router.push("/aktuelles");
-            break;
-        }
-      },
-      swipe_Left(direction, event) {
-        if (event.path.length > 8) return;
-
-        switch (this.$store.state.route.path) {
-          case "/referenzen":
-            this.$router.push("/kunden");
-            break;
-          case "/kunden":
-            this.$router.push("/aktuelles");
-            break;
-          case "/aktuelles":
-            this.$router.push("/leistungen");
-            break;
-          case "/leistungen":
-            this.$router.push("/referenzen");
-            break;
-        }
-      },
+export default {
+  name: "Header",
+  metaInfo: {
+    titleTemplate: "%s | Agentur für Design",
+    base: { target: "_blank", href: "/" },
+    meta: [
+      { charset: "utf-8" },
+      { name: "viewport", content: "width=device-width, initial-scale=1" }
+    ],
+    htmlAttrs: {
+      lang: "de",
+      amp: undefined
+    }
+  },
+  data: () => ({
+    duration: 4000
+  }),
+  methods: {
+    clearError() {
+      this.$store.commit("clearError");
     },
-    beforeMount() {
-      this.$store.dispatch("getNews");
+    swipe_Right(direction, event) {
+      if (event.path.length > 8) return;
+
+      switch (this.$store.state.route.path) {
+        case "/referenzen":
+          this.$router.push("/leistungen");
+          break;
+        case "/kunden":
+          this.$router.push("/referenzen");
+          break;
+        case "/aktuelles":
+          this.$router.push("/kunden");
+          break;
+        case "/leistungen":
+          this.$router.push("/aktuelles");
+          break;
+      }
     },
-    computed: {
-      error: {
-        get() {
-          return this.$store.getters.getError;
-        },
-        set(val) {
-          this.$store.commit("clearError");
-        }
-      },
-      theme: {
-        get() {
-          return this.$store.state.general.theme;
-        },
-        set(val) {
-          this.$store.commit("setTheme", val);
-        }
-      },
-      success: {
-        get() {
-          return this.$store.getters.getSuccess;
-        },
-        set(val) {
-          this.$store.commit("clearSuccess");
-        }
-      },
-      showSnackbar: {
-        get() {
-          return this.success ? true : false;
-        },
-        set(val) {
-          this.$store.commit("clearSuccess");
-        }
+    swipe_Left(direction, event) {
+      if (event.path.length > 8) return;
+
+      switch (this.$store.state.route.path) {
+        case "/referenzen":
+          this.$router.push("/kunden");
+          break;
+        case "/kunden":
+          this.$router.push("/aktuelles");
+          break;
+        case "/aktuelles":
+          this.$router.push("/leistungen");
+          break;
+        case "/leistungen":
+          this.$router.push("/referenzen");
+          break;
       }
     }
-  };
-
+  },
+  beforeMount() {
+    this.$store.dispatch("getNews");
+  },
+  computed: {
+    error: {
+      get() {
+        return this.$store.getters.getError;
+      },
+      set(val) {
+        this.$store.commit("clearError");
+      }
+    },
+    theme: {
+      get() {
+        return this.$store.state.general.theme;
+      },
+      set(val) {
+        this.$store.commit("setTheme", val);
+      }
+    },
+    success: {
+      get() {
+        return this.$store.getters.getSuccess;
+      },
+      set(val) {
+        this.$store.commit("clearSuccess");
+      }
+    },
+    showSnackbar: {
+      get() {
+        return this.success ? true : false;
+      },
+      set(val) {
+        this.$store.commit("clearSuccess");
+      }
+    }
+  }
+};
 </script>
 
 <style>
-  #tabs {
-    overflow-x: hidden;
-  }
+#tabs {
+  overflow-x: hidden;
+}
 
-  #tabs {
-    min-height: 98vh;
-  }
+#tabs {
+  min-height: 98vh;
+}
 
-  #footer {
-    width: 100%;
-    height: 5%;
-    min-height: 35px;
-    max-height: 60px;
-    position: absolute;
-    left: 0;
-    bottom: 0;
-    position: fixed;
-    z-index: 1000;
-  }
+#footer {
+  width: 100%;
+  height: 5%;
+  min-height: 35px;
+  max-height: 60px;
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  position: fixed;
+  z-index: 1000;
+}
 
-  #footer.light {
-    background-color: rgb(214, 214, 214);
-  }
+#footer.light {
+  background-color: rgb(214, 214, 214);
+}
 
-  #footer.dark {
-    background-color: rgb(68, 68, 68);
-  }
+#footer.dark {
+  background-color: rgb(68, 68, 68);
+}
 
-  #errorBar {
-    z-index: 9001;
-  }
+#errorBar {
+  z-index: 9001;
+}
 
-  #app {
-    font-family: "Avenir", Helvetica, Arial, sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    text-align: center;
-    color: #2c3e50;
-    margin-top: 60px;
-  }
+#app {
+  font-family: "Avenir", Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  color: #2c3e50;
+  margin-top: 60px;
+}
 
-  #spacer {
-    width: 10px;
-  }
+#spacer {
+  width: 10px;
+}
 
-  .page-enter-active,
-  .page-leave-active {
-    transition: opacity 0.2s, transform 0.35s;
-  }
+.page-enter-active,
+.page-leave-active {
+  transition: opacity 0.2s, transform 0.35s;
+}
 
-  .page-enter,
-  .page-leave-to {
-    opacity: 0;
-    transform: translateY(-30%);
-  }
+.page-enter,
+.page-leave-to {
+  opacity: 0;
+  transform: translateY(-30%);
+}
 
-  #footer span {
-    cursor: pointer;
-  }
+#footer span {
+  cursor: pointer;
+}
 
-  #footer span:hover {
-    font-weight: bold;
-  }
+#footer span:hover {
+  font-weight: bold;
+}
 
-  #footer ul {
-    list-style-type: none;
-  }
+#footer ul {
+  list-style-type: none;
+}
 
-  #footer li {
-    float: left;
-    margin-right: 1%;
-  }
+#footer li {
+  float: left;
+  margin-right: 1%;
+}
 
-  #themeswitch {
-    position: absolute;
-    top: 13px;
-    left: 13px;
-    z-index: 3;
-    cursor: pointer;
-  }
-
+#themeswitch {
+  position: absolute;
+  top: 13px;
+  left: 13px;
+  z-index: 3;
+  cursor: pointer;
+}
 </style>

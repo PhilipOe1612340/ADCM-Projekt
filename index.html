@@ -26,6 +26,7 @@
 
     if (navigator.doNotTrack === "1") console.info("respecting 'do not track'")
     window['ga-disable-UA-113316168-1'] = navigator.doNotTrack === "1";
+    ga('require', 'displayfeatures');
     ga('create', 'UA-113316168-1', {
       'siteSpeedSampleRate': 100
     });

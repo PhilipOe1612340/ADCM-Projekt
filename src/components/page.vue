@@ -28,72 +28,70 @@
 </template>
 
 <script>
-  import moment from "moment";
-  import card from "./card.vue";
+import moment from "moment";
+import card from "./card.vue";
 
-  export default {
-    name: "page",
-    props: {
-      type: {
-        type: String
-      },
-      description: {
-        type: String
-      }
+export default {
+  name: "page",
+  props: {
+    type: {
+      type: String
     },
-    components: {
-      card
-    },
-    methods: {
-      loadNews() {
-        this.$store.dispatch("getNews");
-      }
-    },
-    beforeMount() {
-      this.$store.dispatch("getNews");
-      window['ga-disable-UA-113316168-1'] = navigator.doNotTrack === "1";
-      ga('set', 'page', '/' + this.type);
-      ga('send', 'pageview');
-    },
-    computed: {
-      url() {
-        return "static/" + this.type + ".webp"
-      },
-      loading() {
-        return this.$store.getters.getLoading;
-      },
-      news() {
-        var news = this.$store.getters.getNews;
-        var i = 0;
-        moment.locale("de");
-        news.forEach(card => {
-          card.id = i++;
-          card.datum = moment(card.date).format("LL");
-        });
-        return news;
-      }
+    description: {
+      type: String
     }
-  };
-
+  },
+  components: {
+    card
+  },
+  methods: {
+    loadNews() {
+      this.$store.dispatch("getNews");
+    }
+  },
+  beforeMount() {
+    this.$store.dispatch("getNews");
+    window["ga-disable-UA-113316168-1"] = navigator.doNotTrack === "1";
+    ga("set", "page", "/" + this.type);
+    ga("send", "pageview");
+  },
+  computed: {
+    url() {
+      return "static/" + this.type + ".webp";
+    },
+    loading() {
+      return this.$store.getters.getLoading;
+    },
+    news() {
+      var news = this.$store.getters.getNews;
+      var i = 0;
+      moment.locale("de");
+      news.forEach(card => {
+        card.id = i++;
+        card.datum = moment(card.date).format("LL");
+      });
+      return news;
+    }
+  }
+};
 </script>
 
 
 <style scoped>
-  #card>* {
-    word-wrap: break-word;
-    overflow: hidden;
-  }
+#card > * {
+  word-wrap: break-word;
+  overflow: hidden;
+}
 
-  #card {
-    margin: 0px 15px 15px 15px;
-  }
+#card {
+  margin: 0px 15px 15px 15px;
+}
 
-  #komplett {
-    width: 95%;
-    margin: 0 3vw 0 3vw;
-    max-width: 1000px;
-    margin: auto;
-    padding: 10px;
-  }
-
+#komplett {
+  width: 95%;
+  margin: 0 3vw 0 3vw;
+  max-width: 1000px;
+  margin: auto;
+  padding: 10px;
+}
 </style>

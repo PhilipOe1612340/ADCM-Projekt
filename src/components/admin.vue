@@ -164,6 +164,9 @@
 
   export default {
     name: "admin",
+     metaInfo: {
+      title: 'Admin',
+    },
     components: {
       card
     },

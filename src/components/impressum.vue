@@ -1,5 +1,5 @@
 <template>
-  <!-- <div id="impr"> 
+  <!-- <div id="impr">
     <h1>Impressum</h1>
     <div>
       <span>agentur_dcm</span><br />
@@ -25,27 +25,27 @@
 </template>
 
 <script>
-  export default {
-    beforeMount() {
-      this.$store.dispatch("getNews");
-      window['ga-disable-UA-113316168-1'] = navigator.doNotTrack === "1";
-      ga('set', 'page', '/impressum');
-      ga('send', 'pageview');
-    }
+export default {
+  metaInfo: {
+    title: "Impressum"
+  },
+  beforeMount() {
+    window["ga-disable-UA-113316168-1"] = navigator.doNotTrack === "1";
+    ga("set", "page", "/impressum");
+    ga("send", "pageview");
   }
-
+};
 </script>
 
 <style scoped>
-  #impr {
-    width: 50%;
-    min-width: 300px;
-    margin: auto;
-  }
+#impr {
+  width: 50%;
+  min-width: 300px;
+  margin: auto;
+}
 
-  #legal {
-    color: rgb(194, 194, 194);
-    line-height: 12pt;
-  }
-
+#legal {
+  color: rgb(194, 194, 194);
+  line-height: 12pt;
+}
 </style>
