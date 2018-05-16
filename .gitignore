@@ -16,4 +16,3 @@ cypress/videos/
 *.sln
 
 *.code-workspace
-*.mp4

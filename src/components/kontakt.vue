@@ -50,7 +50,7 @@
 
         </form>
       </div>
-       <div class="md-layout-item md-large-size-35 md-medium-size-45 md-small-size-95">
+      <!-- <div class="md-layout-item md-large-size-35 md-medium-size-45 md-small-size-95">
         Agentur_dcm<br/>
         Agentur für Design und Fotographie</p>
         <p>dcm Galerie<br/>
@@ -62,7 +62,7 @@
         <p>Tel	+49 (0)711 300 36 91<br/> </p>
         Email <a href="mailto:info@agentur-dcm.de">info@agentur-dcm.de</a>
       </div>
-      <div class="md-layout-item md-large-size-5 md-medium-hide"></div>
+      <div class="md-layout-item md-large-size-5 md-medium-hide"></div>-->
     </div>
   </div>
 </template>

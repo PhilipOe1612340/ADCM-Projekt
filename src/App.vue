@@ -1,5 +1,7 @@
 <template>
   <div id="tabs" v-touch:swipe.left="swipe_Left" v-touch:swipe.right="swipe_Right">
+    <!-- DEVELOPMENT SIGN -->
+    <span style="margin:auto; color:rgb(255, 132, 132); position:fixed; top:10px; left:20px; z-index:200; pointer-events: none;">NO OFFICAL WEBSITE</span>
     <md-tabs md-sync-route md-alignment="centered" v-if="$store.state.route.path != '/admin'">
       <md-tab id="tab-leistungen" md-label="leistungen" to="/leistungen" />
       <md-tab id="tab-referenzen" md-label="referenzen" to="/referenzen" />
